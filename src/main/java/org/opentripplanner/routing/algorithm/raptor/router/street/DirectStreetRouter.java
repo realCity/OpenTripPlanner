@@ -27,7 +27,8 @@ public class DirectStreetRouter {
   private static final double MAX_BIKE_DISTANCE_METERS = 150_000;
   private static final double MAX_CAR_DISTANCE_METERS  = 500_000;
 
-  public static List<Itinerary> route(Router router, RoutingRequest request) {
+  public static List<Itinerary> route(Router router, RoutingRequest request,
+          boolean includeMultipleOnStreetItineraries) {
     request.setRoutingContext(router.graph);
     try {
       if (request.modes.directMode == null) {
@@ -36,6 +37,12 @@ public class DirectStreetRouter {
       if(!streetDistanceIsReasonable(request)) { return Collections.emptyList(); }
 
       RoutingRequest nonTransitRequest = request.getStreetSearchRequest(request.modes.directMode);
+
+      if (includeMultipleOnStreetItineraries) {
+        nonTransitRequest.setNumItineraries((request.arriveBy ? request.rctx.fromVertices : request.rctx.toVertices).size());
+      } else {
+        nonTransitRequest.setNumItineraries(1);
+      }
 
       // we could also get a persistent router-scoped GraphPathFinder but there's no setup cost here
       GraphPathFinder gpFinder = new GraphPathFinder(router);

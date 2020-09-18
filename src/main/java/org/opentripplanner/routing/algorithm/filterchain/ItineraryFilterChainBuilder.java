@@ -6,6 +6,7 @@ import org.opentripplanner.routing.algorithm.filterchain.filters.FilterChain;
 import org.opentripplanner.routing.algorithm.filterchain.filters.GroupBySimilarLegsFilter;
 import org.opentripplanner.routing.algorithm.filterchain.filters.LatestDepartureTimeFilter;
 import org.opentripplanner.routing.algorithm.filterchain.filters.MaxLimitFilter;
+import org.opentripplanner.routing.algorithm.filterchain.filters.MaxOnStreetOnlyLimitFilter;
 import org.opentripplanner.routing.algorithm.filterchain.filters.OtpDefaultSortOrder;
 import org.opentripplanner.routing.algorithm.filterchain.filters.RemoveTransitIfStreetOnlyIsBetterFilter;
 import org.opentripplanner.routing.algorithm.filterchain.filters.TransitGeneralizedCostFilter;
@@ -30,6 +31,7 @@ public class ItineraryFilterChainBuilder {
 
     private boolean debug = false;
     private int maxNumberOfItineraries = NOT_SET;
+    private int maxNumberOfOnStreetOnlyItineraries = 1;
     private boolean removeTransitWithHigherCostThanBestOnStreetOnly = true;
     private DoubleFunction<Double> transitGeneralizedCostLimit;
     private Instant latestDepartureTimeLimit = null;
@@ -51,6 +53,16 @@ public class ItineraryFilterChainBuilder {
      */
     public ItineraryFilterChainBuilder withMaxNumberOfItineraries(int value) {
         this.maxNumberOfItineraries = value;
+        return this;
+    }
+
+    /**
+     * The maximum number of on street only itineraries returned.
+     * <p>
+     * Use {@code -1} to disable.
+     */
+    public ItineraryFilterChainBuilder withMaxNumberOfOnStreetOnlyItineraries(int value) {
+        this.maxNumberOfOnStreetOnlyItineraries = value;
         return this;
     }
 
@@ -169,6 +181,18 @@ public class ItineraryFilterChainBuilder {
         // Filter transit itineraries on generalized-cost
         if(transitGeneralizedCostLimit != null) {
             filters.add(new TransitGeneralizedCostFilter(transitGeneralizedCostLimit));
+        }
+
+        // Remove walk itineraries over the limit
+        if (maxNumberOfOnStreetOnlyItineraries > 0) {
+            // Sort first to make sure we keep the most relevant itineraries
+            filters.add(new OtpDefaultSortOrder(arriveBy));
+            filters.add(
+                    new MaxOnStreetOnlyLimitFilter(
+                            "number-of-on-street-only-itineraries-filter",
+                            maxNumberOfOnStreetOnlyItineraries
+                    )
+            );
         }
 
         // Remove itineraries if max limit is set

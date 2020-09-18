@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.opentripplanner.ConstantsForTests;
+import org.opentripplanner.model.FeedScopedId;
+import org.opentripplanner.model.GenericLocation;
 import org.opentripplanner.model.plan.Itinerary;
 import org.opentripplanner.model.plan.Leg;
 import org.opentripplanner.model.plan.WalkStep;
@@ -35,11 +37,33 @@ import static org.junit.Assert.assertEquals;
 public abstract class RoutingSnapshotTestBase {
 
     private static final ObjectMapper objectMapper = buildObjectMapper();
+
     private static final PrettyPrinter pp = buildDefaultPrettyPrinter();
 
     static final boolean verbose = Boolean.getBoolean("otp.test.verbose");
 
     protected Router router;
+
+    static GenericLocation ptc = new GenericLocation("Rose Quarter Transit Center",
+            new FeedScopedId("prt", "79-tc"), null, null);
+
+    static GenericLocation ps = new GenericLocation("NE 12th & Couch",
+            new FeedScopedId("prt", "6577"), null, null);
+
+    static GenericLocation p0 = new GenericLocation("SE Stark    St. & SE 17th Ave. (P0)", null,
+            45.519320, -122.648567);
+
+    static GenericLocation p1 = new GenericLocation("SE Morrison St. & SE 17th Ave. (P1)", null,
+            45.51726, -122.64847);
+
+    static GenericLocation p2 = new GenericLocation("NW Northrup St. & NW 22nd Ave. (P2)", null,
+            45.53122, -122.69659);
+
+    static GenericLocation p3 = new GenericLocation("NW Northrup St. & NW 24th Ave. (P3)", null,
+            45.53100, -122.70029);
+
+    static GenericLocation p4 = new GenericLocation("NE Thompson St. & NE 18th Ave. (P4)", null,
+            45.53896, -122.64699);
 
     public static void loadGraphBeforeClass() {
         ConstantsForTests.getInstance().getPortlandGraph();
@@ -56,11 +80,14 @@ public abstract class RoutingSnapshotTestBase {
         return router;
     }
 
-    protected RoutingRequest createTestRequest(int year, int month, int day, int hour, int minute, int second) {
+    protected RoutingRequest createTestRequest(int year, int month, int day, int hour, int minute,
+            int second) {
         Router router = getRouter();
 
         RoutingRequest request = router.defaultRoutingRequest.clone();
-        request.dateTime = TestUtils.dateInSeconds(router.graph.getTimeZone().getID(), year, month, day, hour, minute, second);
+        request.dateTime = TestUtils
+                .dateInSeconds(router.graph.getTimeZone().getID(), year, month, day, hour, minute,
+                        second);
         request.maxTransfers = 6;
         request.numItineraries = 6;
         request.searchWindow = Duration.ofHours(5);
@@ -88,7 +115,8 @@ public abstract class RoutingSnapshotTestBase {
             for (int j = 0; j < itinerary.legs.size(); j++) {
                 Leg leg = itinerary.legs.get(j);
                 String mode = leg.mode.name().substring(0, 1);
-                System.out.printf(" - leg %2d - %52.52s %9s --%s-> %-9s %-52.52s\n", j, leg.from.toStringShort(),
+                System.out.printf(" - leg %2d - %52.52s %9s --%s-> %-9s %-52.52s\n", j,
+                        leg.from.toStringShort(),
                         dtf.format(leg.startTime.toInstant().atZone(zoneId)), mode,
                         dtf.format(leg.endTime.toInstant().atZone(zoneId)), leg.to.toStringShort());
             }
@@ -139,7 +167,8 @@ public abstract class RoutingSnapshotTestBase {
 
         RoutingRequest arriveBy = request.clone();
         arriveBy.setArriveBy(true);
-        arriveBy.dateTime = departByItineraries.get(0).lastLeg().endTime.toInstant().getEpochSecond();
+        arriveBy.dateTime = departByItineraries.get(0).lastLeg().endTime.toInstant()
+                .getEpochSecond();
 
         List<Itinerary> arriveByItineraries = retrieveItineraries(arriveBy, router);
 
@@ -161,7 +190,8 @@ public abstract class RoutingSnapshotTestBase {
     }
 
     private void sanitizeItinerariesForSnapshot(List<Itinerary> itineraries) {
-        itineraries.forEach(itinerary -> itinerary.legs.forEach(leg -> sanitizeWalkStepsForSnapshot(leg.walkSteps)));
+        itineraries.forEach(itinerary -> itinerary.legs
+                .forEach(leg -> sanitizeWalkStepsForSnapshot(leg.walkSteps)));
     }
 
     private void sanitizeWalkStepsForSnapshot(List<WalkStep> walkSteps) {

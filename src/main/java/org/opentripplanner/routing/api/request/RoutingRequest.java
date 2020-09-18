@@ -98,11 +98,7 @@ public class RoutingRequest implements Cloneable, Serializable {
 
     /**
      * An ordered list of intermediate locations to be visited.
-     *
-     * @deprecated TODO OTP2 - Regression. Not currently working in OTP2. Must be re-implemented
-     *                       - using raptor.
      */
-    @Deprecated
     public List<GenericLocation> intermediatePlaces;
 
     /**
@@ -114,7 +110,6 @@ public class RoutingRequest implements Cloneable, Serializable {
      *                       so it does work similar as before.
      * @see https://github.com/opentripplanner/OpenTripPlanner/issues/2886
      */
-    @Deprecated
     public double maxWalkDistance = Double.MAX_VALUE;
 
     /**
@@ -986,12 +981,7 @@ public class RoutingRequest implements Cloneable, Serializable {
     }
 
     public int getNumItineraries() {
-        if (streetSubRequestModes.isTransit()) {
-            return numItineraries;
-        } else {
-            // If transit is not to be used, only search for one itinerary.
-            return 1;
-        }
+        return numItineraries;
     }
 
     public void setNumItineraries(int numItineraries) {
@@ -1135,6 +1125,10 @@ public class RoutingRequest implements Cloneable, Serializable {
             clone.unpreferredRoutes = unpreferredRoutes.clone();
 
             clone.bannedTrips = (HashMap<FeedScopedId, BannedStopSet>) bannedTrips.clone();
+
+            if (intermediatePlaces != null) {
+                clone.intermediatePlaces = new ArrayList<>(intermediatePlaces);
+            }
 
             if (this.bikeWalkingOptions != this) {
                 clone.bikeWalkingOptions = this.bikeWalkingOptions.clone();

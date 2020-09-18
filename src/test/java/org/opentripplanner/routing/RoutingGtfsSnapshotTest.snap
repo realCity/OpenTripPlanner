@@ -8383,6 +8383,11 @@ org.opentripplanner.routing.RoutingGtfsSnapshotTest.test_trip_planning_with_walk
 ]
 
 
+org.opentripplanner.routing.RoutingGtfsSnapshotTest.test_trip_planning_with_walk_only_arrive_by=[
+  [ ]
+]
+
+
 org.opentripplanner.routing.RoutingGtfsSnapshotTest.test_trip_planning_with_walk_only_stop=[
   [
     {

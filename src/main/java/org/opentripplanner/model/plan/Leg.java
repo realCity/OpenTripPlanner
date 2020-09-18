@@ -167,7 +167,43 @@ public class Leg {
     this.trip = trip;
   }
 
-  /**
+  public Leg(Leg leg) {
+      this.mode = leg.mode;
+      this.trip = leg.trip;
+      this.startTime = copyCalendar(leg.startTime);
+      this.endTime = copyCalendar(leg.endTime);
+      this.departureDelay = leg.departureDelay;
+      this.arrivalDelay = leg.arrivalDelay;
+      this.realTime = leg.realTime;
+      this.isNonExactFrequency = leg.isNonExactFrequency;
+      this.headway = leg.headway;
+      this.distanceMeters = leg.distanceMeters;
+      this.pathway = leg.pathway;
+      this.agencyTimeZoneOffset = leg.agencyTimeZoneOffset;
+      this.routeType = leg.routeType;
+      this.interlineWithPreviousLeg = leg.interlineWithPreviousLeg;
+      this.headsign = leg.headsign;
+      this.serviceDate = leg.serviceDate;
+      this.routeBrandingUrl = leg.routeBrandingUrl;
+      this.from = leg.from;
+      this.to = leg.to;
+      this.intermediateStops = leg.intermediateStops;
+      this.legGeometry = leg.legGeometry;
+      this.walkSteps = leg.walkSteps;
+      this.streetNotes = leg.streetNotes;
+      this.transitAlerts = leg.transitAlerts;
+      this.boardRule = leg.boardRule;
+      this.alightRule = leg.alightRule;
+      this.rentedBike = leg.rentedBike;
+  }
+
+    private Calendar copyCalendar(Calendar endTime) {
+        Calendar copy = Calendar.getInstance(endTime.getTimeZone());
+        copy.setTimeInMillis(endTime.getTimeInMillis());
+        return copy;
+    }
+
+    /**
     * Whether this leg is a transit leg or not.
     * @return Boolean true if the leg is a transit leg
     */
@@ -247,6 +283,11 @@ public class Leg {
 
   /** For transit legs, the the trip. For non-transit legs, null. */
   public Trip getTrip() {  return trip; }
+
+  public void timeShift(int adjustmentMilliSeconds) {
+    startTime.add(Calendar.MILLISECOND, adjustmentMilliSeconds);
+    endTime.add(Calendar.MILLISECOND, adjustmentMilliSeconds);
+ }
 
   /** Should be used for debug logging only */
     @Override

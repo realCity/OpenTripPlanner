@@ -3,8 +3,6 @@ package org.opentripplanner.routing;
 import io.github.jsonSnapshot.SnapshotMatcher;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opentripplanner.model.FeedScopedId;
-import org.opentripplanner.model.GenericLocation;
 import org.opentripplanner.model.TransitMode;
 import org.opentripplanner.routing.api.request.RequestModes;
 import org.opentripplanner.routing.api.request.RoutingRequest;
@@ -16,27 +14,6 @@ import static java.util.Collections.emptySet;
 
 public class RoutingGtfsSnapshotTest
         extends RoutingSnapshotTestBase {
-
-    static GenericLocation ptc = new GenericLocation("Rose Quarter Transit Center",
-            new FeedScopedId("prt", "79-tc"), null, null);
-
-    static GenericLocation ps = new GenericLocation("NE 12th & Couch",
-            new FeedScopedId("prt", "6577"), null, null);
-
-    static GenericLocation p0 = new GenericLocation("SE Stark    St. & SE 17th Ave. (P0)", null,
-            45.519320, -122.648567);
-
-    static GenericLocation p1 = new GenericLocation("SE Morrison St. & SE 17th Ave. (P1)", null,
-            45.51726, -122.64847);
-
-    static GenericLocation p2 = new GenericLocation("NW Northrup St. & NW 22nd Ave. (P2)", null,
-            45.53122, -122.69659);
-
-    static GenericLocation p3 = new GenericLocation("NW Northrup St. & NW 24th Ave. (P3)", null,
-            45.53100, -122.70029);
-
-    static GenericLocation p4 = new GenericLocation("NE Thompson St. & NE 18th Ave. (P4)", null,
-            45.53896, -122.64699);
 
     @BeforeClass public static void beforeClass() {
         SnapshotMatcher.start(RoutingSnapshotTestBase::asJsonString);
@@ -52,6 +29,18 @@ public class RoutingGtfsSnapshotTest
         request.to = p2;
 
         expectArriveByToMatchDepartAtAndSnapshot(request);
+    }
+
+    @Test public void test_trip_planning_with_walk_only_arrive_by() {
+        RoutingRequest request = createTestRequest(2009, 10, 17, 11, 3, 24);
+
+        request.modes = new RequestModes(StreetMode.WALK, StreetMode.WALK, StreetMode.WALK,
+                emptySet());
+        request.arriveBy = true;
+        request.from = p0;
+        request.to = p2;
+
+        expectRequestResponseToMatchSnapshot(request);
     }
 
     @Test public void test_trip_planning_with_walk_only_stop() {

@@ -2,6 +2,7 @@ package org.opentripplanner.routing.core;
 
 import com.google.common.collect.Sets;
 import org.locationtech.jts.geom.LineString;
+import org.opentripplanner.api.resource.DebugOutput;
 import org.opentripplanner.common.geometry.GeometryUtils;
 import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.routing.algorithm.astar.strategies.EuclideanRemainingWeightHeuristic;
@@ -61,6 +62,9 @@ public class RoutingContext implements Cloneable {
     public Edge originBackEdge;
 
     public RemainingWeightHeuristic remainingWeightHeuristic;
+
+    /** An object that accumulates profiling and debugging info for inclusion in the response. */
+    public DebugOutput debugOutput = null;
 
     /** Indicates that the search timed out or was otherwise aborted. */
     public boolean aborted;

@@ -122,6 +122,7 @@ public class Itinerary {
         this.streetOnly = totals.streetOnly;
     }
 
+
     /**
      * Time that the trip departs.
      */
@@ -206,10 +207,7 @@ public class Itinerary {
     }
 
     private void timeShift(int adjustmentMilliSeconds) {
-        for (Leg leg : this.legs) {
-            leg.startTime.add(Calendar.MILLISECOND, adjustmentMilliSeconds);
-            leg.endTime.add(Calendar.MILLISECOND, adjustmentMilliSeconds);
-        }
+        legs.forEach(leg -> leg.timeShift(adjustmentMilliSeconds));
     }
 
     /**

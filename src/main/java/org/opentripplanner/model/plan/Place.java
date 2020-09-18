@@ -4,6 +4,8 @@ import org.opentripplanner.model.WgsCoordinate;
 import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.model.base.ToStringBuilder;
 
+import java.util.Objects;
+
 /** 
 * A Place is where a journey starts or ends, or a transit stop along the way.
 */ 
@@ -68,15 +70,15 @@ public class Place {
     }
 
     /**
-     * Test if the place is likely to be at the same location. First check the coordinates
-     * then check the stopId [if it exist].
+     * Test if the place is likely to be at the same location. First check the stopId [if it exists]
+     * and then the coordinates.
      */
     public boolean sameLocation(Place other) {
         if(this == other) { return true; }
-        if(coordinate != null) {
-            return coordinate.sameLocation(other.coordinate);
+        if (stopId != null || other.stopId != null) {
+            return Objects.equals(stopId, other.stopId);
         }
-        return stopId != null && stopId.equals(other.stopId);
+        return coordinate.sameLocation(other.coordinate);
     }
 
     /**
