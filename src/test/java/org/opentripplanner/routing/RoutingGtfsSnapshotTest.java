@@ -51,7 +51,7 @@ public class RoutingGtfsSnapshotTest
         request.from = p0;
         request.to = p2;
 
-        expectRequestResponseToMatchSnapshot(request);
+        expectArriveByToMatchDepartAtAndSnapshot(request);
     }
 
     @Test public void test_trip_planning_with_walk_only_stop() {
@@ -62,7 +62,7 @@ public class RoutingGtfsSnapshotTest
         request.from = ps;
         request.to = p2;
 
-        expectRequestResponseToMatchSnapshot(request);
+        expectArriveByToMatchDepartAtAndSnapshot(request);
     }
 
     @Test public void test_trip_planning_with_walk_only_stop_collection() {
@@ -74,6 +74,7 @@ public class RoutingGtfsSnapshotTest
         request.to = p3;
 
         expectRequestResponseToMatchSnapshot(request);
+        // not equal - expectArriveByToMatchDepartAtAndSnapshot(request);
     }
 
     @Test public void test_trip_planning_with_transit() {
@@ -96,7 +97,7 @@ public class RoutingGtfsSnapshotTest
         request.from = p1;
         request.to = p2;
 
-        expectRequestResponseToMatchSnapshot(request);
+        expectArriveByToMatchDepartAtAndSnapshot(request);
     }
 
     @Test public void test_trip_planning_with_transit_stop() {
@@ -104,10 +105,11 @@ public class RoutingGtfsSnapshotTest
 
         request.modes = new RequestModes(StreetMode.WALK, StreetMode.WALK, StreetMode.WALK,
                 Set.of(TransitMode.values()));
+        request.maxWalkDistance = 1000;
         request.from = ps;
         request.to = p3;
 
-        expectRequestResponseToMatchSnapshot(request);
+        expectArriveByToMatchDepartAtAndSnapshot(request);
     }
 
     @Test public void test_trip_planning_with_transit_stop_collection() {
@@ -115,9 +117,10 @@ public class RoutingGtfsSnapshotTest
 
         request.modes = new RequestModes(StreetMode.WALK, StreetMode.WALK, StreetMode.WALK,
                 Set.of(TransitMode.values()));
+        request.maxWalkDistance = 1000;
         request.from = ptc;
         request.to = p3;
 
-        expectRequestResponseToMatchSnapshot(request);
+        expectArriveByToMatchDepartAtAndSnapshot(request);
     }
 }

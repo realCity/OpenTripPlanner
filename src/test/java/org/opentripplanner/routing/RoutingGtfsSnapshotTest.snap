@@ -4459,249 +4459,6 @@ org.opentripplanner.routing.RoutingGtfsSnapshotTest.test_trip_planning_with_tran
 org.opentripplanner.routing.RoutingGtfsSnapshotTest.test_trip_planning_with_transit_stop=[
   [
     {
-      "durationSeconds": 3451,
-      "elevationGained": 0.0,
-      "elevationLost": 0.0,
-      "fare": {
-        "details": { },
-        "fare": { }
-      },
-      "generalizedCost": 6717,
-      "legs": [
-        {
-          "agencyTimeZoneOffset": -28800000,
-          "arrivalDelay": 0,
-          "departureDelay": 0,
-          "distanceMeters": 4442.913999999999,
-          "endTime": 1258484251000,
-          "from": {
-            "coordinate": {
-              "latitude": 45.52337,
-              "longitude": -122.653725
-            },
-            "name": "NE 12th & Couch",
-            "orig": "NE 12th & Couch",
-            "platformCode": "6577",
-            "stopCode": "6577",
-            "stopId": {
-              "feedId": "prt",
-              "id": "6577"
-            },
-            "vertexType": "TRANSIT",
-            "zoneId": "1"
-          },
-          "interlineWithPreviousLeg": false,
-          "legGeometry": {
-            "length": 208,
-            "points": "ahztGxxrkV@Sb@?`@@T??V?vCAT?R?`D?T?RA`D?R?R?t@?n@?z@?T?R?jB?@?r@?R?R?tA?\\?l@?R?T?VAd@?jA?N?N?J?Z?jA?z@?P?Z?J@N?hA@x@Ap@ATETGpJCjEA|CArAAxAAxAAdBEzHClF?@Ax@GTAjBAZ?R@hC@h@Q@cBBM?M?_CDsA@Y?Q@O?K?Q?mBB[?C?W@[?]@E?IDI@]DO@SBM?S@G@A?GDEJQ|@AL?L@nA?j@@L?V?d@@~@@NI?E?W@Q?Q?m@@Q@AF?DAJBzB?V?NANM@K?GBEDEHIJUX_@f@KNQRSVGFCBQPIHGDGBIBK@W@a@?mA@E?C@C@A?CBQTKJEHIJeC~CYZo@v@g@d@IJAFAD?L@vC@hB@p@?X?T@P?N@P@nA?j@AX?L@`B@dA?R?RBbD?T?NBbD?R?P@|D@jB?x@@J?N?B?P?LBjD@N@fD?T?LBdD?R?PF`K?RDlJ?R?PFlJ?RDbH@xA?D?P?RDpH"
-          },
-          "mode": "WALK",
-          "onStreetNonTransit": true,
-          "pathway": false,
-          "realTime": false,
-          "rentedBike": false,
-          "startTime": 1258480800000,
-          "streetNotes": [ ],
-          "to": {
-            "coordinate": {
-              "latitude": 45.531,
-              "longitude": -122.70029
-            },
-            "name": "NW Northrup St. & NW 24th Ave. (P3)",
-            "orig": "NW Northrup St. & NW 24th Ave. (P3)",
-            "vertexType": "NORMAL"
-          },
-          "transitAlerts": [ ],
-          "transitLeg": false,
-          "walkSteps": [
-            {
-              "absoluteDirection": "SOUTH",
-              "angle": -3.1191187064694192,
-              "area": false,
-              "bogusName": false,
-              "distance": 51.525,
-              "edges": [ ],
-              "elevation": [ ],
-              "relativeDirection": "DEPART",
-              "startLocation": {
-                "latitude": 45.52336838632084,
-                "longitude": -122.65362253301092
-              },
-              "stayOn": false,
-              "streetName": "Northeast 12th Avenue",
-              "streetNotes": [ ]
-            },
-            {
-              "absoluteDirection": "WEST",
-              "angle": -1.5608232952160197,
-              "area": false,
-              "bogusName": false,
-              "distance": 877.279,
-              "edges": [ ],
-              "elevation": [ ],
-              "relativeDirection": "RIGHT",
-              "startLocation": {
-                "latitude": 45.5229051,
-                "longitude": -122.6536312
-              },
-              "stayOn": false,
-              "streetName": "East Burnside Street",
-              "streetNotes": [ ]
-            },
-            {
-              "absoluteDirection": "WEST",
-              "angle": -1.5429374364857065,
-              "area": false,
-              "bogusName": false,
-              "distance": 407.384,
-              "edges": [ ],
-              "elevation": [ ],
-              "relativeDirection": "CONTINUE",
-              "startLocation": {
-                "latitude": 45.523001,
-                "longitude": -122.6648816
-              },
-              "stayOn": false,
-              "streetName": "Burnside Bridge",
-              "streetNotes": [ ]
-            },
-            {
-              "absoluteDirection": "WEST",
-              "angle": -1.5423269695355575,
-              "area": false,
-              "bogusName": false,
-              "distance": 256.851,
-              "edges": [ ],
-              "elevation": [ ],
-              "relativeDirection": "CONTINUE",
-              "startLocation": {
-                "latitude": 45.523105400000006,
-                "longitude": -122.67010870000001
-              },
-              "stayOn": false,
-              "streetName": "West Burnside Street",
-              "streetNotes": [ ]
-            },
-            {
-              "absoluteDirection": "NORTH",
-              "angle": -0.028022114817565644,
-              "area": false,
-              "bogusName": false,
-              "distance": 460.622,
-              "edges": [ ],
-              "elevation": [ ],
-              "relativeDirection": "RIGHT",
-              "startLocation": {
-                "latitude": 45.523177600000004,
-                "longitude": -122.67338950000001
-              },
-              "stayOn": false,
-              "streetName": "Northwest 3rd Avenue",
-              "streetNotes": [ ]
-            },
-            {
-              "absoluteDirection": "WEST",
-              "angle": -1.1944859782105497,
-              "area": false,
-              "bogusName": false,
-              "distance": 145.81199999999998,
-              "edges": [ ],
-              "elevation": [ ],
-              "relativeDirection": "SLIGHTLY_LEFT",
-              "startLocation": {
-                "latitude": 45.527286600000004,
-                "longitude": -122.67371650000001
-              },
-              "stayOn": false,
-              "streetName": "Northwest Hoyt Street",
-              "streetNotes": [ ]
-            },
-            {
-              "absoluteDirection": "NORTH",
-              "angle": -0.029032765206574367,
-              "area": false,
-              "bogusName": false,
-              "distance": 77.353,
-              "edges": [ ],
-              "elevation": [ ],
-              "relativeDirection": "RIGHT",
-              "startLocation": {
-                "latitude": 45.5273496,
-                "longitude": -122.6755629
-              },
-              "stayOn": false,
-              "streetName": "Northwest 5th Avenue",
-              "streetNotes": [ ]
-            },
-            {
-              "absoluteDirection": "WEST",
-              "angle": -1.4107231165936804,
-              "area": false,
-              "bogusName": false,
-              "distance": 80.53,
-              "edges": [ ],
-              "elevation": [ ],
-              "relativeDirection": "LEFT",
-              "startLocation": {
-                "latitude": 45.528044900000005,
-                "longitude": -122.6755935
-              },
-              "stayOn": false,
-              "streetName": "Northwest Irving Street",
-              "streetNotes": [ ]
-            },
-            {
-              "absoluteDirection": "NORTH",
-              "angle": -0.07553970510661134,
-              "area": false,
-              "bogusName": false,
-              "distance": 465.426,
-              "edges": [ ],
-              "elevation": [ ],
-              "relativeDirection": "RIGHT",
-              "startLocation": {
-                "latitude": 45.528051500000004,
-                "longitude": -122.67662320000001
-              },
-              "stayOn": false,
-              "streetName": "Northwest Station Way",
-              "streetNotes": [ ]
-            },
-            {
-              "absoluteDirection": "WEST",
-              "angle": -1.3840041579257698,
-              "area": false,
-              "bogusName": false,
-              "distance": 1620.1320000000003,
-              "edges": [ ],
-              "elevation": [ ],
-              "relativeDirection": "LEFT",
-              "startLocation": {
-                "latitude": 45.531545200000004,
-                "longitude": -122.679511
-              },
-              "stayOn": false,
-              "streetName": "Northwest Northrup Street",
-              "streetNotes": [ ]
-            }
-          ],
-          "walkingLeg": true
-        }
-      ],
-      "nTransfers": 0,
-      "nonTransitDistanceMeters": 4442.913999999999,
-      "nonTransitLimitExceeded": false,
-      "nonTransitTimeSeconds": 3451,
-      "onStreetAllTheWay": true,
-      "streetOnly": true,
-      "systemNotices": [ ],
-      "tooSloped": false,
-      "transitTimeSeconds": 0,
-      "waitingTimeSeconds": 0,
-      "walkOnly": true,
-      "walkingAllTheWay": true
-    },
-    {
       "durationSeconds": 1553,
       "elevationGained": 0.0,
       "elevationLost": 0.0,
@@ -5106,7 +4863,7 @@ org.opentripplanner.routing.RoutingGtfsSnapshotTest.test_trip_planning_with_tran
       ],
       "nTransfers": 0,
       "nonTransitDistanceMeters": 1000.8340000000001,
-      "nonTransitLimitExceeded": false,
+      "nonTransitLimitExceeded": true,
       "nonTransitTimeSeconds": 784,
       "onStreetAllTheWay": false,
       "streetOnly": false,
@@ -5522,7 +5279,7 @@ org.opentripplanner.routing.RoutingGtfsSnapshotTest.test_trip_planning_with_tran
       ],
       "nTransfers": 0,
       "nonTransitDistanceMeters": 1000.8340000000001,
-      "nonTransitLimitExceeded": false,
+      "nonTransitLimitExceeded": true,
       "nonTransitTimeSeconds": 784,
       "onStreetAllTheWay": false,
       "streetOnly": false,
@@ -5938,7 +5695,7 @@ org.opentripplanner.routing.RoutingGtfsSnapshotTest.test_trip_planning_with_tran
       ],
       "nTransfers": 0,
       "nonTransitDistanceMeters": 1000.8340000000001,
-      "nonTransitLimitExceeded": false,
+      "nonTransitLimitExceeded": true,
       "nonTransitTimeSeconds": 784,
       "onStreetAllTheWay": false,
       "streetOnly": false,
@@ -6790,56 +6547,292 @@ org.opentripplanner.routing.RoutingGtfsSnapshotTest.test_trip_planning_with_tran
       "waitingTimeSeconds": 0,
       "walkOnly": false,
       "walkingAllTheWay": false
-    }
-  ]
-]
-
-
-org.opentripplanner.routing.RoutingGtfsSnapshotTest.test_trip_planning_with_transit_stop_collection=[
-  [
+    },
     {
-      "durationSeconds": 2361,
+      "durationSeconds": 1583,
       "elevationGained": 0.0,
       "elevationLost": 0.0,
       "fare": {
-        "details": { },
-        "fare": { }
+        "details": {
+          "regular": [
+            {
+              "fareId": {
+                "feedId": "prt",
+                "id": "8"
+              },
+              "price": {
+                "cents": 200,
+                "currency": {
+                  "value": "USD"
+                }
+              },
+              "routes": [
+                {
+                  "feedId": "prt",
+                  "id": "20"
+                }
+              ]
+            }
+          ]
+        },
+        "fare": {
+          "regular": {
+            "cents": 200,
+            "currency": {
+              "value": "USD"
+            }
+          }
+        }
       },
-      "generalizedCost": 4557,
+      "generalizedCost": 2967,
       "legs": [
         {
           "agencyTimeZoneOffset": -28800000,
           "arrivalDelay": 0,
           "departureDelay": 0,
-          "distanceMeters": 2989.7960000000003,
-          "endTime": 1258483161000,
+          "distanceMeters": 87.019,
+          "endTime": 1258484400000,
           "from": {
             "coordinate": {
-              "latitude": 45.530244,
-              "longitude": -122.667794
+              "latitude": 45.52337,
+              "longitude": -122.653725
             },
-            "name": "Interstate/Rose Quarter MAX Station",
-            "orig": "Rose Quarter Transit Center",
-            "platformCode": "11508",
-            "stopCode": "11508",
+            "name": "NE 12th & Couch",
+            "platformCode": "6577",
+            "stopCode": "6577",
             "stopId": {
               "feedId": "prt",
-              "id": "11508"
+              "id": "6577"
             },
             "vertexType": "TRANSIT",
-            "zoneId": "0"
+            "zoneId": "1"
           },
           "interlineWithPreviousLeg": false,
           "legGeometry": {
-            "length": 173,
-            "points": "_s{tGvpukV??c@tADDFDDDHHYx@Wt@{@lBS^MROZ]h@Y`@[`@k@r@kAtASVEDa@f@EDm@l@s@p@JVA@GOCBzEfKxF`M|AfDJRLPVb@DBBBBBDBB@CRE\\C?A@A@ABAB?DAHATC\\AXAVCZATAPAPATG`AATAPAL?J?F?F?D?F@x@AJ@D@B@DAB?RK@I??TBlBCJ?D?BAFAB?DADABEFCDA@CDC?c@@{@@O?K??LCDC??LC?G?E@GBE?KCI?EFC@?N?F?D?BABA@AD?D?B?D@B@BABAB?D?DADABABABC@A@I@IZCFIJ?L@`B@dA?R?RBbD?T?NBbD?R?P@|D@jB?x@@J?N?B?P?LBjD@N@fD?T?LBdD?R?PF`K?RDlJ?R?PFlJ?RDbH@xA?D?P?RDpH"
+            "length": 9,
+            "points": "ahztGxxrkV@Sb@?`@@?a@?k@GGKY@A"
           },
           "mode": "WALK",
           "onStreetNonTransit": true,
           "pathway": false,
           "realTime": false,
           "rentedBike": false,
-          "startTime": 1258480800000,
+          "startTime": 1258484327000,
+          "streetNotes": [ ],
+          "to": {
+            "coordinate": {
+              "latitude": 45.523103,
+              "longitude": -122.653064
+            },
+            "name": "NE Sandy & 12th",
+            "platformCode": "5055",
+            "stopCode": "5055",
+            "stopId": {
+              "feedId": "prt",
+              "id": "5055"
+            },
+            "stopIndex": 94,
+            "vertexType": "TRANSIT",
+            "zoneId": "1"
+          },
+          "transitAlerts": [ ],
+          "transitLeg": false,
+          "walkSteps": [
+            {
+              "absoluteDirection": "SOUTH",
+              "angle": -3.1191187064694192,
+              "area": false,
+              "bogusName": false,
+              "distance": 39.059,
+              "edges": [ ],
+              "elevation": [ ],
+              "relativeDirection": "DEPART",
+              "startLocation": {
+                "latitude": 45.52336838632084,
+                "longitude": -122.65362253301092
+              },
+              "stayOn": false,
+              "streetName": "Northeast 12th Avenue",
+              "streetNotes": [ ]
+            },
+            {
+              "absoluteDirection": "EAST",
+              "angle": 1.5906288403465376,
+              "area": false,
+              "bogusName": true,
+              "distance": 47.959999999999994,
+              "edges": [ ],
+              "elevation": [ ],
+              "relativeDirection": "LEFT",
+              "startLocation": {
+                "latitude": 45.523017200000005,
+                "longitude": -122.65363380000001
+              },
+              "stayOn": false,
+              "streetName": "way 162042138 from 0",
+              "streetNotes": [ ]
+            },
+            {
+              "absoluteDirection": "SOUTHEAST",
+              "angle": 2.595824436092695,
+              "area": false,
+              "bogusName": false,
+              "distance": 0.0,
+              "edges": [ ],
+              "elevation": [ ],
+              "relativeDirection": "RIGHT",
+              "startLocation": {
+                "latitude": 45.52311311424974,
+                "longitude": -122.6530727670171
+              },
+              "stayOn": false,
+              "streetName": "NE Sandy & 12th",
+              "streetNotes": [ ]
+            }
+          ],
+          "walkingLeg": true
+        },
+        {
+          "agencyTimeZoneOffset": 0,
+          "arrivalDelay": 0,
+          "departureDelay": 0,
+          "distanceMeters": 3729.9737283822847,
+          "endTime": 1258485199000,
+          "from": {
+            "coordinate": {
+              "latitude": 45.523103,
+              "longitude": -122.653064
+            },
+            "name": "NE Sandy & 12th",
+            "platformCode": "5055",
+            "stopCode": "5055",
+            "stopId": {
+              "feedId": "prt",
+              "id": "5055"
+            },
+            "stopIndex": 94,
+            "vertexType": "TRANSIT",
+            "zoneId": "1"
+          },
+          "headsign": "23rd Ave to Tichner",
+          "intermediateStops": [ ],
+          "legGeometry": {
+            "length": 95,
+            "points": "weztGdtrkV?BPj@@jA?jEAhE?pD???VAjE?hE?dB?b@???`AAhE?dD???l@C`EAhEEhE?bAA|@?XAZ@\\AzACnGKbKAjC?bE???JEnE@fEDlE@hE@~A??@rBBzDBpE@~A???Z@tD@RBnEB|A???@BdB?lEBjA??BnBApF@dB?X?^@r@?f@@bCAx@EtB???VChAE|BGnD??AXKnEGnD???XGjD??AZEfCC`AEzB??AXCfAGxDE|AEtBIlC??APu@lJMhBI`@"
+          },
+          "mode": "BUS",
+          "onStreetNonTransit": false,
+          "pathway": false,
+          "realTime": false,
+          "serviceDate": {
+            "day": 17,
+            "minMax": false,
+            "month": 11,
+            "sequenceNumber": 20091117,
+            "year": 2009
+          },
+          "startTime": 1258484400000,
+          "streetNotes": [ ],
+          "to": {
+            "coordinate": {
+              "latitude": 45.523897,
+              "longitude": -122.700681
+            },
+            "name": "W Burnside & NW 23rd Pl",
+            "platformCode": "9555",
+            "stopCode": "9555",
+            "stopId": {
+              "feedId": "prt",
+              "id": "9555"
+            },
+            "stopIndex": 109,
+            "vertexType": "TRANSIT",
+            "zoneId": "1"
+          },
+          "transitAlerts": [ ],
+          "transitLeg": true,
+          "trip": {
+            "bikesAllowed": 1,
+            "blockId": "2038",
+            "directionId": "0",
+            "id": {
+              "feedId": "prt",
+              "id": "200W1230"
+            },
+            "route": {
+              "agency": {
+                "fareUrl": "http://trimet.org/fares/index.htm",
+                "id": {
+                  "feedId": "prt",
+                  "id": "prt"
+                },
+                "lang": "en",
+                "name": "TriMet",
+                "phone": "503-238-7433",
+                "timezone": "America/Los_Angeles",
+                "url": "http://trimet.org"
+              },
+              "bikesAllowed": 0,
+              "id": {
+                "feedId": "prt",
+                "id": "20"
+              },
+              "longName": "Burnside/Stark",
+              "mode": "BUS",
+              "routeBikesAllowed": 0,
+              "shortName": "20",
+              "sortOrder": -999,
+              "sortOrderSet": false,
+              "type": 3,
+              "url": "http://trimet.org/schedules/r020.htm"
+            },
+            "serviceId": {
+              "feedId": "prt",
+              "id": "W"
+            },
+            "shapeId": {
+              "feedId": "prt",
+              "id": "20.0.6"
+            },
+            "tripBikesAllowed": 2,
+            "wheelchairAccessible": 0
+          },
+          "walkSteps": [ ],
+          "walkingLeg": false
+        },
+        {
+          "agencyTimeZoneOffset": -28800000,
+          "arrivalDelay": 0,
+          "departureDelay": 0,
+          "distanceMeters": 913.815,
+          "endTime": 1258485910000,
+          "from": {
+            "coordinate": {
+              "latitude": 45.523897,
+              "longitude": -122.700681
+            },
+            "name": "W Burnside & NW 23rd Pl",
+            "platformCode": "9555",
+            "stopCode": "9555",
+            "stopId": {
+              "feedId": "prt",
+              "id": "9555"
+            },
+            "stopIndex": 109,
+            "vertexType": "TRANSIT",
+            "zoneId": "1"
+          },
+          "interlineWithPreviousLeg": false,
+          "legGeometry": {
+            "length": 39,
+            "points": "ikztGh~{kVNDEVUzACPOUQO_@Yc@[QMMEOKOIECGCIAMCGCGAECECECOOMOGKIFMLk@BsABGDGBoCBkCDoC@mCBmCDoCDmCD?qA"
+          },
+          "mode": "WALK",
+          "onStreetNonTransit": true,
+          "pathway": false,
+          "realTime": false,
+          "rentedBike": false,
+          "startTime": 1258485199000,
           "streetNotes": [ ],
           "to": {
             "coordinate": {
@@ -6847,262 +6840,108 @@ org.opentripplanner.routing.RoutingGtfsSnapshotTest.test_trip_planning_with_tran
               "longitude": -122.70029
             },
             "name": "NW Northrup St. & NW 24th Ave. (P3)",
-            "orig": "NW Northrup St. & NW 24th Ave. (P3)",
             "vertexType": "NORMAL"
           },
           "transitAlerts": [ ],
           "transitLeg": false,
           "walkSteps": [
             {
-              "absoluteDirection": "NORTHWEST",
-              "angle": -1.0117505068799668,
+              "absoluteDirection": "SOUTH",
+              "angle": -2.8184575457673615,
               "area": false,
               "bogusName": false,
-              "distance": 39.035,
+              "distance": 0.0,
               "edges": [ ],
               "elevation": [ ],
               "relativeDirection": "DEPART",
               "startLocation": {
-                "latitude": 45.53024090735772,
-                "longitude": -122.66779676192563
+                "latitude": 45.523897,
+                "longitude": -122.700681
               },
               "stayOn": false,
-              "streetName": "Interstate/Rose Quarter Northbound Yellow Line MAX Platform",
-              "streetNotes": [ ]
-            },
-            {
-              "absoluteDirection": "SOUTHWEST",
-              "angle": -2.5578844637953133,
-              "area": false,
-              "bogusName": true,
-              "distance": 20.608,
-              "edges": [ ],
-              "elevation": [ ],
-              "relativeDirection": "LEFT",
-              "startLocation": {
-                "latitude": 45.530427100000004,
-                "longitude": -122.66822160000001
-              },
-              "stayOn": false,
-              "streetName": "way 125785939 from 4",
-              "streetNotes": [ ]
-            },
-            {
-              "absoluteDirection": "NORTHWEST",
-              "angle": -1.0040390128191803,
-              "area": false,
-              "bogusName": false,
-              "distance": 410.023,
-              "edges": [ ],
-              "elevation": [ ],
-              "relativeDirection": "RIGHT",
-              "startLocation": {
-                "latitude": 45.5302724,
-                "longitude": -122.66836730000001
-              },
-              "stayOn": false,
-              "streetName": "North Interstate Avenue",
-              "streetNotes": [ ]
-            },
-            {
-              "absoluteDirection": "SOUTHWEST",
-              "angle": -2.1939957467118765,
-              "area": false,
-              "bogusName": true,
-              "distance": 40.36,
-              "edges": [ ],
-              "elevation": [ ],
-              "relativeDirection": "LEFT",
-              "startLocation": {
-                "latitude": 45.532912800000005,
-                "longitude": -122.67197920000001
-              },
-              "stayOn": false,
-              "streetName": "way 117315127 from 2",
-              "streetNotes": [ ]
-            },
-            {
-              "absoluteDirection": "NORTHWEST",
-              "angle": -0.5513565900563633,
-              "area": false,
-              "bogusName": true,
-              "distance": 2.245,
-              "edges": [ ],
-              "elevation": [ ],
-              "relativeDirection": "RIGHT",
-              "startLocation": {
-                "latitude": 45.532907900000005,
-                "longitude": -122.67202800000001
-              },
-              "stayOn": true,
-              "streetName": "way 117315115 from 0",
-              "streetNotes": [ ]
-            },
-            {
-              "absoluteDirection": "SOUTHWEST",
-              "angle": -2.244625586005241,
-              "area": false,
-              "bogusName": false,
-              "distance": 543.668,
-              "edges": [ ],
-              "elevation": [ ],
-              "relativeDirection": "LEFT",
-              "startLocation": {
-                "latitude": 45.5329251,
-                "longitude": -122.67204310000001
-              },
-              "stayOn": false,
-              "streetName": "Broadway Bridge",
-              "streetNotes": [ ]
-            },
-            {
-              "absoluteDirection": "SOUTHWEST",
-              "angle": -2.6328128620177256,
-              "area": false,
-              "bogusName": false,
-              "distance": 14.158,
-              "edges": [ ],
-              "elevation": [ ],
-              "relativeDirection": "CONTINUE",
-              "startLocation": {
-                "latitude": 45.5298506,
-                "longitude": -122.67746670000001
-              },
-              "stayOn": false,
-              "streetName": "Northwest Broadway",
-              "streetNotes": [ ]
-            },
-            {
-              "absoluteDirection": "NORTH",
-              "angle": -0.3605525651149334,
-              "area": false,
-              "bogusName": false,
-              "distance": 23.666,
-              "edges": [ ],
-              "elevation": [ ],
-              "relativeDirection": "UTURN_RIGHT",
-              "startLocation": {
-                "latitude": 45.5297871,
-                "longitude": -122.67780010000001
-              },
-              "stayOn": true,
-              "streetName": "Northwest Broadway",
-              "streetNotes": [ ]
-            },
-            {
-              "absoluteDirection": "NORTHWEST",
-              "angle": -0.824039902719837,
-              "area": false,
-              "bogusName": false,
-              "distance": 298.376,
-              "edges": [ ],
-              "elevation": [ ],
-              "relativeDirection": "SLIGHTLY_LEFT",
-              "startLocation": {
-                "latitude": 45.529817200000004,
-                "longitude": -122.6778163
-              },
-              "stayOn": false,
-              "streetName": "Northwest Lovejoy Street",
-              "streetNotes": [ ]
-            },
-            {
-              "absoluteDirection": "NORTH",
-              "angle": -0.02530676616508235,
-              "area": false,
-              "bogusName": false,
-              "distance": 71.22,
-              "edges": [ ],
-              "elevation": [ ],
-              "relativeDirection": "RIGHT",
-              "startLocation": {
-                "latitude": 45.5302432,
-                "longitude": -122.6813836
-              },
-              "stayOn": false,
-              "streetName": "Northwest 10th Avenue",
+              "streetName": "W Burnside & NW 23rd Pl",
               "streetNotes": [ ]
             },
             {
               "absoluteDirection": "WEST",
-              "angle": -1.6009032896942996,
+              "angle": -1.247661800162498,
               "area": false,
               "bogusName": false,
-              "distance": 5.54,
+              "distance": 54.628,
               "edges": [ ],
               "elevation": [ ],
-              "relativeDirection": "LEFT",
+              "relativeDirection": "RIGHT",
               "startLocation": {
-                "latitude": 45.5308835,
-                "longitude": -122.68140700000001
+                "latitude": 45.523815597641374,
+                "longitude": -122.70071990797962
               },
               "stayOn": false,
-              "streetName": "Northwest Marshall Street",
+              "streetName": "West Burnside Street",
+              "streetNotes": [ ]
+            },
+            {
+              "absoluteDirection": "NORTHEAST",
+              "angle": 0.7501559967245512,
+              "area": false,
+              "bogusName": false,
+              "distance": 176.41,
+              "edges": [ ],
+              "elevation": [ ],
+              "relativeDirection": "RIGHT",
+              "startLocation": {
+                "latitude": 45.5239733,
+                "longitude": -122.701384
+              },
+              "stayOn": false,
+              "streetName": "Northwest 24th Place",
               "streetNotes": [ ]
             },
             {
               "absoluteDirection": "NORTHWEST",
-              "angle": -0.43945025938890175,
-              "area": false,
-              "bogusName": true,
-              "distance": 5.888,
-              "edges": [ ],
-              "elevation": [ ],
-              "relativeDirection": "RIGHT",
-              "startLocation": {
-                "latitude": 45.530882000000005,
-                "longitude": -122.6814781
-              },
-              "stayOn": false,
-              "streetName": "way 117751890 from 1",
-              "streetNotes": [ ]
-            },
-            {
-              "absoluteDirection": "WEST",
-              "angle": -1.2367914711217416,
+              "angle": -0.5889596407957216,
               "area": false,
               "bogusName": false,
-              "distance": 7.364,
+              "distance": 15.262,
               "edges": [ ],
               "elevation": [ ],
               "relativeDirection": "LEFT",
               "startLocation": {
-                "latitude": 45.5309273,
-                "longitude": -122.6815085
+                "latitude": 45.5253583,
+                "longitude": -122.70033570000001
               },
               "stayOn": false,
-              "streetName": "Tanner Springs Park",
+              "streetName": "Northwest Westover Road",
               "streetNotes": [ ]
             },
             {
               "absoluteDirection": "NORTH",
-              "angle": -0.023281899787656588,
+              "angle": -0.05815952978341337,
               "area": false,
               "bogusName": false,
-              "distance": 116.77899999999998,
+              "distance": 635.654,
+              "edges": [ ],
+              "elevation": [ ],
+              "relativeDirection": "SLIGHTLY_RIGHT",
+              "startLocation": {
+                "latitude": 45.525472400000005,
+                "longitude": -122.7004445
+              },
+              "stayOn": false,
+              "streetName": "Northwest 24th Avenue",
+              "streetNotes": [ ]
+            },
+            {
+              "absoluteDirection": "EAST",
+              "angle": 1.5432591328990624,
+              "area": false,
+              "bogusName": false,
+              "distance": 31.861,
               "edges": [ ],
               "elevation": [ ],
               "relativeDirection": "RIGHT",
               "startLocation": {
-                "latitude": 45.530944000000005,
-                "longitude": -122.6815772
-              },
-              "stayOn": false,
-              "streetName": "Tanner Springs Park Trail",
-              "streetNotes": [ ]
-            },
-            {
-              "absoluteDirection": "WEST",
-              "angle": -1.5979804349450852,
-              "area": false,
-              "bogusName": false,
-              "distance": 1390.866,
-              "edges": [ ],
-              "elevation": [ ],
-              "relativeDirection": "LEFT",
-              "startLocation": {
-                "latitude": 45.5315117,
-                "longitude": -122.68244770000001
+                "latitude": 45.531181000000004,
+                "longitude": -122.70070630000001
               },
               "stayOn": false,
               "streetName": "Northwest Northrup Street",
@@ -7113,18 +6952,24 @@ org.opentripplanner.routing.RoutingGtfsSnapshotTest.test_trip_planning_with_tran
         }
       ],
       "nTransfers": 0,
-      "nonTransitDistanceMeters": 2989.7960000000003,
-      "nonTransitLimitExceeded": false,
-      "nonTransitTimeSeconds": 2361,
-      "onStreetAllTheWay": true,
-      "streetOnly": true,
+      "nonTransitDistanceMeters": 1000.8340000000001,
+      "nonTransitLimitExceeded": true,
+      "nonTransitTimeSeconds": 784,
+      "onStreetAllTheWay": false,
+      "streetOnly": false,
       "systemNotices": [ ],
       "tooSloped": false,
-      "transitTimeSeconds": 0,
+      "transitTimeSeconds": 799,
       "waitingTimeSeconds": 0,
-      "walkOnly": true,
-      "walkingAllTheWay": true
-    },
+      "walkOnly": false,
+      "walkingAllTheWay": false
+    }
+  ]
+]
+
+
+org.opentripplanner.routing.RoutingGtfsSnapshotTest.test_trip_planning_with_transit_stop_collection=[
+  [
     {
       "durationSeconds": 831,
       "elevationGained": 0.0,
@@ -8416,6 +8261,456 @@ org.opentripplanner.routing.RoutingGtfsSnapshotTest.test_trip_planning_with_tran
       "systemNotices": [ ],
       "tooSloped": false,
       "transitTimeSeconds": 650,
+      "waitingTimeSeconds": 0,
+      "walkOnly": false,
+      "walkingAllTheWay": false
+    },
+    {
+      "durationSeconds": 1665,
+      "elevationGained": 0.0,
+      "elevationLost": 0.0,
+      "fare": {
+        "details": {
+          "regular": [
+            {
+              "fareId": {
+                "feedId": "prt",
+                "id": "8"
+              },
+              "price": {
+                "cents": 200,
+                "currency": {
+                  "value": "USD"
+                }
+              },
+              "routes": [
+                {
+                  "feedId": "prt",
+                  "id": "17"
+                }
+              ]
+            }
+          ]
+        },
+        "fare": {
+          "regular": {
+            "cents": 200,
+            "currency": {
+              "value": "USD"
+            }
+          }
+        }
+      },
+      "generalizedCost": 3426,
+      "legs": [
+        {
+          "agencyTimeZoneOffset": -28800000,
+          "arrivalDelay": 0,
+          "departureDelay": 0,
+          "distanceMeters": 1024.855,
+          "endTime": 1258486201000,
+          "from": {
+            "coordinate": {
+              "latitude": 45.529829,
+              "longitude": -122.667591
+            },
+            "name": "N Interstate & Multnomah (Rose Quarter)",
+            "platformCode": "11813",
+            "stopCode": "11813",
+            "stopId": {
+              "feedId": "prt",
+              "id": "11813"
+            },
+            "vertexType": "TRANSIT",
+            "zoneId": "0"
+          },
+          "interlineWithPreviousLeg": false,
+          "legGeometry": {
+            "length": 74,
+            "points": "kp{tGnoukVA?BGFWFEFEJ?FAHABCJEJGLEJCPALAT@J@JBLBNHLFPLJHFJHJFJFLFLHRFPlAjDh@|A\\|@pArDPb@DJDJBH@H@J?F?JA`AEdE@zBAHAJ@L?`@CD?F@JBP@JN?PzCJT?V?P?f@@fB?L?D?L@\\?lC?H?D?NB~C?RK??O"
+          },
+          "mode": "WALK",
+          "onStreetNonTransit": true,
+          "pathway": false,
+          "realTime": false,
+          "rentedBike": false,
+          "startTime": 1258485393000,
+          "streetNotes": [ ],
+          "to": {
+            "coordinate": {
+              "latitude": 45.526678,
+              "longitude": -122.677476
+            },
+            "name": "NW Glisan & Broadway",
+            "platformCode": "1997",
+            "stopCode": "1997",
+            "stopId": {
+              "feedId": "prt",
+              "id": "1997"
+            },
+            "stopIndex": 67,
+            "vertexType": "TRANSIT",
+            "zoneId": "0"
+          },
+          "transitAlerts": [ ],
+          "transitLeg": false,
+          "walkSteps": [
+            {
+              "absoluteDirection": "SOUTHEAST",
+              "angle": 2.1082144216807244,
+              "area": false,
+              "bogusName": false,
+              "distance": 18.231,
+              "edges": [ ],
+              "elevation": [ ],
+              "relativeDirection": "DEPART",
+              "startLocation": {
+                "latitude": 45.529830019288696,
+                "longitude": -122.66759013292318
+              },
+              "stayOn": false,
+              "streetName": "North Interstate Avenue",
+              "streetNotes": [ ]
+            },
+            {
+              "absoluteDirection": "SOUTH",
+              "angle": 2.9729213611619913,
+              "area": false,
+              "bogusName": false,
+              "distance": 636.3109999999999,
+              "edges": [ ],
+              "elevation": [ ],
+              "relativeDirection": "RIGHT",
+              "startLocation": {
+                "latitude": 45.5297372,
+                "longitude": -122.66740060000001
+              },
+              "stayOn": false,
+              "streetName": "Steel Bridge (Upper Deck)",
+              "streetNotes": [ ]
+            },
+            {
+              "absoluteDirection": "WEST",
+              "angle": -1.520485736208139,
+              "area": false,
+              "bogusName": false,
+              "distance": 26.786,
+              "edges": [ ],
+              "elevation": [ ],
+              "relativeDirection": "CONTINUE",
+              "startLocation": {
+                "latitude": 45.5269014,
+                "longitude": -122.6730696
+              },
+              "stayOn": false,
+              "streetName": "Northwest Glisan Street",
+              "streetNotes": [ ]
+            },
+            {
+              "absoluteDirection": "WEST",
+              "angle": -1.8012584480877298,
+              "area": false,
+              "bogusName": true,
+              "distance": 15.139,
+              "edges": [ ],
+              "elevation": [ ],
+              "relativeDirection": "SLIGHTLY_LEFT",
+              "startLocation": {
+                "latitude": 45.526929900000006,
+                "longitude": -122.673394
+              },
+              "stayOn": false,
+              "streetName": "way 129272940 from 9",
+              "streetNotes": [ ]
+            },
+            {
+              "absoluteDirection": "SOUTHWEST",
+              "angle": -2.709758123673988,
+              "area": false,
+              "bogusName": true,
+              "distance": 13.668,
+              "edges": [ ],
+              "elevation": [ ],
+              "relativeDirection": "LEFT",
+              "startLocation": {
+                "latitude": 45.526898800000005,
+                "longitude": -122.67358320000001
+              },
+              "stayOn": true,
+              "streetName": "way 129272940 from 6",
+              "streetNotes": [ ]
+            },
+            {
+              "absoluteDirection": "WEST",
+              "angle": -1.7452819441705985,
+              "area": false,
+              "bogusName": false,
+              "distance": 307.618,
+              "edges": [ ],
+              "elevation": [ ],
+              "relativeDirection": "RIGHT",
+              "startLocation": {
+                "latitude": 45.5268085,
+                "longitude": -122.67364260000001
+              },
+              "stayOn": false,
+              "streetName": "Northwest Glisan Street",
+              "streetNotes": [ ]
+            },
+            {
+              "absoluteDirection": "NORTH",
+              "angle": -0.027189629237692806,
+              "area": false,
+              "bogusName": false,
+              "distance": 7.102,
+              "edges": [ ],
+              "elevation": [ ],
+              "relativeDirection": "RIGHT",
+              "startLocation": {
+                "latitude": 45.5266126,
+                "longitude": -122.67755450000001
+              },
+              "stayOn": false,
+              "streetName": "Northwest Broadway",
+              "streetNotes": [ ]
+            },
+            {
+              "absoluteDirection": "EAST",
+              "angle": 1.5436067140273741,
+              "area": false,
+              "bogusName": false,
+              "distance": 0.0,
+              "edges": [ ],
+              "elevation": [ ],
+              "relativeDirection": "RIGHT",
+              "startLocation": {
+                "latitude": 45.52667645709921,
+                "longitude": -122.67755697892466
+              },
+              "stayOn": false,
+              "streetName": "NW Glisan & Broadway",
+              "streetNotes": [ ]
+            }
+          ],
+          "walkingLeg": true
+        },
+        {
+          "agencyTimeZoneOffset": 0,
+          "arrivalDelay": 0,
+          "departureDelay": 0,
+          "distanceMeters": 1863.9337152126066,
+          "endTime": 1258486705000,
+          "from": {
+            "coordinate": {
+              "latitude": 45.526678,
+              "longitude": -122.677476
+            },
+            "name": "NW Glisan & Broadway",
+            "platformCode": "1997",
+            "stopCode": "1997",
+            "stopId": {
+              "feedId": "prt",
+              "id": "1997"
+            },
+            "stopIndex": 67,
+            "vertexType": "TRANSIT",
+            "zoneId": "0"
+          },
+          "headsign": "Montgomery Park",
+          "intermediateStops": [ ],
+          "legGeometry": {
+            "length": 45,
+            "points": "g|ztGfmwkV?PBjE?`B??@X@jEBjD???\\BhEBpD???XBhE@nD??@Z?hEBtA?h@@h@??@Z@nEBhEBhD???`@FtKDhH??@hBoCD}BB??O@mCBoCDM@_C@q@@??{AByBD"
+          },
+          "mode": "BUS",
+          "onStreetNonTransit": false,
+          "pathway": false,
+          "realTime": false,
+          "serviceDate": {
+            "day": 17,
+            "minMax": false,
+            "month": 11,
+            "sequenceNumber": 20091117,
+            "year": 2009
+          },
+          "startTime": 1258486201000,
+          "streetNotes": [ ],
+          "to": {
+            "coordinate": {
+              "latitude": 45.531179,
+              "longitude": -122.69454
+            },
+            "name": "NW 21st & Northrup",
+            "platformCode": "7128",
+            "stopCode": "7128",
+            "stopId": {
+              "feedId": "prt",
+              "id": "7128"
+            },
+            "stopIndex": 77,
+            "vertexType": "TRANSIT",
+            "zoneId": "1"
+          },
+          "transitAlerts": [ ],
+          "transitLeg": true,
+          "trip": {
+            "bikesAllowed": 1,
+            "blockId": "1713",
+            "directionId": "1",
+            "id": {
+              "feedId": "prt",
+              "id": "171W1300"
+            },
+            "route": {
+              "agency": {
+                "fareUrl": "http://trimet.org/fares/index.htm",
+                "id": {
+                  "feedId": "prt",
+                  "id": "prt"
+                },
+                "lang": "en",
+                "name": "TriMet",
+                "phone": "503-238-7433",
+                "timezone": "America/Los_Angeles",
+                "url": "http://trimet.org"
+              },
+              "bikesAllowed": 0,
+              "id": {
+                "feedId": "prt",
+                "id": "17"
+              },
+              "longName": "Holgate/NW 21st",
+              "mode": "BUS",
+              "routeBikesAllowed": 0,
+              "shortName": "17",
+              "sortOrder": -999,
+              "sortOrderSet": false,
+              "type": 3,
+              "url": "http://trimet.org/schedules/r017.htm"
+            },
+            "serviceId": {
+              "feedId": "prt",
+              "id": "W"
+            },
+            "shapeId": {
+              "feedId": "prt",
+              "id": "17.1.14"
+            },
+            "tripBikesAllowed": 2,
+            "wheelchairAccessible": 0
+          },
+          "walkSteps": [ ],
+          "walkingLeg": false
+        },
+        {
+          "agencyTimeZoneOffset": -28800000,
+          "arrivalDelay": 0,
+          "departureDelay": 0,
+          "distanceMeters": 456.155,
+          "endTime": 1258487058000,
+          "from": {
+            "coordinate": {
+              "latitude": 45.531179,
+              "longitude": -122.69454
+            },
+            "name": "NW 21st & Northrup",
+            "platformCode": "7128",
+            "stopCode": "7128",
+            "stopId": {
+              "feedId": "prt",
+              "id": "7128"
+            },
+            "stopIndex": 77,
+            "vertexType": "TRANSIT",
+            "zoneId": "1"
+          },
+          "interlineWithPreviousLeg": false,
+          "legGeometry": {
+            "length": 13,
+            "points": "yx{tGzwzkV?LI?M@?PFlJ?RDbH@xA?D?P?RDpH"
+          },
+          "mode": "WALK",
+          "onStreetNonTransit": true,
+          "pathway": false,
+          "realTime": false,
+          "rentedBike": false,
+          "startTime": 1258486705000,
+          "streetNotes": [ ],
+          "to": {
+            "coordinate": {
+              "latitude": 45.531,
+              "longitude": -122.70029
+            },
+            "name": "NW Northrup St. & NW 24th Ave. (P3)",
+            "vertexType": "NORMAL"
+          },
+          "transitAlerts": [ ],
+          "transitLeg": false,
+          "walkSteps": [
+            {
+              "absoluteDirection": "WEST",
+              "angle": -1.5961983598891116,
+              "area": false,
+              "bogusName": false,
+              "distance": 0.0,
+              "edges": [ ],
+              "elevation": [ ],
+              "relativeDirection": "DEPART",
+              "startLocation": {
+                "latitude": 45.531179,
+                "longitude": -122.69454
+              },
+              "stayOn": false,
+              "streetName": "NW 21st & Northrup",
+              "streetNotes": [ ]
+            },
+            {
+              "absoluteDirection": "NORTH",
+              "angle": -0.023174148169809464,
+              "area": false,
+              "bogusName": false,
+              "distance": 13.057,
+              "edges": [ ],
+              "elevation": [ ],
+              "relativeDirection": "RIGHT",
+              "startLocation": {
+                "latitude": 45.53117780366266,
+                "longitude": -122.69460721567688
+              },
+              "stayOn": false,
+              "streetName": "Northwest 21st Avenue",
+              "streetNotes": [ ]
+            },
+            {
+              "absoluteDirection": "WEST",
+              "angle": -1.586062646924392,
+              "area": false,
+              "bogusName": false,
+              "distance": 443.09799999999996,
+              "edges": [ ],
+              "elevation": [ ],
+              "relativeDirection": "LEFT",
+              "startLocation": {
+                "latitude": 45.5312952,
+                "longitude": -122.6946111
+              },
+              "stayOn": false,
+              "streetName": "Northwest Northrup Street",
+              "streetNotes": [ ]
+            }
+          ],
+          "walkingLeg": true
+        }
+      ],
+      "nTransfers": 0,
+      "nonTransitDistanceMeters": 1481.01,
+      "nonTransitLimitExceeded": true,
+      "nonTransitTimeSeconds": 1161,
+      "onStreetAllTheWay": false,
+      "streetOnly": false,
+      "systemNotices": [ ],
+      "tooSloped": false,
+      "transitTimeSeconds": 504,
       "waitingTimeSeconds": 0,
       "walkOnly": false,
       "walkingAllTheWay": false

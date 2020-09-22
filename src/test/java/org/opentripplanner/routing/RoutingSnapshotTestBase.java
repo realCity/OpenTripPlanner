@@ -11,8 +11,6 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.opentripplanner.ConstantsForTests;
-import org.opentripplanner.model.FeedScopedId;
-import org.opentripplanner.model.GenericLocation;
 import org.opentripplanner.model.plan.Itinerary;
 import org.opentripplanner.model.plan.Leg;
 import org.opentripplanner.model.plan.WalkStep;
@@ -32,6 +30,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import static io.github.jsonSnapshot.SnapshotMatcher.expect;
+import static org.junit.Assert.assertEquals;
 
 public abstract class RoutingSnapshotTestBase {
 
@@ -110,6 +109,12 @@ public abstract class RoutingSnapshotTestBase {
     protected void expectRequestResponseToMatchSnapshot(RoutingRequest request) {
         Router router = getRouter();
 
+        List<Itinerary> itineraries = retrieveItineraries(request, router);
+
+        expectItinerariesToMatchSnapshot(itineraries);
+    }
+
+    private List<Itinerary> retrieveItineraries(RoutingRequest request, Router router) {
         request.setRoutingContext(router.graph);
 
         long startMillis = System.currentTimeMillis();
@@ -123,8 +128,30 @@ public abstract class RoutingSnapshotTestBase {
             printItineraries(itineraries, startMillis, System.currentTimeMillis(),
                     router.graph.getTimeZone());
         }
+        return itineraries;
+    }
 
-        expectItinerariesToMatchSnapshot(itineraries);
+    protected void expectArriveByToMatchDepartAtAndSnapshot(RoutingRequest request) {
+        Router router = getRouter();
+
+        RoutingRequest departAt = request.clone();
+        List<Itinerary> departByItineraries = retrieveItineraries(departAt, router);
+
+        RoutingRequest arriveBy = request.clone();
+        arriveBy.setArriveBy(true);
+        arriveBy.dateTime = departByItineraries.get(0).lastLeg().endTime.toInstant().getEpochSecond();
+
+        List<Itinerary> arriveByItineraries = retrieveItineraries(arriveBy, router);
+
+        sanitizeItinerariesForSnapshot(departByItineraries);
+        sanitizeItinerariesForSnapshot(arriveByItineraries);
+
+        String departAtItinerary = asJsonString(departByItineraries.get(0));
+        String arriveByItinerary = asJsonString(arriveByItineraries.get(0));
+
+        expectItinerariesToMatchSnapshot(departByItineraries);
+
+        assertEquals(departAtItinerary, arriveByItinerary);
     }
 
     protected void expectItinerariesToMatchSnapshot(List<Itinerary> itineraries) {
@@ -134,9 +161,7 @@ public abstract class RoutingSnapshotTestBase {
     }
 
     private void sanitizeItinerariesForSnapshot(List<Itinerary> itineraries) {
-        itineraries.forEach(itinerary -> itinerary.legs.forEach(leg -> {
-            sanitizeWalkStepsForSnapshot(leg.walkSteps);
-        }));
+        itineraries.forEach(itinerary -> itinerary.legs.forEach(leg -> sanitizeWalkStepsForSnapshot(leg.walkSteps)));
     }
 
     private void sanitizeWalkStepsForSnapshot(List<WalkStep> walkSteps) {
