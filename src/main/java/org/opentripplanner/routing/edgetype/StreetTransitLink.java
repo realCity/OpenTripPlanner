@@ -110,6 +110,7 @@ public class StreetTransitLink extends Edge {
         int streetToStopTime = stopVertex.hasPathways() ? 0 : stopVertex.getStreetToStopTime();
         // We do not increase the time here, so that searching from the stop coordinates instead of
         // the stop id catch transit departing at that exact search time.
+        s1.setBackMode(null);
         s1.incrementTimeInSeconds(streetToStopTime);
         s1.incrementWeight(STL_TRAVERSE_COST + streetToStopTime);
         return s1.makeState();

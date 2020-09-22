@@ -10,6 +10,7 @@ import org.opentripplanner.routing.vertextype.BikeRentalStationVertex;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Set;
 
 public class State implements Cloneable {
@@ -394,7 +395,7 @@ public class State implements Cloneable {
             boolean found = false;
             for (Edge out2 : tov.getOutgoing()) {
                 State outState2 = out2.traverse(outState);
-                if (outState2 != null && !outState2.getBackMode().equals(requestedMode)) {
+                if (outState2 != null && !Objects.equals(outState2.getBackMode(), requestedMode)) {
                     // walking a bike, so, not really an exit
                     continue;
                 }
