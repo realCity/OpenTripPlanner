@@ -1,5 +1,8 @@
 package org.opentripplanner.routing.edgetype;
 
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LineString;
+import org.opentripplanner.common.geometry.GeometryUtils;
 import org.opentripplanner.routing.api.request.RoutingRequest;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.core.StateEditor;
@@ -9,7 +12,6 @@ import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.vertextype.BikeRentalStationVertex;
 import org.opentripplanner.routing.vertextype.StreetVertex;
 
-import org.locationtech.jts.geom.LineString;
 import java.util.Locale;
 
 /**
@@ -22,14 +24,25 @@ public class StreetBikeRentalLink extends Edge {
 
     private BikeRentalStationVertex bikeRentalStationVertex;
 
+    private LineString geometry = null;
+
     public StreetBikeRentalLink(StreetVertex fromv, BikeRentalStationVertex tov) {
         super(fromv, tov);
         bikeRentalStationVertex = tov;
+        initGeometry();
     }
 
     public StreetBikeRentalLink(BikeRentalStationVertex fromv, StreetVertex tov) {
         super(fromv, tov);
         bikeRentalStationVertex = fromv;
+        initGeometry();
+    }
+
+    private void initGeometry() {
+        Coordinate fromc = fromv.getCoordinate();
+        Coordinate toc = tov.getCoordinate();
+        geometry = GeometryUtils.getGeometryFactory().createLineString(
+                new Coordinate[] { fromc, toc });
     }
 
     public String getDirection() {
@@ -41,7 +54,7 @@ public class StreetBikeRentalLink extends Edge {
     }
 
     public LineString getGeometry() {
-        return null;
+        return geometry;
     }
 
     public String getName() {

@@ -42,7 +42,6 @@ public class ParkAndRideLinkEdge extends Edge {
 
     private boolean exit;
 
-    @SuppressWarnings("unused")
     private LineString geometry = null;
 
     /** The estimated distance between the center of the P+R envelope and the street access. */
@@ -133,7 +132,7 @@ public class ParkAndRideLinkEdge extends Edge {
 
     @Override
     public LineString getGeometry() {
-        return null;
+        return geometry;
     }
 
     @Override

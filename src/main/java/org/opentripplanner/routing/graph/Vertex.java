@@ -205,14 +205,14 @@ public abstract class Vertex implements Serializable, Cloneable {
     /** If this vertex is located on only one street, get that street's name
      * in english localization */
     public String getName() {
-        return this.name.toString();
+        return this.name != null ? this.name.toString() : "";
     }
 
     /** If this vertex is located on only one street, get that street's name
      * in provided localization
      * @param locale wanted localization */
     public String getName(Locale locale) {
-        return this.name.toString(locale);
+        return this.name != null ? this.name.toString(locale) : "";
     }
 
     /** Get the corresponding StationElement if this is a transit vertex */

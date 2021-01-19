@@ -6,16 +6,34 @@ import org.locationtech.jts.index.strtree.STRtree;
 import org.opentripplanner.graph_builder.DataImportIssue;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.core.TraverseMode;
+import org.opentripplanner.routing.edgetype.ElevatorAlightEdge;
+import org.opentripplanner.routing.edgetype.ElevatorBoardEdge;
+import org.opentripplanner.routing.edgetype.FreeEdge;
+import org.opentripplanner.routing.edgetype.ParkAndRideLinkEdge;
 import org.opentripplanner.routing.edgetype.PathwayEdge;
+import org.opentripplanner.routing.edgetype.StreetBikeParkLink;
+import org.opentripplanner.routing.edgetype.StreetBikeRentalLink;
 import org.opentripplanner.routing.edgetype.StreetEdge;
-import org.opentripplanner.routing.edgetype.StreetTransitStopLink;
+import org.opentripplanner.routing.edgetype.StreetTransitEntityLink;
 import org.opentripplanner.routing.edgetype.StreetTraversalPermission;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
+import org.opentripplanner.routing.location.StreetLocation;
 import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.routing.spt.ShortestPathTree;
+import org.opentripplanner.routing.vertextype.BikeParkVertex;
+import org.opentripplanner.routing.vertextype.BikeRentalStationVertex;
+import org.opentripplanner.routing.vertextype.ElevatorOffboardVertex;
+import org.opentripplanner.routing.vertextype.ElevatorOnboardVertex;
+import org.opentripplanner.routing.vertextype.ExitVertex;
 import org.opentripplanner.routing.vertextype.IntersectionVertex;
+import org.opentripplanner.routing.vertextype.ParkAndRideVertex;
+import org.opentripplanner.routing.vertextype.SplitterVertex;
+import org.opentripplanner.routing.vertextype.TemporaryVertex;
+import org.opentripplanner.routing.vertextype.TransitBoardingAreaVertex;
+import org.opentripplanner.routing.vertextype.TransitEntranceVertex;
+import org.opentripplanner.routing.vertextype.TransitPathwayNodeVertex;
 import org.opentripplanner.routing.vertextype.TransitStopVertex;
 import processing.core.PApplet;
 import processing.core.PFont;
@@ -120,6 +138,8 @@ public class ShowGraph extends PApplet implements MouseWheelListener {
     boolean drawStreetVertices = true;
 
     boolean drawTransitStopVertices = true;
+
+    boolean drawExtraVertices = true;
 
     private static double lastLabelY;
 
@@ -468,11 +488,8 @@ public class ShowGraph extends PApplet implements MouseWheelListener {
             for (Edge e : v.getOutgoing()) {
                 if (e.getGeometry() == null)
                     continue;
-                if (e instanceof StreetTransitStopLink
-                        || e instanceof StreetEdge || e instanceof PathwayEdge) {
-                    env = e.getGeometry().getEnvelopeInternal();
-                    edgeIndex.insert(env, e);
-                }
+                env = e.getGeometry().getEnvelopeInternal();
+                edgeIndex.insert(env, e);
             }
         }
         vertexIndex.build();
@@ -486,10 +503,10 @@ public class ShowGraph extends PApplet implements MouseWheelListener {
         visibleLinkEdges.clear();
         visibleTransitEdges.clear();
         for (Edge de : (Iterable<Edge>) edgeIndex.query(modelBounds)) {
-            if (de instanceof PathwayEdge || de instanceof StreetTransitStopLink) {
+            if (de instanceof PathwayEdge || de instanceof StreetTransitEntityLink || de instanceof FreeEdge || de instanceof ParkAndRideLinkEdge || de instanceof StreetBikeParkLink || de instanceof StreetBikeRentalLink) {
                 visibleLinkEdges.add(de);
             }
-            else if (de instanceof StreetEdge) {
+            else if (de instanceof StreetEdge || de instanceof ElevatorAlightEdge || de instanceof ElevatorBoardEdge) {
                 visibleStreetEdges.add(de);
             }
         }
@@ -721,13 +738,21 @@ public class ShowGraph extends PApplet implements MouseWheelListener {
 		boolean closeEnough = (modelBounds.getHeight() * METERS_PER_DEGREE_LAT / this.width < 5);
 		/* Draw selected visible vertices */
 		for (Vertex v : visibleVertices) {
-            if (drawTransitStopVertices && closeEnough && v instanceof TransitStopVertex) {
+            if (drawTransitStopVertices && closeEnough && (v instanceof TransitStopVertex || v instanceof TransitPathwayNodeVertex
+                    || v instanceof TransitEntranceVertex || v instanceof TransitBoardingAreaVertex)) {
                 fill(60, 60, 200); // Make transit stops blue dots
 		        drawVertex(v, 7);
 			}
-			if (drawStreetVertices && v instanceof IntersectionVertex) {
-		        IntersectionVertex iv = (IntersectionVertex) v;
-		        if (iv.trafficLight) {
+            if (drawExtraVertices && closeEnough && (v instanceof BikeParkVertex || v instanceof BikeRentalStationVertex
+                    || v instanceof ParkAndRideVertex)) {
+                fill(255, 70, 255); // Make B+R/P+R pink
+                drawVertex(v, 7);
+            }
+			if (drawStreetVertices && ((v instanceof IntersectionVertex && ((IntersectionVertex) v).trafficLight)
+                    || (v instanceof ElevatorOnboardVertex || v instanceof ElevatorOffboardVertex || v instanceof ExitVertex
+                    || v instanceof TemporaryVertex || v instanceof SplitterVertex || v instanceof StreetLocation)))
+			{
+                if (v instanceof IntersectionVertex && ((IntersectionVertex) v).trafficLight) {
                     fill(120, 60, 60); // Make traffic lights red dots
                     drawVertex(v, 5);
                 }
