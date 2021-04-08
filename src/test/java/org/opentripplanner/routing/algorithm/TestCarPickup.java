@@ -103,14 +103,12 @@ public class TestCarPickup extends GraphRoutingTest {
     }
 
     public void testWalkOnlyCarPickup() {
-        // This is a special case where the reverse states differ, due to both starting in the IN_CAR
-        // state and switching to walking when encountering the first edge. This is the only valid
-        // path since a CarPickup must be in `IN_CAR` or `WALK_FROM_DROP_OFF` to be a final state,
-        // and the path can't be traversed by car.
+        // This is a special case where the reverse states differ, since a switch to IN_CAR is
+        // not possible.
         assertPath(
                 A, B,
-                "null - IN_CAR - null, WALK - WALK_FROM_DROP_OFF - AB street",
-                "null - WALK_TO_PICKUP - null, WALK - WALK_TO_PICKUP - AB street"
+                "null - WALK_TO_PICKUP - null, WALK - WALK_TO_PICKUP - AB street",
+                "null - WALK_FROM_DROP_OFF - null, WALK - WALK_FROM_DROP_OFF - AB street"
         );
     }
 

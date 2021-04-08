@@ -50,8 +50,8 @@ public class State implements Cloneable {
     public static Collection<State> getStates(RoutingRequest request) {
         Collection<State> states = new ArrayList<>();
         for (Vertex vertex : request.rctx.fromVertices) {
-            /* carPickup searches may end in two states (see isFinal()): IN_CAR and WALK_FROM_DROP_OFF/WALK_TO_PICKUP
-               for forward/reverse searches to be symmetric both inital states need to be created. */
+            /* carPickup searches may end in two distinct states: IN_CAR and WALK_FROM_DROP_OFF/WALK_TO_PICKUP
+               for forward/reverse searches to be symmetric both initial states need to be created. */
             if (request.carPickup) {
                 states.add(new State(vertex, request.rctx.originBackEdge, request.getSecondsSinceEpoch(), request, true));
             }
@@ -226,25 +226,20 @@ public class State implements Cloneable {
         boolean bikeRentingOk;
         boolean bikeParkAndRideOk;
         boolean carParkAndRideOk;
-        boolean pickedUpByCar;
         if (stateData.opt.arriveBy) {
             // Check that we are not renting a bike at the destination
             // Also check that a bike was rented if bikeRental is specified
             bikeRentingOk = !isBikeRenting() && (!stateData.opt.bikeRental || hasUsedRentedBike());
             bikeParkAndRideOk = !bikeParkAndRide || !isBikeParked();
             carParkAndRideOk = !parkAndRide || !isCarParked();
-            // Checks that taxi has actually been used
-            pickedUpByCar = getCarPickupState() != CarPickupState.WALK_FROM_DROP_OFF;
         } else {
             // Check that we are not renting a bike at the destination
             // Also check that a bike was rented if bikeRental is specified
             bikeRentingOk = !isBikeRenting() && (!stateData.opt.bikeRental || hasUsedRentedBike());
             bikeParkAndRideOk = !bikeParkAndRide || isBikeParked();
             carParkAndRideOk = !parkAndRide || isCarParked();
-            // Checks that taxi has actually been used
-            pickedUpByCar = getCarPickupState() != CarPickupState.WALK_TO_PICKUP;
         }
-        return bikeRentingOk && bikeParkAndRideOk && carParkAndRideOk && pickedUpByCar;
+        return bikeRentingOk && bikeParkAndRideOk && carParkAndRideOk;
     }
 
     public double getWalkDistance() {
