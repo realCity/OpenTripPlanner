@@ -45,6 +45,8 @@ type Alert implements Node {
     """
     id: ID!
 
+    alertId: String
+
     """hashcode from the original GTFS-RT alert"""
     alertHash: Int
 
@@ -814,6 +816,7 @@ type Leg {
     and passenger can stay inside the vehicle.
     """
     interlineWithPreviousLeg: Boolean
+    alerts: [Alert]
 }
 
 """Identifies whether this stop represents a stop or station."""
