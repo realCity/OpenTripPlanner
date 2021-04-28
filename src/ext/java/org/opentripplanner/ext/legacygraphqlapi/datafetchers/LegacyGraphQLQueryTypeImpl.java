@@ -34,12 +34,12 @@ import org.opentripplanner.routing.graphfinder.PlaceAtDistance;
 import org.opentripplanner.routing.graphfinder.PlaceType;
 import org.opentripplanner.routing.api.request.RoutingRequest;
 import org.opentripplanner.routing.api.response.RoutingResponse;
-import org.opentripplanner.routing.bike_park.BikePark;
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
 import org.opentripplanner.routing.bike_rental.BikeRentalStationService;
 import org.opentripplanner.routing.core.BicycleOptimizeType;
 import org.opentripplanner.routing.core.FareRuleSet;
 import org.opentripplanner.routing.error.RoutingValidationException;
+import org.opentripplanner.routing.vehicle_parking.VehicleParking;
 import org.opentripplanner.routing.vertextype.TransitStopVertex;
 import org.opentripplanner.updater.GtfsRealtimeFuzzyTripMatcher;
 import org.opentripplanner.util.ResourceBundleSingleton;
@@ -75,10 +75,11 @@ public class LegacyGraphQLQueryTypeImpl
         case "Alert":
           return null; //TODO
         case "BikePark":
+          var bikeParkId = FeedScopedId.parseId(id);
           return bikerentalStationService == null ? null : bikerentalStationService
               .getBikeParks()
               .stream()
-              .filter(bikePark -> bikePark.id.equals(id))
+              .filter(bikePark -> bikePark.getId().equals(bikeParkId))
               .findAny()
               .orElse(null);
         case "BikeRentalStation":
@@ -533,7 +534,7 @@ public class LegacyGraphQLQueryTypeImpl
   }
 
   @Override
-  public DataFetcher<Iterable<BikePark>> bikeParks() {
+  public DataFetcher<Iterable<VehicleParking>> bikeParks() {
     return environment -> {
       BikeRentalStationService bikerentalStationService = getRoutingService(environment)
           .getBikerentalStationService();
@@ -545,7 +546,7 @@ public class LegacyGraphQLQueryTypeImpl
   }
 
   @Override
-  public DataFetcher<BikePark> bikePark() {
+  public DataFetcher<VehicleParking> bikePark() {
     return environment -> {
       var args = new LegacyGraphQLTypes.LegacyGraphQLQueryTypeBikeParkArgs(environment.getArguments());
 
@@ -554,10 +555,11 @@ public class LegacyGraphQLQueryTypeImpl
 
       if (bikerentalStationService == null) { return null; }
 
+      var bikeParkId = FeedScopedId.parseId(args.getLegacyGraphQLId());
       return bikerentalStationService
               .getBikeParks()
               .stream()
-              .filter(bikepark -> bikepark.id.equals(args.getLegacyGraphQLId()))
+              .filter(bikePark -> bikePark.getId().equals(bikeParkId))
               .findAny()
               .orElse(null);
     };

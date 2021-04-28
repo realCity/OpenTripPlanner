@@ -11,16 +11,15 @@ import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.model.Stop;
 import org.opentripplanner.model.WgsCoordinate;
 import org.opentripplanner.model.WheelChairBoarding;
-import org.opentripplanner.routing.bike_park.BikePark;
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.core.TraverseModeSet;
-import org.opentripplanner.routing.edgetype.BikeParkEdge;
+import org.opentripplanner.routing.edgetype.VehicleParkingEdge;
 import org.opentripplanner.routing.edgetype.BikeRentalEdge;
 import org.opentripplanner.routing.edgetype.ParkAndRideEdge;
 import org.opentripplanner.routing.edgetype.ParkAndRideLinkEdge;
 import org.opentripplanner.routing.edgetype.PathwayEdge;
-import org.opentripplanner.routing.edgetype.StreetBikeParkLink;
+import org.opentripplanner.routing.edgetype.StreetVehicleParkingLink;
 import org.opentripplanner.routing.edgetype.StreetBikeRentalLink;
 import org.opentripplanner.routing.edgetype.StreetEdge;
 import org.opentripplanner.routing.edgetype.StreetTransitEntranceLink;
@@ -31,7 +30,8 @@ import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.location.TemporaryStreetLocation;
-import org.opentripplanner.routing.vertextype.BikeParkVertex;
+import org.opentripplanner.routing.vehicle_parking.VehicleParking;
+import org.opentripplanner.routing.vertextype.VehicleParkingVertex;
 import org.opentripplanner.routing.vertextype.BikeRentalStationVertex;
 import org.opentripplanner.routing.vertextype.IntersectionVertex;
 import org.opentripplanner.routing.vertextype.ParkAndRideVertex;
@@ -292,32 +292,32 @@ public abstract class GraphRoutingTest {
         }
 
         // -- Bike P+R
-        public BikePark bikeParkEntity(String id, double latitude, double longitude) {
-            var bikePark = new BikePark();
-            bikePark.id = id;
-            bikePark.x = longitude;
-            bikePark.y = latitude;
-            return bikePark;
+        public VehicleParking bikeParkEntity(String id, double latitude, double longitude) {
+            return VehicleParking.builder()
+                .id(new FeedScopedId(TEST_FEED_ID, id))
+                .x(longitude)
+                .y(latitude)
+                .build();
         }
 
-        public BikeParkVertex bikePark(String id, double latitude, double longitude) {
-            var vertex = new BikeParkVertex(
+        public VehicleParkingVertex bikePark(String id, double latitude, double longitude) {
+            var vertex = new VehicleParkingVertex(
                     graph,
                     bikeParkEntity(id, latitude, longitude)
             );
-            new BikeParkEdge(vertex);
+            new VehicleParkingEdge(vertex);
             return vertex;
         }
 
-        public StreetBikeParkLink link(StreetVertex from, BikeParkVertex to) {
-            return new StreetBikeParkLink(from, to);
+        public StreetVehicleParkingLink link(StreetVertex from, VehicleParkingVertex to) {
+            return new StreetVehicleParkingLink(from, to);
         }
 
-        public StreetBikeParkLink link(BikeParkVertex from, StreetVertex to) {
-            return new StreetBikeParkLink(from, to);
+        public StreetVehicleParkingLink link(VehicleParkingVertex from, StreetVertex to) {
+            return new StreetVehicleParkingLink(from, to);
         }
 
-        public List<StreetBikeParkLink> biLink(StreetVertex from, BikeParkVertex to) {
+        public List<StreetVehicleParkingLink> biLink(StreetVertex from, VehicleParkingVertex to) {
             return List.of(link(from, to), link(to, from));
         }
 

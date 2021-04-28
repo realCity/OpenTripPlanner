@@ -63,7 +63,7 @@ import org.opentripplanner.ext.transmodelapi.model.plan.TripQuery;
 import org.opentripplanner.ext.transmodelapi.model.plan.TripType;
 import org.opentripplanner.ext.transmodelapi.model.siri.et.EstimatedCallType;
 import org.opentripplanner.ext.transmodelapi.model.siri.sx.PtSituationElementType;
-import org.opentripplanner.ext.transmodelapi.model.stop.BikeParkType;
+import org.opentripplanner.ext.transmodelapi.model.stop.VehicleParkingType;
 import org.opentripplanner.ext.transmodelapi.model.stop.BikeRentalStationType;
 import org.opentripplanner.ext.transmodelapi.model.stop.PlaceAtDistanceType;
 import org.opentripplanner.ext.transmodelapi.model.stop.PlaceInterfaceType;
@@ -144,8 +144,7 @@ public class TransmodelGraphQLSchema {
     GraphQLOutputType tariffZoneType = TariffZoneType.createTZ();
     GraphQLInterfaceType placeInterface = PlaceInterfaceType.create();
     GraphQLOutputType bikeRentalStationType = BikeRentalStationType.create(placeInterface);
-    GraphQLOutputType bikeParkType = BikeParkType.createB(placeInterface);
-//  GraphQLOutputType carParkType = new GraphQLTypeReference("CarPark");
+    GraphQLOutputType vehicleParkingType = VehicleParkingType.createB(placeInterface);
     GraphQLOutputType stopPlaceType = StopPlaceType.create(
         placeInterface,
         QuayType.REF,
@@ -1001,18 +1000,19 @@ public class TransmodelGraphQLSchema {
             .newFieldDefinition()
             .name("bikePark")
             .description("Get a single bike park based on its id")
-            .type(bikeParkType)
+            .type(vehicleParkingType)
             .argument(GraphQLArgument
                 .newArgument()
                 .name("id")
                 .type(new GraphQLNonNull(Scalars.GraphQLString))
                 .build())
             .dataFetcher(environment -> {
+              var bikeParkId = FeedScopedId.parseId(environment.getArgument("id"));
               return GqlUtil.getRoutingService(environment)
                   .getBikerentalStationService()
                   .getBikeParks()
                   .stream()
-                  .filter(bikePark -> bikePark.id.equals(environment.getArgument("id")))
+                  .filter(bikePark -> bikePark.getId().equals(bikeParkId))
                   .findFirst()
                   .orElse(null);
             })
@@ -1021,7 +1021,7 @@ public class TransmodelGraphQLSchema {
             .newFieldDefinition()
             .name("bikeParks")
             .description("Get all bike parks")
-            .type(new GraphQLNonNull(new GraphQLList(bikeParkType)))
+            .type(new GraphQLNonNull(new GraphQLList(vehicleParkingType)))
             .dataFetcher(environment -> {
               return new ArrayList<>(GqlUtil.getRoutingService(environment)
                   .getBikerentalStationService()
