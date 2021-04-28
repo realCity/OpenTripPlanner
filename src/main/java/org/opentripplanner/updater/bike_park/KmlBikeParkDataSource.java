@@ -24,9 +24,9 @@ class KmlBikeParkDataSource implements BikeParkDataSource {
 
     private static final Logger LOG = LoggerFactory.getLogger(KmlBikeParkDataSource.class);
 
-    private static final String KML_FEED_ID = "KML";
-
     private final String url;
+
+    private final String feedId;
 
     private final String namePrefix;
 
@@ -38,6 +38,7 @@ class KmlBikeParkDataSource implements BikeParkDataSource {
 
     public KmlBikeParkDataSource(Parameters config) {
         this.url = config.getUrl();
+        this.feedId = config.getFeedId();
         this.namePrefix = config.getNamePrefix();
         this.zip = config.zip();
 
@@ -67,7 +68,7 @@ class KmlBikeParkDataSource implements BikeParkDataSource {
                 .name(localizedName)
                 .x(x)
                 .y(y)
-                .id(new FeedScopedId(KML_FEED_ID, id))
+                .id(new FeedScopedId(feedId, id))
                 .build();
         });
     }
@@ -102,6 +103,7 @@ class KmlBikeParkDataSource implements BikeParkDataSource {
 
     public interface Parameters {
         String getUrl();
+        String getFeedId();
         String getNamePrefix();
         boolean zip();
     }
