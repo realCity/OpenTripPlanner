@@ -16,8 +16,6 @@ import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.core.TraverseModeSet;
 import org.opentripplanner.routing.edgetype.VehicleParkingEdge;
 import org.opentripplanner.routing.edgetype.BikeRentalEdge;
-import org.opentripplanner.routing.edgetype.ParkAndRideEdge;
-import org.opentripplanner.routing.edgetype.ParkAndRideLinkEdge;
 import org.opentripplanner.routing.edgetype.PathwayEdge;
 import org.opentripplanner.routing.edgetype.StreetVehicleParkingLink;
 import org.opentripplanner.routing.edgetype.StreetBikeRentalLink;
@@ -34,7 +32,6 @@ import org.opentripplanner.routing.vehicle_parking.VehicleParking;
 import org.opentripplanner.routing.vertextype.VehicleParkingVertex;
 import org.opentripplanner.routing.vertextype.BikeRentalStationVertex;
 import org.opentripplanner.routing.vertextype.IntersectionVertex;
-import org.opentripplanner.routing.vertextype.ParkAndRideVertex;
 import org.opentripplanner.routing.vertextype.StreetVertex;
 import org.opentripplanner.routing.vertextype.TemporaryVertex;
 import org.opentripplanner.routing.vertextype.TransitEntranceVertex;
@@ -300,7 +297,7 @@ public abstract class GraphRoutingTest {
                 .build();
         }
 
-        public VehicleParkingVertex bikePark(String id, double latitude, double longitude) {
+        public VehicleParkingVertex vehicleParking(String id, double latitude, double longitude) {
             var vertex = new VehicleParkingVertex(
                     graph,
                     bikeParkEntity(id, latitude, longitude)
@@ -318,26 +315,6 @@ public abstract class GraphRoutingTest {
         }
 
         public List<StreetVehicleParkingLink> biLink(StreetVertex from, VehicleParkingVertex to) {
-            return List.of(link(from, to), link(to, from));
-        }
-
-        // -- Car P+R
-        public ParkAndRideVertex carPark(String id, double latitude, double longitude) {
-            var vertex =
-                    new ParkAndRideVertex(graph, id, id, latitude, longitude, null);
-            new ParkAndRideEdge(vertex);
-            return vertex;
-        }
-
-        public ParkAndRideLinkEdge link(StreetVertex from, ParkAndRideVertex to) {
-            return new ParkAndRideLinkEdge(from, to);
-        }
-
-        public ParkAndRideLinkEdge link(ParkAndRideVertex from, StreetVertex to) {
-            return new ParkAndRideLinkEdge(from, to);
-        }
-
-        public List<ParkAndRideLinkEdge> biLink(StreetVertex from, ParkAndRideVertex to) {
             return List.of(link(from, to), link(to, from));
         }
     }
