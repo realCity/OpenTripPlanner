@@ -13,6 +13,7 @@ import org.opentripplanner.common.geometry.SphericalDistanceLibrary;
 import org.opentripplanner.common.model.P2;
 import org.opentripplanner.common.model.T2;
 import org.opentripplanner.graph_builder.DataImportIssueStore;
+import org.opentripplanner.graph_builder.issues.InvalidVehicleParkingCapacity;
 import org.opentripplanner.graph_builder.issues.Graphwide;
 import org.opentripplanner.graph_builder.issues.ParkAndRideUnlinked;
 import org.opentripplanner.graph_builder.issues.StreetCarSpeedZero;
@@ -74,6 +75,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -324,15 +326,7 @@ public class OpenStreetMapModule implements GraphBuilderModule {
                     creativeName = new NonLocalizedString("" + node.getId());
                 }
 
-                int capacity = Integer.MAX_VALUE;
-                if (node.hasTag("capacity")) {
-                    try {
-                        capacity = node.getCapacity();
-                    } catch (NumberFormatException e) {
-                        LOG.warn("Capacity for osm node " + node.getId() + " (" + creativeName
-                                + ") is not a number: " + node.getTag("capacity"));
-                    }
-                }
+                int capacity = parseCapacity(node).orElse(Integer.MAX_VALUE);
                 String networks = node.getTag("network");
                 String operators = node.getTag("operator");
                 Set<String> networkSet = new HashSet<String>();
@@ -366,6 +360,23 @@ public class OpenStreetMapModule implements GraphBuilderModule {
             LOG.info("Created " + n + " bike rental stations.");
         }
 
+        private OptionalInt parseCapacity(OSMWithTags element) {
+            return parseCapacity(element, "capacity");
+        }
+
+        private OptionalInt parseCapacity(OSMWithTags element, String capacityTag) {
+            if (element.hasTag(capacityTag)) {
+                String capacity = element.getTag(capacityTag);
+                try {
+                    int parsedValue = Integer.parseInt(capacity);
+                    return OptionalInt.of(parsedValue);
+                } catch (NumberFormatException e) {
+                    issueStore.add(new InvalidVehicleParkingCapacity(element.getId(), capacity));
+                }
+            }
+            return OptionalInt.empty();
+        }
+
         private void processBikeParkAndRideNodes() {
             LOG.info("Processing bike P+R nodes...");
             int n = 0;
@@ -377,12 +388,21 @@ public class OpenStreetMapModule implements GraphBuilderModule {
                 //TODO: localize
                 if (creativeName == null)
                     creativeName = new NonLocalizedString("P+R");
+                VehicleParking.VehiclePlaces vehiclePlaces = null;
+                var capacity = parseCapacity(node);
+                if (capacity.isPresent()) {
+                    vehiclePlaces = VehicleParking.VehiclePlaces.builder()
+                        .bicycleSpaces(capacity.getAsInt())
+                        .build();
+                }
                 VehicleParking bikePark = VehicleParking.builder()
                     .id(new FeedScopedId(VEHICLE_PARKING_OSM_FEED_ID, "" + node.getId()))
                     .name(creativeName)
                     .x(node.lon)
                     .y(node.lat)
                     .bicyclePlaces(true)
+                    .capacity(vehiclePlaces)
+                    .availability(vehiclePlaces)
                     .build();
                 bikeRentalService.addBikePark(bikePark);
                 VehicleParkingVertex parkVertex = new VehicleParkingVertex(graph, bikePark);
@@ -428,12 +448,21 @@ public class OpenStreetMapModule implements GraphBuilderModule {
                     envelope.expandToInclude(new Coordinate(node.lon, node.lat));
                 }
             }
+            VehicleParking.VehiclePlaces vehiclePlaces = null;
+            var capacity = parseCapacity(area.parent);
+            if (capacity.isPresent()) {
+                vehiclePlaces = VehicleParking.VehiclePlaces.builder()
+                    .bicycleSpaces(capacity.getAsInt())
+                    .build();
+            }
             VehicleParking bikePark = VehicleParking.builder()
                 .id(new FeedScopedId(VEHICLE_PARKING_OSM_FEED_ID, "" + osmId))
                 .name(creativeName)
                 .x((envelope.getMinX() + envelope.getMaxX()) / 2)
                 .y((envelope.getMinY() + envelope.getMaxY()) / 2)
                 .bicyclePlaces(true)
+                .capacity(vehiclePlaces)
+                .availability(vehiclePlaces)
                 .build();
             bikeRentalService.addBikePark(bikePark);
             VehicleParkingVertex bikeParkVertex = new VehicleParkingVertex(graph, bikePark);
@@ -510,6 +539,9 @@ public class OpenStreetMapModule implements GraphBuilderModule {
             List<OsmVertex> accessVertexes = new ArrayList<OsmVertex>();
             I18NString creativeName = null;
             long osmId = 0L;
+            OptionalInt bicycleCapacity = OptionalInt.empty();
+            OptionalInt wheelchairAccessibleCapacity = OptionalInt.empty();
+            OptionalInt carCapacity = OptionalInt.empty();
             for (Area area : group.areas) {
                 osmId = area.parent.getId();
                 if (creativeName == null || area.parent.getTag("name") != null)
@@ -524,6 +556,9 @@ public class OpenStreetMapModule implements GraphBuilderModule {
                         accessVertexes.add(accessVertex);
                     }
                 }
+                carCapacity = parseCapacity(area.parent);
+                bicycleCapacity = parseCapacity(area.parent, "capacity:bike");
+                wheelchairAccessibleCapacity = parseCapacity(area.parent, "capacity:disabled");
             }
             // Check P+R accessibility by walking and driving.
             TraversalRequirements walkReq = new TraversalRequirements(new RoutingRequest(
@@ -565,13 +600,26 @@ public class OpenStreetMapModule implements GraphBuilderModule {
                 // This does not prevent routing as we only use P+R for car dropoff,
                 // but this is an issue with OSM data.
             }
-            // Place the P+R at the center of the envelope
+
+            VehicleParking.VehiclePlaces vehiclePlaces = null;
+            if (bicycleCapacity.isPresent() || carCapacity.isPresent() || wheelchairAccessibleCapacity.isPresent()) {
+                vehiclePlaces = VehicleParking.VehiclePlaces.builder()
+                    .bicycleSpaces(bicycleCapacity.isPresent() ? bicycleCapacity.getAsInt() : null)
+                    .carSpaces(carCapacity.isPresent() ? carCapacity.getAsInt() : null)
+                    .wheelchairAccessibleCarSpaces(wheelchairAccessibleCapacity.isPresent() ? wheelchairAccessibleCapacity.getAsInt() : null)
+                    .build();
+            }
             VehicleParking vehicleParking = VehicleParking.builder()
                 .id(new FeedScopedId(VEHICLE_PARKING_OSM_FEED_ID, "P+R" + osmId))
                 .name(creativeName)
+                // Place the P+R at the center of the envelope
                 .x((envelope.getMinX() + envelope.getMaxX()) / 2)
                 .y((envelope.getMinY() + envelope.getMaxY()) / 2)
                 .carPlaces(true)
+                .bicyclePlaces(bicycleCapacity.isPresent())
+                .wheelchairAccessibleCarPlaces(wheelchairAccessibleCapacity.isPresent())
+                .availability(vehiclePlaces)
+                .capacity(vehiclePlaces)
                 .build();
 
             VehicleParkingVertex parkAndRideVertex = new VehicleParkingVertex(graph, vehicleParking);
