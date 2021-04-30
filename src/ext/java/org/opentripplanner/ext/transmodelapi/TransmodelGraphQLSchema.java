@@ -1009,9 +1009,8 @@ public class TransmodelGraphQLSchema {
             .dataFetcher(environment -> {
               var bikeParkId = FeedScopedId.parseId(environment.getArgument("id"));
               return GqlUtil.getRoutingService(environment)
-                  .getBikerentalStationService()
+                  .getVehicleParkingService()
                   .getBikeParks()
-                  .stream()
                   .filter(bikePark -> bikePark.getId().equals(bikeParkId))
                   .findFirst()
                   .orElse(null);
@@ -1022,11 +1021,38 @@ public class TransmodelGraphQLSchema {
             .name("bikeParks")
             .description("Get all bike parks")
             .type(new GraphQLNonNull(new GraphQLList(vehicleParkingType)))
+            .dataFetcher(environment -> GqlUtil.getRoutingService(environment)
+                .getVehicleParkingService()
+                .getBikeParks().collect(Collectors.toCollection(ArrayList::new)))
+            .build())
+        .field(GraphQLFieldDefinition
+            .newFieldDefinition()
+            .name("carPark")
+            .description("Get a single car park based on its id")
+            .type(vehicleParkingType)
+            .argument(GraphQLArgument
+                .newArgument()
+                .name("id")
+                .type(new GraphQLNonNull(Scalars.GraphQLString))
+                .build())
             .dataFetcher(environment -> {
-              return new ArrayList<>(GqlUtil.getRoutingService(environment)
-                  .getBikerentalStationService()
-                  .getBikeParks());
+              var carParkId = FeedScopedId.parseId(environment.getArgument("id"));
+              return GqlUtil.getRoutingService(environment)
+                  .getVehicleParkingService()
+                  .getCarParks()
+                  .filter(carPark -> carPark.getId().equals(carParkId))
+                  .findFirst()
+                  .orElse(null);
             })
+            .build())
+        .field(GraphQLFieldDefinition
+            .newFieldDefinition()
+            .name("carParks")
+            .description("Get all car parks")
+            .type(new GraphQLNonNull(new GraphQLList(vehicleParkingType)))
+            .dataFetcher(environment -> GqlUtil.getRoutingService(environment)
+                .getVehicleParkingService()
+                .getCarParks().collect(Collectors.toCollection(ArrayList::new)))
             .build())
         .field(GraphQLFieldDefinition
             .newFieldDefinition()

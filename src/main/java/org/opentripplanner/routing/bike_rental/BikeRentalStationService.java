@@ -9,14 +9,11 @@ import java.util.stream.Collectors;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
-import org.opentripplanner.routing.vehicle_parking.VehicleParking;
 
 public class BikeRentalStationService implements Serializable {
     private static final long serialVersionUID = -1288992939159246764L;
 
     private final Set<BikeRentalStation> bikeRentalStations = new HashSet<>();
-
-    private Set<VehicleParking> bikeParks = new HashSet<>();
 
     public Collection<BikeRentalStation> getBikeRentalStations() {
         return bikeRentalStations;
@@ -30,20 +27,6 @@ public class BikeRentalStationService implements Serializable {
 
     public void removeBikeRentalStation(BikeRentalStation bikeRentalStation) {
         bikeRentalStations.remove(bikeRentalStation);
-    }
-
-    public Collection<VehicleParking> getBikeParks() {
-        return bikeParks;
-    }
-
-    public void addBikePark(VehicleParking bikePark) {
-        // Remove old reference first, as adding will be a no-op if already present
-        bikeParks.remove(bikePark);
-        bikeParks.add(bikePark);
-    }
-
-    public void removeBikePark(VehicleParking bikePark) {
-        bikeParks.remove(bikePark);
     }
 
     /**
