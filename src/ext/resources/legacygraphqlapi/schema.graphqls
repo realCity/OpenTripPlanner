@@ -264,11 +264,9 @@ type BikeRentalStation implements Node & PlaceInterface {
     """
     spacesAvailable: Int
 
-    capacity: Int
-
     """
     A description of the current state of this bike rental station, e.g. "Station on"
-  """
+    """
     state: String
 
     """
