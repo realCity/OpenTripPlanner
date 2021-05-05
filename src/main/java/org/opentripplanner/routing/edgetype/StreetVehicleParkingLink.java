@@ -47,7 +47,7 @@ public class StreetVehicleParkingLink extends Edge {
 
     public State traverse(State s0) {
         // Do not even consider bike park vertices unless bike P+R is enabled.
-        if (!s0.getOptions().bikeParkAndRide && !s0.getOptions().parkAndRide) {
+        if (!s0.getOptions().parkAndRide) {
             return null;
         }
         // Disallow traversing two StreetBikeParkLinks in a row.
