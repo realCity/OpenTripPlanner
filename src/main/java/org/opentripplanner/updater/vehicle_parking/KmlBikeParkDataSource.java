@@ -1,4 +1,4 @@
-package org.opentripplanner.updater.bike_park;
+package org.opentripplanner.updater.vehicle_parking;
 
 import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.routing.vehicle_parking.VehicleParking;
@@ -20,7 +20,7 @@ import java.util.Locale;
  * @author laurent
  * @author GoAbout
  */
-class KmlBikeParkDataSource implements BikeParkDataSource {
+class KmlBikeParkDataSource implements VehicleParkingDataSource {
 
     private static final Logger LOG = LoggerFactory.getLogger(KmlBikeParkDataSource.class);
 
@@ -92,7 +92,7 @@ class KmlBikeParkDataSource implements BikeParkDataSource {
     }
 
     @Override
-    public synchronized List<VehicleParking> getBikeParks() {
+    public synchronized List<VehicleParking> getVehicleParkings() {
         return bikeParks;
     }
 
