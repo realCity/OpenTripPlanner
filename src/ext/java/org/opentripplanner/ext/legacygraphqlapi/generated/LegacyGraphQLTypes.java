@@ -417,6 +417,7 @@ public class LegacyGraphQLTypes {
         Bus("BUS"),
         CableCar("CABLE_CAR"),
         Car("CAR"),
+        Carpool("CARPOOL"),
         Ferry("FERRY"),
         Flexible("FLEXIBLE"),
         Funicular("FUNICULAR"),
