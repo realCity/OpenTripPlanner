@@ -850,6 +850,9 @@ enum Mode {
     """CAR"""
     CAR
 
+    """CARPOOL"""
+    CARPOOL
+
     """FERRY"""
     FERRY
 
