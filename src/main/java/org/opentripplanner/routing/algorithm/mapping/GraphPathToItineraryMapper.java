@@ -204,12 +204,22 @@ public abstract class GraphPathToItineraryMapper {
         List<int[]> legsIndexes = new ArrayList<int[]>();
 
         for (int i = 1; i < states.length - 1; i++) {
-            TraverseMode backMode = states[i].getBackMode();
-            TraverseMode forwardMode = states[i + 1].getBackMode();
+            var backState = states[i];
+            var forwardState = states[i + 1];
+            var backMode = backState.getBackMode();
+            var forwardMode = forwardState.getBackMode();
 
-            if (backMode == null || forwardMode == null) continue;
+            boolean modeChange = backMode != forwardMode && backMode != null && forwardMode != null;
+            boolean rentalChange = backState.isBikeRenting() != forwardState.isBikeRenting();
 
-            if (backMode != forwardMode) {
+            if (rentalChange) {
+                // When splitting due too bicycle rental changes, the states don't need to be part
+                // of both legs, and so the next indexPair starts with i + 1
+                legIndexPairs[1] = i;
+                legsIndexes.add(legIndexPairs);
+                legIndexPairs = new int[]{i + 1, states.length - 1};
+            }
+            else if (modeChange) {
                 legIndexPairs[1] = i;
                 legsIndexes.add(legIndexPairs);
                 legIndexPairs = new int[] {i, states.length - 1};
@@ -225,9 +235,11 @@ public abstract class GraphPathToItineraryMapper {
         for (int i = 0; i < legsStates.length; i++) {
             legIndexPairs = legsIndexes.get(i);
             legsStates[i] = new State[legIndexPairs[1] - legIndexPairs[0] + 1];
-            for (int j = 0; j <= legIndexPairs[1] - legIndexPairs[0]; j++) {
-                legsStates[i][j] = states[legIndexPairs[0] + j];
-            }
+            if (legIndexPairs[1] - legIndexPairs[0] + 1 >= 0)
+                System.arraycopy(
+                        states, legIndexPairs[0], legsStates[i], 0,
+                        legIndexPairs[1] - legIndexPairs[0] + 1
+                );
         }
 
         return legsStates;

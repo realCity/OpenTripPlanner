@@ -98,7 +98,7 @@ public class BikeRentalEdge extends Edge {
         s1.incrementWeight(pickedUp ? options.bikeRentalPickupCost : options.bikeRentalDropoffCost);
         s1.incrementTimeInSeconds(pickedUp ? options.bikeRentalPickupTime : options.bikeRentalDropoffTime);
         s1.setBikeRentalNetwork(networks);
-        s1.setBackMode(s0.getNonTransitMode());
+        s1.setBackMode(null);
         return s1.makeState();
     }
 
