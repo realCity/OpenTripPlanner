@@ -1,7 +1,10 @@
 package org.opentripplanner.routing.algorithm;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.locationtech.jts.geom.Coordinate;
 import org.opentripplanner.common.TurnRestriction;
 import org.opentripplanner.common.TurnRestrictionType;
@@ -11,31 +14,35 @@ import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.model.Stop;
 import org.opentripplanner.model.WgsCoordinate;
 import org.opentripplanner.model.WheelChairBoarding;
+import org.opentripplanner.routing.algorithm.astar.AStar;
+import org.opentripplanner.routing.api.request.RoutingRequest;
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.core.TraverseModeSet;
-import org.opentripplanner.routing.edgetype.VehicleParkingEdge;
 import org.opentripplanner.routing.edgetype.BikeRentalEdge;
 import org.opentripplanner.routing.edgetype.PathwayEdge;
-import org.opentripplanner.routing.edgetype.StreetVehicleParkingLink;
 import org.opentripplanner.routing.edgetype.StreetBikeRentalLink;
 import org.opentripplanner.routing.edgetype.StreetEdge;
 import org.opentripplanner.routing.edgetype.StreetTransitEntranceLink;
 import org.opentripplanner.routing.edgetype.StreetTransitStopLink;
 import org.opentripplanner.routing.edgetype.StreetTraversalPermission;
+import org.opentripplanner.routing.edgetype.StreetVehicleParkingLink;
 import org.opentripplanner.routing.edgetype.TemporaryFreeEdge;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.location.TemporaryStreetLocation;
+import org.opentripplanner.routing.spt.GraphPath;
+import org.opentripplanner.routing.spt.ShortestPathTree;
 import org.opentripplanner.routing.vehicle_parking.VehicleParking;
-import org.opentripplanner.routing.vertextype.VehicleParkingVertex;
+import org.opentripplanner.routing.vehicle_parking.VehicleParkingHelper;
 import org.opentripplanner.routing.vertextype.BikeRentalStationVertex;
 import org.opentripplanner.routing.vertextype.IntersectionVertex;
 import org.opentripplanner.routing.vertextype.StreetVertex;
 import org.opentripplanner.routing.vertextype.TemporaryVertex;
 import org.opentripplanner.routing.vertextype.TransitEntranceVertex;
 import org.opentripplanner.routing.vertextype.TransitStopVertex;
+import org.opentripplanner.routing.vertextype.VehicleParkingEntranceVertex;
 import org.opentripplanner.util.NonLocalizedString;
 
 public abstract class GraphRoutingTest {
@@ -288,34 +295,65 @@ public abstract class GraphRoutingTest {
             return List.of(link(from, to), link(to, from));
         }
 
-        // -- Bike P+R
-        public VehicleParking bikeParkEntity(String id, double latitude, double longitude) {
-            return VehicleParking.builder()
+        public void vehicleParking(String id, double x, double y, boolean bicyclePlaces, boolean carPlaces, List<VehicleParkingEntranceVertex> entranceVertices) {
+            var vehicleParking = VehicleParking.builder()
                 .id(new FeedScopedId(TEST_FEED_ID, id))
-                .x(longitude)
-                .y(latitude)
+                .x(x)
+                .y(y)
+                .bicyclePlaces(bicyclePlaces)
+                .carPlaces(carPlaces)
+                .entrances(entranceVertices.stream().map(VehicleParkingEntranceVertex::getParkingEntrance).collect(Collectors.toList()))
                 .build();
+
+            VehicleParkingHelper.linkVehicleParkingEntrances(entranceVertices, vehicleParking);
         }
 
-        public VehicleParkingVertex vehicleParking(String id, double latitude, double longitude) {
-            var vertex = new VehicleParkingVertex(
-                    graph,
-                    bikeParkEntity(id, latitude, longitude)
-            );
-            new VehicleParkingEdge(vertex);
-            return vertex;
+        public VehicleParkingEntranceVertex vehicleParkingEntrance(StreetVertex streetVertex, String id, boolean carAccessible, boolean walkAccessible) {
+            var entrance = VehicleParking.VehicleParkingEntrance.builder()
+                .entranceId(new FeedScopedId(TEST_FEED_ID, id))
+                .name(new NonLocalizedString(id))
+                .x(streetVertex.getX())
+                .y(streetVertex.getY())
+                .vertex(streetVertex)
+                .carAccessible(carAccessible)
+                .walkAccessible(walkAccessible)
+                .build();
+
+            var vehicleParkingVertex = new VehicleParkingEntranceVertex(graph, entrance);
+            biLink(streetVertex, vehicleParkingVertex);
+            return vehicleParkingVertex;
         }
 
-        public StreetVehicleParkingLink link(StreetVertex from, VehicleParkingVertex to) {
+        public StreetVehicleParkingLink link(StreetVertex from, VehicleParkingEntranceVertex to) {
             return new StreetVehicleParkingLink(from, to);
         }
 
-        public StreetVehicleParkingLink link(VehicleParkingVertex from, StreetVertex to) {
+        public StreetVehicleParkingLink link(VehicleParkingEntranceVertex from, StreetVertex to) {
             return new StreetVehicleParkingLink(from, to);
         }
 
-        public List<StreetVehicleParkingLink> biLink(StreetVertex from, VehicleParkingVertex to) {
+        public List<StreetVehicleParkingLink> biLink(StreetVertex from, VehicleParkingEntranceVertex to) {
             return List.of(link(from, to), link(to, from));
         }
+    }
+
+    public static String graphPathToString(GraphPath graphPath) {
+        return graphPath.states.stream()
+            .flatMap(s -> Stream.of(
+                s.getBackEdge() != null ? s.getBackEdge().getName() : null,
+                s.getVertex().getName()
+            ))
+            .filter(Objects::nonNull)
+            .collect(Collectors.joining(" - "));
+    }
+
+    protected GraphPath routeParkAndRide(Graph graph, StreetVertex from, StreetVertex to, TraverseModeSet traverseModeSet) {
+        RoutingRequest request = new RoutingRequest(traverseModeSet);
+        request.setRoutingContext(graph, from, to);
+        request.parkAndRide = true;
+
+        AStar aStar = new AStar();
+        ShortestPathTree tree = aStar.getShortestPathTree(request);
+        return tree.getPath(to, false);
     }
 }
