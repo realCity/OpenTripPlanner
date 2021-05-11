@@ -68,6 +68,9 @@ public class OSMDatabase {
     /* Map of all bike parking nodes, keyed by their OSM ID */
     private TLongObjectMap<OSMNode> bikeParkingNodes = new TLongObjectHashMap<>();
 
+    /* Map of all bike parking nodes, keyed by their OSM ID */
+    private TLongObjectMap<OSMNode> carParkingNodes = new TLongObjectHashMap<>();
+
     /* Map of all non-area ways keyed by their OSM ID */
     private TLongObjectMap<OSMWay> waysById = new TLongObjectHashMap<>();
 
@@ -163,6 +166,10 @@ public class OSMDatabase {
         return Collections.unmodifiableCollection(bikeParkingNodes.valueCollection());
     }
 
+    public Collection<OSMNode> getCarParkingNodes() {
+        return Collections.unmodifiableCollection(carParkingNodes.valueCollection());
+    }
+
     public Collection<Area> getWalkableAreas() {
         return Collections.unmodifiableCollection(walkableAreas);
     }
@@ -214,6 +221,9 @@ public class OSMDatabase {
         }
         if (node.isBikeParking()) {
             bikeParkingNodes.put(node.getId(), node);
+        }
+        if (node.isParkAndRide()) {
+            carParkingNodes.put(node.getId(), node);
         }
         if (!(waysNodeIds.contains(node.getId()) || areaNodeIds.contains(node.getId()) || node
                 .isStop())) {
