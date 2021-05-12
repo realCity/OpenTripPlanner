@@ -13,7 +13,5 @@ ADD target/*-shaded.jar ${OTP_ROOT}/otp-shaded.jar
 EXPOSE 8080
 EXPOSE 8081
 
-ENV JAVA_OPTS="-Xms8G -Xmx8G"
-
-ENTRYPOINT ["java", "-jar", "otp-shaded.jar", $JAVA_OPTS]
+ENTRYPOINT ["java", "-jar", "otp-shaded.jar"]
 
