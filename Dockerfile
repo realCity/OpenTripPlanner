@@ -9,11 +9,13 @@ ENV OTP_ROOT="/opt/opentripplanner"
 WORKDIR ${OTP_ROOT}
 
 ADD target/*-shaded.jar ${OTP_ROOT}/otp-shaded.jar
+ADD entrypoint.sh .
+RUN chmod +x entrypoint.sh
 
 EXPOSE 8080
 EXPOSE 8081
 
 ENV JAVA_OPTS="-Xmx8G"
 
-ENTRYPOINT [ "sh", "-c", "java", "$JAVA_OPTS", "-jar" "otp-shaded.jar" ]
+ENTRYPOINT ["./entrypoint.sh"]
 
