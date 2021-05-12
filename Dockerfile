@@ -15,5 +15,5 @@ EXPOSE 8081
 
 ENV JAVA_OPTS="-Xms8G -Xmx8G"
 
-ENTRYPOINT ["java", "-jar", "otp-shaded.jar"]
+ENTRYPOINT ["java", "-jar", "otp-shaded.jar", $JAVA_OPTS]
 
