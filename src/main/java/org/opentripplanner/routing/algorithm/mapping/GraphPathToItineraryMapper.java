@@ -30,6 +30,7 @@ import org.opentripplanner.routing.edgetype.ElevatorAlightEdge;
 import org.opentripplanner.routing.edgetype.FreeEdge;
 import org.opentripplanner.routing.edgetype.PathwayEdge;
 import org.opentripplanner.routing.edgetype.StreetEdge;
+import org.opentripplanner.routing.edgetype.VehicleParkingEdge;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
@@ -205,12 +206,24 @@ public abstract class GraphPathToItineraryMapper {
         List<int[]> legsIndexes = new ArrayList<int[]>();
 
         for (int i = 1; i < states.length - 1; i++) {
-            TraverseMode backMode = states[i].getBackMode();
-            TraverseMode forwardMode = states[i + 1].getBackMode();
+            var backState = states[i];
+            var forwardState = states[i + 1];
+            var backMode = backState.getBackMode();
+            var forwardMode = forwardState.getBackMode();
 
-            if (backMode == null || forwardMode == null) continue;
+            var modeChange = backMode != forwardMode && backMode != null && forwardMode != null;
+            var parkingChange = backState.isVehicleParked() != forwardState.isVehicleParked();
 
-            if (backMode != forwardMode) {
+            if (parkingChange) {
+                /* Remove the state for actually parking (traversing VehicleParkingEdge) from the
+                 * states so that the leg from/to edges correspond to the actual entrances.
+                 * The actual time for parking is added to the walking leg in generateLeg().
+                 */
+                legIndexPairs[1] = i;
+                legsIndexes.add(legIndexPairs);
+                legIndexPairs = new int[] {i + 1, states.length - 1};
+            }
+            else if (modeChange) {
                 legIndexPairs[1] = i;
                 legsIndexes.add(legIndexPairs);
                 legIndexPairs = new int[] {i, states.length - 1};
@@ -301,6 +314,17 @@ public abstract class GraphPathToItineraryMapper {
 
         if (flexEdge != null) {
             FlexLegMapper.fixFlexTripLeg(leg, flexEdge);
+        }
+
+        /* For the from/to vertices to be in the correct place for vehicle parking
+         * the state for actually parking (traversing the VehicleParkEdge) is excluded
+         * from the list of states.
+         * This add the time for parking to the walking leg.
+         */
+        var previousStateIsVehicleParking = states[0].getBackState() != null
+                && states[0].getBackEdge() instanceof VehicleParkingEdge;
+        if (previousStateIsVehicleParking) {
+            leg.startTime = makeCalendar(states[0].getBackState());
         }
 
         return leg;
