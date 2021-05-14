@@ -1,70 +1,80 @@
 package org.opentripplanner.model.plan;
 
-import org.opentripplanner.model.WgsCoordinate;
+import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import org.opentripplanner.model.FeedScopedId;
+import org.opentripplanner.model.StopLocation;
+import org.opentripplanner.model.WgsCoordinate;
 import org.opentripplanner.model.base.ToStringBuilder;
+import org.opentripplanner.routing.bike_rental.BikeRentalStation;
+import org.opentripplanner.routing.graph.Vertex;
+import org.opentripplanner.routing.vertextype.BikeRentalStationVertex;
+import org.opentripplanner.routing.vertextype.TransitStopVertex;
+import org.opentripplanner.routing.vertextype.VehicleParkingEntranceVertex;
 
 /** 
 * A Place is where a journey starts or ends, or a transit stop along the way.
-*/ 
+*/
+@Getter
+@Builder(toBuilder = true)
+@AllArgsConstructor
 public class Place {
 
     /** 
      * For transit stops, the name of the stop.  For points of interest, the name of the POI.
      */
-    public final String name;
+    private String name;
 
-    /** 
-     * The ID of the stop. This is often something that users don't care about.
-     */
-    public FeedScopedId stopId = null;
-
-    /** 
-     * The "code" of the stop. Depending on the transit agency, this is often
-     * something that users care about.
-     */
-    public String stopCode = null;
-
-    /**
-      * The code or name identifying the quay/platform the vehicle will arrive at or depart from
-      *
-    */
-    public String platformCode = null;
+    @Setter
+    private String orig;
 
     /**
      * The coordinate of the place.
      */
-    public final WgsCoordinate coordinate;
-
-    public String orig;
-
-    public String zoneId;
-
-    /**
-     * For transit trips, the stop index (numbered from zero from the start of the trip).
-     */
-    public Integer stopIndex;
-
-    /**
-     * For transit trips, the sequence number of the stop. Per GTFS, these numbers are increasing.
-     */
-    public Integer stopSequence;
+    private WgsCoordinate coordinate;
 
     /**
      * Type of vertex. (Normal, Bike sharing station, Bike P+R, Transit stop)
      * Mostly used for better localization of bike sharing and P+R station names
      */
-    public VertexType vertexType;
+    private VertexType vertexType;
 
     /**
-     * In case the vertex is of type Bike sharing station.
+     * The bike rental station if the type is {@link VertexType#BIKESHARE}.
      */
-    public String bikeShareId;
+    private BikeRentalStation bikeRentalStation;
+
+    /**
+     * The vehicle parking entrance if the type is {@link VertexType#VEHICLEPARKING}.
+     */
+    private VehicleParkingWithEntrance vehicleParkingWithEntrance;
+
+    /**
+     * The stop if the type is {@link VertexType#TRANSIT}.
+     */
+    private StopLocation stop;
+
+    /**
+     * For transit trips, the stop index (numbered from zero from the start of the trip).
+     */
+    private Integer stopIndex;
+
+    /**
+     * For transit trips, the sequence number of the stop. Per GTFS, these numbers are increasing.
+     */
+    private Integer stopSequence;
 
     public Place(Double lat, Double lon, String name) {
         this.name = name;
         this.vertexType = VertexType.NORMAL;
         this.coordinate = WgsCoordinate.creatOptionalCoordinate(lat, lon);
+    }
+
+    public FeedScopedId getStopId() {
+        return stop != null ? stop.getId() : null;
     }
 
     /**
@@ -76,7 +86,7 @@ public class Place {
         if(coordinate != null) {
             return coordinate.sameLocation(other.coordinate);
         }
-        return stopId != null && stopId.equals(other.stopId);
+        return stop != null && Objects.equals(this.stop, other.stop);
     }
 
     /**
@@ -85,8 +95,8 @@ public class Place {
      */
     public String toStringShort() {
         StringBuilder buf = new StringBuilder(name);
-        if(stopId != null) {
-            buf.append(", ").append(stopId);
+        if(stop != null) {
+            buf.append(", ").append(stop.getId());
         }
         buf.append(" ").append(coordinate.toString());
 
@@ -97,16 +107,61 @@ public class Place {
     public String toString() {
         return ToStringBuilder.of(Place.class)
                 .addStr("name", name)
-                .addObj("stopId", stopId)
-                .addStr("stopCode", stopCode)
-                .addStr("platformCode", platformCode)
-                .addObj("coordinate", coordinate)
                 .addStr("orig", orig)
-                .addStr("zoneId", zoneId)
+                .addObj("coordinate", coordinate)
+                .addEnum("vertexType", vertexType)
+                .addObj("bikeRentalStation", bikeRentalStation)
+                .addObj("vehicleParkingEntrance", vehicleParkingWithEntrance)
+                .addObj("stopId", stop != null ? stop.getId() : null)
                 .addNum("stopIndex", stopIndex)
                 .addNum("stopSequence", stopSequence)
-                .addEnum("vertexType", vertexType)
-                .addStr("bikeShareId", bikeShareId)
                 .toString();
+    }
+
+    public static Place normal(Vertex vertex, String name) {
+        return defaults(vertex, name)
+                .vertexType(VertexType.NORMAL)
+                .build();
+    }
+
+    public static Place forStop(StopLocation stop, Integer stopIndex, Integer stopSequence) {
+        return Place.builder()
+                .name(stop.getName())
+                .coordinate(stop.getCoordinate())
+                .vertexType(VertexType.TRANSIT)
+                .stop(stop)
+                .stopIndex(stopIndex)
+                .stopSequence(stopSequence)
+                .build();
+    }
+
+    public static Place forStop(TransitStopVertex vertex, String name) {
+        return defaults(vertex, name)
+                .vertexType(VertexType.TRANSIT)
+                .stop(vertex.getStop())
+                .build();
+    }
+
+    public static Place forBikeRentalStation(BikeRentalStationVertex vertex, String name) {
+        return defaults(vertex, name)
+                .vertexType(VertexType.BIKESHARE)
+                .bikeRentalStation(vertex.getStation())
+                .build();
+    }
+
+    public static Place forVehicleParkingEntrance(VehicleParkingEntranceVertex vertex, String name) {
+        return defaults(vertex, name)
+                .vertexType(VertexType.VEHICLEPARKING)
+                .vehicleParkingWithEntrance(VehicleParkingWithEntrance.builder()
+                        .vehicleParking(vertex.getVehicleParking())
+                        .entrance(vertex.getParkingEntrance())
+                        .build())
+                .build();
+    }
+
+    private static Place.PlaceBuilder defaults(Vertex vertex, String name) {
+        return Place.builder()
+                .name(name)
+                .coordinate(WgsCoordinate.creatOptionalCoordinate(vertex.getLat(), vertex.getLon()));
     }
 }
