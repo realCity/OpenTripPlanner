@@ -41,10 +41,10 @@ public class TripTimeShortHelper {
          */
 
         if (leg.realTime) {
-            return tripTimes.stream().filter(tripTime -> tripTime.getRealtimeDeparture() == startTimeSeconds && matchesQuayOrSiblingQuay(leg.from.stopId,
+            return tripTimes.stream().filter(tripTime -> tripTime.getRealtimeDeparture() == startTimeSeconds && matchesQuayOrSiblingQuay(leg.from.getStopId(),
                 tripTime.getStopId(), routingService)).findFirst().orElse(null);
         }
-        return tripTimes.stream().filter(tripTime -> tripTime.getScheduledDeparture() == startTimeSeconds && matchesQuayOrSiblingQuay(leg.from.stopId,
+        return tripTimes.stream().filter(tripTime -> tripTime.getScheduledDeparture() == startTimeSeconds && matchesQuayOrSiblingQuay(leg.from.getStopId(),
             tripTime.getStopId(), routingService)).findFirst().orElse(null);
     }
 
@@ -72,10 +72,10 @@ public class TripTimeShortHelper {
         */
 
         if (leg.realTime) {
-            return tripTimes.stream().filter(tripTime -> tripTime.getRealtimeArrival() == endTimeSeconds && matchesQuayOrSiblingQuay(leg.to.stopId,
+            return tripTimes.stream().filter(tripTime -> tripTime.getRealtimeArrival() == endTimeSeconds && matchesQuayOrSiblingQuay(leg.to.getStopId(),
                 tripTime.getStopId(), routingService)).findFirst().orElse(null);
         }
-        return tripTimes.stream().filter(tripTime -> tripTime.getScheduledArrival() == endTimeSeconds && matchesQuayOrSiblingQuay(leg.to.stopId,
+        return tripTimes.stream().filter(tripTime -> tripTime.getScheduledArrival() == endTimeSeconds && matchesQuayOrSiblingQuay(leg.to.getStopId(),
             tripTime.getStopId(), routingService)).findFirst().orElse(null);
     }
 
@@ -113,14 +113,14 @@ public class TripTimeShortHelper {
 
             if (!boardingStopFound) {
                 boardingStopFound = boardingTime == startTimeSeconds
-                    && matchesQuayOrSiblingQuay(leg.from.stopId,
+                    && matchesQuayOrSiblingQuay(leg.from.getStopId(),
                     tripTime.getStopId(), routingService);
                 continue;
             }
 
             long arrivalTime = leg.realTime ? tripTime.getRealtimeArrival()
                 : tripTime.getScheduledArrival();
-            if (arrivalTime == endTimeSeconds && matchesQuayOrSiblingQuay(leg.to.stopId,
+            if (arrivalTime == endTimeSeconds && matchesQuayOrSiblingQuay(leg.to.getStopId(),
                 tripTime.getStopId(), routingService)) {
                 break;
             }

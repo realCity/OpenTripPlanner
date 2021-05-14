@@ -242,6 +242,7 @@ public class LegacyGraphQLDataFetchers {
     public DataFetcher<BikeRentalStation> bikeRentalStation();
     public DataFetcher<Object> bikePark();
     public DataFetcher<Object> carPark();
+    public DataFetcher<VehicleParking> vehicleParking();
   }
   
   /** Interface for places, e.g. stops, stations, parking areas.. */
@@ -444,6 +445,7 @@ public class LegacyGraphQLDataFetchers {
     public DataFetcher<String> note();
     public DataFetcher<VehicleParking.VehicleParkingState> state();
     public DataFetcher<Boolean> bicyclePlaces();
+    public DataFetcher<Boolean> anyCarPlaces();
     public DataFetcher<Boolean> carPlaces();
     public DataFetcher<Boolean> wheelchairAccessibleCarPlaces();
     public DataFetcher<VehicleParking.VehiclePlaces> capacity();

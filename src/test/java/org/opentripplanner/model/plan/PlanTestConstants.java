@@ -1,10 +1,12 @@
 package org.opentripplanner.model.plan;
 
+import static org.opentripplanner.util.time.TimeUtils.time;
+
 import org.opentripplanner.model.FeedScopedId;
+import org.opentripplanner.model.Stop;
+import org.opentripplanner.model.WgsCoordinate;
 import org.opentripplanner.model.calendar.ServiceDate;
 import org.opentripplanner.util.time.DurationUtils;
-
-import static org.opentripplanner.util.time.TimeUtils.time;
 
 public interface PlanTestConstants {
   ServiceDate SERVICE_DATE = new ServiceDate(2020, 9, 21);
@@ -68,8 +70,10 @@ public interface PlanTestConstants {
   Place G = place("G", 9.5, 11.0);
 
   private static Place place(String name, double lat, double lon) {
-    Place p = new Place(lat, lon, name);
-    p.stopId = new FeedScopedId(FEED_ID, name);
-    return p;
+    return Place.builder()
+            .name(name)
+            .coordinate(WgsCoordinate.creatOptionalCoordinate(lat, lon))
+            .stop(new Stop(new FeedScopedId(FEED_ID, name), null, null, null, null, null, null, null, null, null, null, null))
+            .build();
   }
 }

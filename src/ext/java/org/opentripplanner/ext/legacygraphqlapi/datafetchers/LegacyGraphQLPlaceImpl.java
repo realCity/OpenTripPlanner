@@ -4,36 +4,33 @@ import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import org.opentripplanner.ext.legacygraphqlapi.LegacyGraphQLRequestContext;
 import org.opentripplanner.ext.legacygraphqlapi.generated.LegacyGraphQLDataFetchers;
-import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.model.plan.Place;
 import org.opentripplanner.model.plan.StopArrival;
 import org.opentripplanner.model.plan.VertexType;
 import org.opentripplanner.routing.RoutingService;
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
-import org.opentripplanner.routing.bike_rental.BikeRentalStationService;
 import org.opentripplanner.routing.vehicle_parking.VehicleParking;
-import org.opentripplanner.routing.vehicle_parking.VehicleParkingService;
 
 public class LegacyGraphQLPlaceImpl implements LegacyGraphQLDataFetchers.LegacyGraphQLPlace {
 
   @Override
   public DataFetcher<String> name() {
-    return environment -> getSource(environment).place.name;
+    return environment -> getSource(environment).place.getName();
   }
 
   @Override
   public DataFetcher<String> vertexType() {
-    return environment -> getSource(environment).place.vertexType.name();
+    return environment -> getSource(environment).place.getVertexType().name();
   }
 
   @Override
   public DataFetcher<Double> lat() {
-    return environment -> getSource(environment).place.coordinate.latitude();
+    return environment -> getSource(environment).place.getCoordinate().latitude();
   }
 
   @Override
   public DataFetcher<Double> lon() {
-    return environment -> getSource(environment).place.coordinate.longitude();
+    return environment -> getSource(environment).place.getCoordinate().longitude();
   }
 
   @Override
@@ -50,30 +47,14 @@ public class LegacyGraphQLPlaceImpl implements LegacyGraphQLDataFetchers.LegacyG
   public DataFetcher<Object> stop() {
     return environment -> {
       Place place = getSource(environment).place;
-      return place.vertexType.equals(VertexType.TRANSIT) ?
-          getRoutingService(environment).getStopForId(place.stopId) : null;
+      return place.getVertexType().equals(VertexType.TRANSIT) ?
+          getRoutingService(environment).getStopForId(place.getStopId()) : null;
     };
   }
 
   @Override
   public DataFetcher<BikeRentalStation> bikeRentalStation() {
-    return environment -> {
-      Place place = getSource(environment).place;
-
-      if (!place.vertexType.equals(VertexType.BIKESHARE)) { return null; }
-
-      BikeRentalStationService bikerentalStationService = getRoutingService(environment)
-          .getBikerentalStationService();
-
-      if (bikerentalStationService == null) { return null; }
-
-      return bikerentalStationService
-          .getBikeRentalStations()
-          .stream()
-          .filter(bikeRentalStation -> bikeRentalStation.id.equals(place.bikeShareId))
-          .findAny()
-          .orElse(null);
-    };
+    return environment -> getSource(environment).place.getBikeRentalStation();
   }
 
   @Override
@@ -86,19 +67,18 @@ public class LegacyGraphQLPlaceImpl implements LegacyGraphQLDataFetchers.LegacyG
     return this::getVehicleParking;
   }
 
+  @Override
+  public DataFetcher<VehicleParking> vehicleParking() {
+    return this::getVehicleParking;
+  }
+
   private VehicleParking getVehicleParking(DataFetchingEnvironment environment) {
-    FeedScopedId vehiclePlaceId = getSource(environment).place.stopId;
+    var vehicleParkingWithEntrance = getSource(environment).place.getVehicleParkingWithEntrance();
+    if (vehicleParkingWithEntrance == null) {
+      return null;
+    }
 
-    VehicleParkingService vehicleParkingService = getRoutingService(environment)
-        .getVehicleParkingService();
-
-    if (vehicleParkingService == null) { return null; }
-
-    return vehicleParkingService
-        .getVehicleParkings()
-        .filter(vehicleParking -> vehicleParking.getId().equals(vehiclePlaceId))
-        .findAny()
-        .orElse(null);
+    return vehicleParkingWithEntrance.getVehicleParking();
   }
 
   private RoutingService getRoutingService(DataFetchingEnvironment environment) {

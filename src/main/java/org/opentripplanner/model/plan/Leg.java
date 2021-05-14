@@ -276,7 +276,7 @@ public class Leg {
       if(!trip.getId().equals(other.trip.getId())) { return false; }
 
       // Return true if legs overlap
-      return this.from.stopIndex < other.to.stopIndex && to.stopIndex > other.from.stopIndex;
+      return this.from.getStopIndex() < other.to.getStopIndex() && to.getStopIndex() > other.from.getStopIndex();
     }
 
   /** For transit legs, the route agency. For non-transit legs {@code null}. */

@@ -219,8 +219,8 @@ public class LegType {
               }
               else {
                 return (
-                    stops.stream().filter(stop -> stop.place.stopId != null).map(s -> {
-                      return GqlUtil.getRoutingService(env).getStopForId(s.place.stopId);
+                    stops.stream().filter(stop -> stop.place.getStopId() != null).map(s -> {
+                      return GqlUtil.getRoutingService(env).getStopForId(s.place.getStopId());
                     }).filter(Objects::nonNull).collect(Collectors.toList())
                 );
               }

@@ -16,7 +16,6 @@ import org.opentripplanner.model.plan.Itinerary;
 import org.opentripplanner.model.plan.Leg;
 import org.opentripplanner.model.plan.Place;
 import org.opentripplanner.model.plan.StopArrival;
-import org.opentripplanner.model.plan.VertexType;
 import org.opentripplanner.routing.algorithm.raptor.transit.AccessEgress;
 import org.opentripplanner.routing.algorithm.raptor.transit.Transfer;
 import org.opentripplanner.routing.algorithm.raptor.transit.TransitLayer;
@@ -347,23 +346,14 @@ public class RaptorPathToItineraryMapper {
      * Maps stops for non-transit (transfer) legs.
      */
     private Place mapStopToPlace(Stop stop) {
-        Place place = new Place(stop.getLat(), stop.getLon(), stop.getName());
-        place.stopId = stop.getId();
-        place.stopCode = stop.getCode();
-        place.platformCode = stop.getPlatformCode();
-        place.zoneId = stop.getFirstZoneAsString();
-        place.vertexType = VertexType.TRANSIT;
-        return place;
+        return Place.forStop(stop, null, null);
     }
 
     /**
      * Maps stops for transit legs.
      */
     private Place mapStopToPlace(Stop stop, Integer stopIndex, TripTimes tripTimes) {
-        Place place = mapStopToPlace(stop);
-        place.stopIndex = stopIndex;
-        place.stopSequence = tripTimes.getStopSequence(stopIndex);
-        return place;
+        return Place.forStop(stop, stopIndex, tripTimes.getStopSequence(stopIndex));
     }
 
     private Calendar createCalendar(int timeInSeconds) {

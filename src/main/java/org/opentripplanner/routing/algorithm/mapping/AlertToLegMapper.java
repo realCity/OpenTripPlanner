@@ -26,8 +26,8 @@ public class AlertToLegMapper {
 
         Date legStartTime = leg.startTime.getTime();
         Date legEndTime = leg.endTime.getTime();
-        FeedScopedId fromStopId = leg.from==null ? null : leg.from.stopId;
-        FeedScopedId toStopId = leg.to==null ? null : leg.to.stopId;
+        FeedScopedId fromStopId = leg.from.getStopId();
+        FeedScopedId toStopId = leg.to.getStopId();
 
         if (leg.isTransitLeg()) {
             FeedScopedId routeId = leg.getRoute().getId();
@@ -43,8 +43,8 @@ public class AlertToLegMapper {
             if (leg.intermediateStops != null) {
                 for (StopArrival visit : leg.intermediateStops) {
                     Place place = visit.place;
-                    if (place.stopId != null) {
-                        Collection<TransitAlert> alerts = getAlertsForStopAndRoute(graph, place.stopId, routeId);
+                    if (place.getStopId() != null) {
+                        Collection<TransitAlert> alerts = getAlertsForStopAndRoute(graph, place.getStopId(), routeId);
                         Date stopArrival = visit.arrival.getTime();
                         Date stopDepature = visit.departure.getTime();
                         addAlertPatchesToLeg(leg, StopCondition.PASSING, alerts, requestedLocale, stopArrival, stopDepature);
@@ -64,8 +64,8 @@ public class AlertToLegMapper {
             if (leg.intermediateStops != null) {
                 for (StopArrival visit : leg.intermediateStops) {
                     Place place = visit.place;
-                    if (place.stopId != null) {
-                        Collection<TransitAlert> alerts = getAlertsForStopAndTrip(graph, place.stopId, tripId);
+                    if (place.getStopId() != null) {
+                        Collection<TransitAlert> alerts = getAlertsForStopAndTrip(graph, place.getStopId(), tripId);
                         Date stopArrival = visit.arrival.getTime();
                         Date stopDepature = visit.departure.getTime();
                         addAlertPatchesToLeg(leg, StopCondition.PASSING, alerts, requestedLocale, stopArrival, stopDepature);
@@ -77,8 +77,8 @@ public class AlertToLegMapper {
         if (leg.intermediateStops != null) {
             for (StopArrival visit : leg.intermediateStops) {
                 Place place = visit.place;
-                if (place.stopId != null) {
-                    Collection<TransitAlert> alerts = getAlertsForStop(graph, place.stopId);
+                if (place.getStopId() != null) {
+                    Collection<TransitAlert> alerts = getAlertsForStop(graph, place.getStopId());
                     Date stopArrival = visit.arrival.getTime();
                     Date stopDepature = visit.departure.getTime();
                     addAlertPatchesToLeg(leg, StopCondition.PASSING, alerts, requestedLocale, stopArrival, stopDepature);
