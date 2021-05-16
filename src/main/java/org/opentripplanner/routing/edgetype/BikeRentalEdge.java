@@ -1,6 +1,7 @@
 package org.opentripplanner.routing.edgetype;
 
 import com.google.common.collect.Sets;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import org.locationtech.jts.geom.LineString;
@@ -34,6 +35,10 @@ public class BikeRentalEdge extends Edge {
         RoutingRequest options = s0.getOptions();
 
         BikeRentalStationVertex stationVertex = (BikeRentalStationVertex) tov;
+        var networks = allowedNetworkBasedOnOptions(options, stationVertex.getStation().networks);
+        if (networks.isEmpty()) {
+            return null;
+        }
 
         boolean pickedUp;
         if (options.arriveBy) {
@@ -133,6 +138,21 @@ public class BikeRentalEdge extends Edge {
     @Override
     public boolean hasBogusName() {
         return false;
+    }
+
+    private Set<String> allowedNetworkBasedOnOptions(RoutingRequest options, Set<String> networks) {
+        if (options.allowedBikeRentalNetworks.isEmpty()
+                && options.bannedBikeRentalNetworks.isEmpty()
+        ) {
+            return networks;
+        }
+
+        var result = new HashSet<>(networks);
+        result.removeAll(options.bannedBikeRentalNetworks);
+        if (!options.allowedBikeRentalNetworks.isEmpty()) {
+            result.retainAll(options.allowedBikeRentalNetworks);
+        }
+        return result;
     }
 
     /**

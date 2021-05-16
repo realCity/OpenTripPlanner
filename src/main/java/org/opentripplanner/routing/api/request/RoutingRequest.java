@@ -382,6 +382,12 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
     /** Cost of dropping-off a rented bike */
     public int bikeRentalDropoffCost = 30;
 
+    /** The bike rental networks which may be used. If empty all networks may be used. */
+    public Set<String> allowedBikeRentalNetworks = Set.of();
+
+    /** The bike rental networks which may not be used. If empty, no networks are banned. */
+    public Set<String> bannedBikeRentalNetworks = Set.of();
+
     /** Time to park a bike */
     public int bikeParkTime = 60;
 
@@ -1139,6 +1145,9 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
         try {
             RoutingRequest clone = (RoutingRequest) super.clone();
             clone.streetSubRequestModes = streetSubRequestModes.clone();
+
+            clone.allowedBikeRentalNetworks = Set.copyOf(allowedBikeRentalNetworks);
+            clone.bannedBikeRentalNetworks = Set.copyOf(bannedBikeRentalNetworks);
 
             clone.preferredAgencies = Set.copyOf(preferredAgencies);
             clone.unpreferredAgencies = Set.copyOf(unpreferredAgencies);

@@ -251,13 +251,16 @@ public abstract class GraphRoutingTest {
         public BikeRentalStation bikeRentalStationEntity(
                 String id,
                 double latitude,
-                double longitude
+                double longitude,
+                String ... networks
         ) {
             var bikeRentalStation = new BikeRentalStation();
             bikeRentalStation.id = id;
+            bikeRentalStation.name = new NonLocalizedString(id);
             bikeRentalStation.x = longitude;
             bikeRentalStation.y = latitude;
             bikeRentalStation.isKeepingBicycleRentalAtDestinationAllowed = false;
+            bikeRentalStation.networks = Set.of(networks);
             return bikeRentalStation;
         }
 
@@ -265,13 +268,13 @@ public abstract class GraphRoutingTest {
                 String id,
                 double latitude,
                 double longitude,
-                Set<String> networks
+                String ... networks
         ) {
             var vertex = new BikeRentalStationVertex(
                     graph,
-                    bikeRentalStationEntity(id, latitude, longitude)
+                    bikeRentalStationEntity(id, latitude, longitude, networks)
             );
-            new BikeRentalEdge(vertex, networks);
+            new BikeRentalEdge(vertex, Set.of(networks));
             return vertex;
         }
 
@@ -280,7 +283,7 @@ public abstract class GraphRoutingTest {
                 double latitude,
                 double longitude
         ) {
-            return bikeRentalStation(id, latitude, longitude, Set.of(TEST_BIKE_RENTAL_NETWORK));
+            return bikeRentalStation(id, latitude, longitude, TEST_BIKE_RENTAL_NETWORK);
         }
 
         public StreetBikeRentalLink link(StreetVertex from, BikeRentalStationVertex to) {

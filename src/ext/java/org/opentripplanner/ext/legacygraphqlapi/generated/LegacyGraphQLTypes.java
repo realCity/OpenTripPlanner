@@ -967,6 +967,7 @@ public class LegacyGraphQLTypes {
     private Integer _heuristicStepsPerMainStep;
     private Boolean _compactLegsByReversedSearch;
     private Iterable<String> _allowedBikeRentalNetworks;
+    private Iterable<String> _bannedBikeRentalNetworks;
   
     public LegacyGraphQLQueryTypePlanArgs(Map<String, Object> args) {
       if (args != null) {
@@ -1032,6 +1033,7 @@ public class LegacyGraphQLTypes {
         this._heuristicStepsPerMainStep = (Integer) args.get("heuristicStepsPerMainStep");
         this._compactLegsByReversedSearch = (Boolean) args.get("compactLegsByReversedSearch");
         this._allowedBikeRentalNetworks = (Iterable<String>) args.get("allowedBikeRentalNetworks");
+        this._bannedBikeRentalNetworks = (Iterable<String>) args.get("bannedBikeRentalNetworks");
       }
     }
   
@@ -1089,6 +1091,7 @@ public class LegacyGraphQLTypes {
     public Integer getLegacyGraphQLHeuristicStepsPerMainStep() { return this._heuristicStepsPerMainStep; }
     public Boolean getLegacyGraphQLCompactLegsByReversedSearch() { return this._compactLegsByReversedSearch; }
     public Iterable<String> getLegacyGraphQLAllowedBikeRentalNetworks() { return this._allowedBikeRentalNetworks; }
+    public Iterable<String> getLegacyGraphQLBannedBikeRentalNetworks() { return this._bannedBikeRentalNetworks; }
   }
   public enum LegacyGraphQLRealtimeState {
     Scheduled("SCHEDULED"),
