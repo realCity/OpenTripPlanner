@@ -35,6 +35,7 @@ import org.opentripplanner.routing.location.TemporaryStreetLocation;
 import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.routing.spt.ShortestPathTree;
 import org.opentripplanner.routing.vehicle_parking.VehicleParking;
+import org.opentripplanner.routing.vehicle_parking.VehicleParking.VehicleParkingEntranceCreator;
 import org.opentripplanner.routing.vehicle_parking.VehicleParkingHelper;
 import org.opentripplanner.routing.vertextype.BikeRentalStationVertex;
 import org.opentripplanner.routing.vertextype.IntersectionVertex;
@@ -298,7 +299,7 @@ public abstract class GraphRoutingTest {
             return List.of(link(from, to), link(to, from));
         }
 
-        public void vehicleParking(String id, double x, double y, boolean bicyclePlaces, boolean carPlaces, List<VehicleParking.VehicleParkingEntranceCreator> entrances) {
+        public VehicleParking vehicleParking(String id, double x, double y, boolean bicyclePlaces, boolean carPlaces, List<VehicleParkingEntranceCreator> entrances, String ... tags) {
             var vehicleParking = VehicleParking.builder()
                 .id(new FeedScopedId(TEST_FEED_ID, id))
                 .x(x)
@@ -306,11 +307,13 @@ public abstract class GraphRoutingTest {
                 .bicyclePlaces(bicyclePlaces)
                 .carPlaces(carPlaces)
                 .entrances(entrances)
+                .tags(List.of(tags))
                 .build();
 
             var vertices = VehicleParkingHelper.createVehicleParkingVertices(graph, vehicleParking);
             VehicleParkingHelper.linkVehicleParkingEntrances(vertices);
             vertices.forEach(v -> biLink(v.getParkingEntrance().getVertex(), v));
+            return vehicleParking;
         }
 
         public VehicleParking.VehicleParkingEntranceCreator vehicleParkingEntrance(StreetVertex streetVertex, String id, boolean carAccessible, boolean walkAccessible) {

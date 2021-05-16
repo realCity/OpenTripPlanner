@@ -704,6 +704,8 @@ public class LegacyGraphQLQueryTypeImpl
       callWith.argument("keepingRentedBicycleAtDestinationCost", (Integer v) -> request.keepingRentedBicycleAtDestinationCost = v);
       callWith.argument("allowedBikeRentalNetworks", (Collection<String> v) -> request.allowedBikeRentalNetworks = new HashSet<>(v));
       callWith.argument("bannedBikeRentalNetworks", (Collection<String> v) -> request.bannedBikeRentalNetworks = new HashSet<>(v));
+      callWith.argument("requiredVehicleParkingTags", (Collection<String> v) -> request.requiredVehicleParkingTags = new HashSet<>(v));
+      callWith.argument("bannedVehicleParkingTags", (Collection<String> v) -> request.bannedVehicleParkingTags = new HashSet<>(v));
 
       // callWith.argument("modeWeight.TRAM", (Double v) -> request.setModeWeight(TraverseMode.TRAM, v));
       // callWith.argument("modeWeight.SUBWAY", (Double v) -> request.setModeWeight(TraverseMode.SUBWAY, v));

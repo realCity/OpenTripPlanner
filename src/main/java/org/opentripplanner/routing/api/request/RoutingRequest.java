@@ -400,6 +400,10 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
     /** Cost of parking a car. */
     public int carParkCost = 120;
 
+    public Set<String> requiredVehicleParkingTags = Set.of();
+
+    public Set<String> bannedVehicleParkingTags = Set.of();
+
     /**
      * Time to park a car in a park and ride, w/o taking into account driving and walking cost
      * (time to park, switch off, pick your stuff, lock the car, etc...)
@@ -1148,6 +1152,9 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
 
             clone.allowedBikeRentalNetworks = Set.copyOf(allowedBikeRentalNetworks);
             clone.bannedBikeRentalNetworks = Set.copyOf(bannedBikeRentalNetworks);
+
+            clone.requiredVehicleParkingTags = Set.copyOf(requiredVehicleParkingTags);
+            clone.bannedVehicleParkingTags = Set.copyOf(bannedVehicleParkingTags);
 
             clone.preferredAgencies = Set.copyOf(preferredAgencies);
             clone.unpreferredAgencies = Set.copyOf(unpreferredAgencies);
