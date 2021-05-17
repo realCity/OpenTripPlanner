@@ -7,6 +7,20 @@ import graphql.relay.SimpleListConnection;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.DataFetchingEnvironmentImpl;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.opentripplanner.api.common.ParameterException;
@@ -28,10 +42,6 @@ import org.opentripplanner.model.TripTimeShort;
 import org.opentripplanner.model.calendar.ServiceDate;
 import org.opentripplanner.routing.RoutingService;
 import org.opentripplanner.routing.alertpatch.TransitAlert;
-import org.opentripplanner.routing.graphfinder.NearbyStop;
-import org.opentripplanner.routing.graphfinder.PatternAtStop;
-import org.opentripplanner.routing.graphfinder.PlaceAtDistance;
-import org.opentripplanner.routing.graphfinder.PlaceType;
 import org.opentripplanner.routing.api.request.RoutingRequest;
 import org.opentripplanner.routing.api.response.RoutingResponse;
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
@@ -39,24 +49,15 @@ import org.opentripplanner.routing.bike_rental.BikeRentalStationService;
 import org.opentripplanner.routing.core.BicycleOptimizeType;
 import org.opentripplanner.routing.core.FareRuleSet;
 import org.opentripplanner.routing.error.RoutingValidationException;
+import org.opentripplanner.routing.graphfinder.NearbyStop;
+import org.opentripplanner.routing.graphfinder.PatternAtStop;
+import org.opentripplanner.routing.graphfinder.PlaceAtDistance;
+import org.opentripplanner.routing.graphfinder.PlaceType;
 import org.opentripplanner.routing.vehicle_parking.VehicleParking;
 import org.opentripplanner.routing.vehicle_parking.VehicleParkingService;
 import org.opentripplanner.routing.vertextype.TransitStopVertex;
 import org.opentripplanner.updater.GtfsRealtimeFuzzyTripMatcher;
 import org.opentripplanner.util.ResourceBundleSingleton;
-
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class LegacyGraphQLQueryTypeImpl
     implements LegacyGraphQLDataFetchers.LegacyGraphQLQueryType {
@@ -76,25 +77,11 @@ public class LegacyGraphQLQueryTypeImpl
           return routingService.getAgencyForId(FeedScopedId.parseId(id));
         case "Alert":
           return null; //TODO
-        case "BikePark":
-          var bikeParkId = FeedScopedId.parseId(id);
-          return vehicleParkingService == null ? null : vehicleParkingService
-              .getBikeParks()
-              .filter(bikePark -> bikePark.getId().equals(bikeParkId))
-              .findAny()
-              .orElse(null);
         case "BikeRentalStation":
           return bikerentalStationService == null ? null : bikerentalStationService
               .getBikeRentalStations()
               .stream()
               .filter(bikeRentalStation -> bikeRentalStation.id.equals(id))
-              .findAny()
-              .orElse(null);
-        case "CarPark":
-          var carParkId = FeedScopedId.parseId(id);
-          return vehicleParkingService == null ? null : vehicleParkingService
-              .getCarParks()
-              .filter(carPark -> carPark.getId().equals(carParkId))
               .findAny()
               .orElse(null);
         case "Cluster":
@@ -133,6 +120,13 @@ public class LegacyGraphQLQueryTypeImpl
           return null; //TODO
         case "Trip":
           return routingService.getTripForId().get(FeedScopedId.parseId(id));
+        case "VehicleParking":
+          var vehicleParkingId = FeedScopedId.parseId(id);
+          return vehicleParkingService == null ? null : vehicleParkingService
+                  .getVehicleParkings()
+                  .filter(bikePark -> bikePark.getId().equals(vehicleParkingId))
+                  .findAny()
+                  .orElse(null);
         default:
           return null;
       }
@@ -570,17 +564,34 @@ public class LegacyGraphQLQueryTypeImpl
     };
   }
 
-  //TODO
   @Override
-  public DataFetcher<Iterable<Object>> carParks() {
-    return environment -> Collections.EMPTY_LIST;
+  public DataFetcher<Iterable<VehicleParking>> carParks() {
+    return environment -> {
+      VehicleParkingService vehicleParkingService = getRoutingService(environment)
+          .getVehicleParkingService();
+
+      if (vehicleParkingService == null) { return null; }
+
+      return vehicleParkingService.getCarParks().collect(Collectors.toList());
+    };
   }
 
-  //TODO
   @Override
-  public DataFetcher<Object> carPark() {
+  public DataFetcher<VehicleParking> carPark() {
     return environment -> {
-      return null;
+      var args = new LegacyGraphQLTypes.LegacyGraphQLQueryTypeBikeParkArgs(environment.getArguments());
+
+      VehicleParkingService vehicleParkingService = getRoutingService(environment)
+          .getVehicleParkingService();
+
+      if (vehicleParkingService == null) { return null; }
+
+      var carParkId = FeedScopedId.parseId(args.getLegacyGraphQLId());
+      return vehicleParkingService
+          .getCarParks()
+          .filter(carPark -> carPark.getId().equals(carParkId))
+          .findAny()
+          .orElse(null);
     };
   }
 
