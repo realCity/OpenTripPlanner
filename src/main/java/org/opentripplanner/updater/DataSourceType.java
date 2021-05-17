@@ -13,6 +13,7 @@ public enum DataSourceType {
   KML,
   NEXT_BIKE,
   OV_FIETS,
+  PARK_API,
   SF_BAY_AREA,
   SHARE_BIKE,
   SMOOVE,

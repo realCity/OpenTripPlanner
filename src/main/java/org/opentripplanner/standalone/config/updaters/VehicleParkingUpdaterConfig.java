@@ -14,6 +14,7 @@ public class VehicleParkingUpdaterConfig {
 
   static {
     CONFIG_MAPPING.put("kml", DataSourceType.KML);
+    CONFIG_MAPPING.put("park-api", DataSourceType.PARK_API);
   }
 
   private static DataSourceType mapStringToSourceType(String typeKey) {
