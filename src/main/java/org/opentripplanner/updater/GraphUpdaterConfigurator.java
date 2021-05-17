@@ -13,6 +13,7 @@ import org.opentripplanner.ext.siri.updater.SiriVMUpdaterParameters;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.updater.alerts.GtfsRealtimeAlertsUpdater;
 import org.opentripplanner.updater.alerts.GtfsRealtimeAlertsUpdaterParameters;
+import org.opentripplanner.updater.vehicle_parking.VehicleParkingDataSourceFactory;
 import org.opentripplanner.updater.vehicle_parking.VehicleParkingUpdater;
 import org.opentripplanner.updater.vehicle_parking.VehicleParkingUpdaterParameters;
 import org.opentripplanner.updater.bike_rental.BikeRentalUpdater;
@@ -139,7 +140,8 @@ public abstract class GraphUpdaterConfigurator {
             updaters.add(new MqttGtfsRealtimeUpdater(configItem));
         }
         for (VehicleParkingUpdaterParameters configItem : config.getVehicleParkingUpdaterParameters()) {
-            updaters.add(new VehicleParkingUpdater(configItem));
+            var source = VehicleParkingDataSourceFactory.create(configItem);
+            updaters.add(new VehicleParkingUpdater(configItem, source));
         }
         for (WFSNotePollingGraphUpdaterParameters configItem : config.getWinkkiPollingGraphUpdaterParameters()) {
             updaters.add(new WinkkiPollingGraphUpdater(configItem));

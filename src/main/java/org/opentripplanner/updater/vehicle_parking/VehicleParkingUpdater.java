@@ -48,10 +48,9 @@ public class VehicleParkingUpdater extends PollingGraphUpdater {
 
     private VehicleParkingService vehicleParkingService;
 
-    public VehicleParkingUpdater(VehicleParkingUpdaterParameters parameters) {
+    public VehicleParkingUpdater(VehicleParkingUpdaterParameters parameters, VehicleParkingDataSource source) {
         super(parameters);
-        // Set source from preferences
-        source = new KmlBikeParkDataSource(parameters.sourceParameters());
+        this.source = source;
 
         LOG.info("Creating bike-park updater running every {} seconds : {}", pollingPeriodSeconds, source);
     }
