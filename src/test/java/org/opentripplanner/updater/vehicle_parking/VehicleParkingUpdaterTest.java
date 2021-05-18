@@ -157,4 +157,77 @@ class VehicleParkingUpdaterTest extends VehicleParkingTestBase {
     assertVehicleParkingsInGraph(1);
   }
 
+  @Test
+  public void addNotOperatingVehicleParkingTest() {
+    var vehicleParking = VehicleParking.builder()
+        .state(VehicleParking.VehicleParkingState.CLOSED)
+        .build();
+
+    when(dataSource.getVehicleParkings()).thenReturn(List.of(vehicleParking));
+    runUpdaterOnce();
+
+    assertEquals(1, graph.getService(VehicleParkingService.class).getVehicleParkings().count());
+    assertVehicleParkingNotLinked();
+  }
+
+  private void assertVehicleParkingNotLinked() {
+    assertEquals(0, graph.getVerticesOfType(VehicleParkingEntranceVertex.class).size());
+    assertEquals(0, graph.getEdgesOfType(StreetVehicleParkingLink.class).size());
+    assertEquals(0, graph.getEdgesOfType(VehicleParkingEdge.class).size());
+  }
+
+  @Test
+  public void updateNotOperatingVehicleParkingTest() {
+    var vehiclePlaces = VehicleParking.VehiclePlaces.builder()
+        .bicycleSpaces(1)
+        .build();
+
+    var vehicleParking = VehicleParking.builder()
+        .availability(vehiclePlaces)
+        .state(VehicleParking.VehicleParkingState.CLOSED)
+        .build();
+
+    when(dataSource.getVehicleParkings()).thenReturn(List.of(vehicleParking));
+    runUpdaterOnce();
+
+    var vehicleParkingService =  graph.getService(VehicleParkingService.class);
+    assertEquals(1, vehicleParkingService.getVehicleParkings().count());
+    assertEquals(vehiclePlaces, vehicleParkingService.getVehicleParkings().findFirst().orElseThrow().getAvailability());
+    assertVehicleParkingNotLinked();
+
+    vehiclePlaces = VehicleParking.VehiclePlaces.builder()
+        .bicycleSpaces(2)
+        .build();
+
+    vehicleParking = VehicleParking.builder()
+        .availability(vehiclePlaces)
+        .state(VehicleParking.VehicleParkingState.CLOSED)
+        .build();
+
+    when(dataSource.getVehicleParkings()).thenReturn(List.of(vehicleParking));
+    runUpdaterOnce();
+
+    assertEquals(1, vehicleParkingService.getVehicleParkings().count());
+    assertEquals(vehiclePlaces, vehicleParkingService.getVehicleParkings().findFirst().orElseThrow().getAvailability());
+    assertVehicleParkingNotLinked();
+  }
+
+  @Test
+  public void deleteNotOperatingVehicleParkingTest() {
+    var vehicleParking = VehicleParking.builder()
+        .state(VehicleParking.VehicleParkingState.CLOSED)
+        .build();
+
+    when(dataSource.getVehicleParkings()).thenReturn(List.of(vehicleParking));
+    runUpdaterOnce();
+
+    var vehicleParkingService =  graph.getService(VehicleParkingService.class);
+    assertEquals(1, vehicleParkingService.getVehicleParkings().count());
+
+    when(dataSource.getVehicleParkings()).thenReturn(List.of());
+    runUpdaterOnce();
+
+    assertEquals(0, vehicleParkingService.getVehicleParkings().count());
+  }
+
 }
