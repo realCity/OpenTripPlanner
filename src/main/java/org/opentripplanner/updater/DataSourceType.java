@@ -12,6 +12,7 @@ public enum DataSourceType {
   KEOLIS_RENNES,
   KML,
   NEXT_BIKE,
+  OPEN_BIKE_BOX,
   OV_FIETS,
   PARK_API,
   SF_BAY_AREA,
