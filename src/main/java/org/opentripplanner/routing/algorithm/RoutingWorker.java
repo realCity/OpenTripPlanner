@@ -165,7 +165,7 @@ public class RoutingWorker {
                                 accessRequest,
                                 false
                         );
-                accessList = accessEgressMapper.mapFlexAccessEgresses(flexAccessList, false);
+                accessList = accessEgressMapper.mapFlexAccessEgresses(flexAccessList, requestTransitDataProvider.getStartOfTime(), false);
             }
             // Regular access routing
             else {
@@ -175,7 +175,7 @@ public class RoutingWorker {
                         false,
                         2000
                 );
-                accessList = accessEgressMapper.mapNearbyStops(accessStops, false);
+                accessList = accessEgressMapper.mapNearbyStops(accessStops, requestTransitDataProvider.getStartOfTime(), false);
             }
         }
 
@@ -190,7 +190,7 @@ public class RoutingWorker {
                                 egressRequest,
                                 true
                         );
-                egressList = accessEgressMapper.mapFlexAccessEgresses(flexEgressList, true);
+                egressList = accessEgressMapper.mapFlexAccessEgresses(flexEgressList, requestTransitDataProvider.getStartOfTime(), true);
             }
             // Regular egress routing
             else {
@@ -200,7 +200,7 @@ public class RoutingWorker {
                         true,
                         2000
                 );
-                egressList = accessEgressMapper.mapNearbyStops(egressStops, true);
+                egressList = accessEgressMapper.mapNearbyStops(egressStops, requestTransitDataProvider.getStartOfTime(), true);
             }
         }
 

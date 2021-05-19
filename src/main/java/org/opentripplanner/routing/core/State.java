@@ -1,8 +1,13 @@
 package org.opentripplanner.routing.core;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import org.opentripplanner.routing.algorithm.astar.NegativeWeightException;
@@ -458,6 +463,8 @@ public class State implements Cloneable {
         newState.stateData.bikeRentalState = stateData.bikeRentalState;
         newState.stateData.carPickupState = stateData.carPickupState;
         newState.stateData.vehicleParked = stateData.vehicleParked;
+        newState.stateData.timeRestrictions = new ArrayList<>(getTimeRestrictions());
+        newState.stateData.timeRestrictionSources = new HashSet<>(getTimeRestrictionSources());
         return newState;
     }
 
@@ -473,6 +480,16 @@ public class State implements Cloneable {
 
     public long getTimeInMillis() {
         return time;
+    }
+
+    public ZonedDateTime getTimeAsZonedDateTime() {
+        return Instant.ofEpochMilli(getTimeInMillis())
+                .atZone(getOptions().rctx.graph.getTimeZone().toZoneId());
+    }
+
+    public LocalDateTime getTimeAsLocalDateTime() {
+        return getTimeAsZonedDateTime()
+                .toLocalDateTime();
     }
 
     public boolean multipleOptionsBefore() {
@@ -587,5 +604,19 @@ public class State implements Cloneable {
 
     public boolean mayKeepRentedBicycleAtDestination() {
         return stateData.mayKeepRentedBicycleAtDestination;
+    }
+
+    public List<TimeRestrictionWithOffset> getTimeRestrictions() {
+        if (stateData.timeRestrictions == null) {
+            return List.of();
+        }
+        return stateData.timeRestrictions;
+    }
+
+    public Set<Object> getTimeRestrictionSources() {
+        if (stateData.timeRestrictions == null) {
+            return Set.of();
+        }
+        return stateData.timeRestrictionSources;
     }
 }

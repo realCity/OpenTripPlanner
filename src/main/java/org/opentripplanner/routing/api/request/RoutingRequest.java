@@ -32,6 +32,7 @@ import org.opentripplanner.model.Route;
 import org.opentripplanner.model.TransitMode;
 import org.opentripplanner.routing.algorithm.transferoptimization.api.TransferOptimizationParameters;
 import org.opentripplanner.routing.core.BicycleOptimizeType;
+import org.opentripplanner.routing.core.TimeRestrictionWithOffset;
 import org.opentripplanner.routing.core.intersection_model.IntersectionTraversalCostModel;
 import org.opentripplanner.routing.core.RouteMatcher;
 import org.opentripplanner.routing.core.RoutingContext;
@@ -395,6 +396,12 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
     public int carParkCost = 120;
 
     /**
+     * If the opening hours should be taken into account for vehicle parkings. If true, it is not
+     * possible to park outside of opening hours.
+     */
+    public boolean useVehicleParkingOpeningHours = true;
+
+    /**
      * Time to park a car in a park and ride, w/o taking into account driving and walking cost
      * (time to park, switch off, pick your stuff, lock the car, etc...)
      */
@@ -688,6 +695,13 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
     public boolean bikeRental = false;
     public boolean parkAndRide  = false;
     public boolean carPickup = false;
+
+    /**
+     * If {@code true}, then {@link org.opentripplanner.routing.core.TimeRestriction} on edges will
+     * be ignored and collected using {@link org.opentripplanner.routing.core.StateEditor#addTimeRestriction(TimeRestrictionWithOffset, Object)}.
+     * This is used to construct {@link org.opentripplanner.routing.algorithm.raptor.transit.AccessEgress} objects for RAPTOR.
+     */
+    public boolean ignoreAndCollectTimeRestrictions = false;
 
     /** The function that compares paths converging on the same vertex to decide which ones continue to be explored. */
     public DominanceFunction dominanceFunction = new DominanceFunction.Pareto();
