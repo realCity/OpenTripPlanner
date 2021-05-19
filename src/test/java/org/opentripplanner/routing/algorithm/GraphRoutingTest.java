@@ -17,6 +17,7 @@ import org.opentripplanner.model.WheelChairBoarding;
 import org.opentripplanner.routing.algorithm.astar.AStar;
 import org.opentripplanner.routing.api.request.RoutingRequest;
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
+import org.opentripplanner.routing.core.TimeRestriction;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.core.TraverseModeSet;
 import org.opentripplanner.routing.edgetype.BikeRentalEdge;
@@ -30,6 +31,7 @@ import org.opentripplanner.routing.edgetype.StreetVehicleParkingLink;
 import org.opentripplanner.routing.edgetype.TemporaryFreeEdge;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
+import org.opentripplanner.routing.graph.GraphIndex;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.location.TemporaryStreetLocation;
 import org.opentripplanner.routing.spt.GraphPath;
@@ -62,6 +64,7 @@ public abstract class GraphRoutingTest {
 
         public Graph graph() {
             build();
+            graph.index = new GraphIndex(graph);
             return graph;
         }
 
@@ -296,14 +299,19 @@ public abstract class GraphRoutingTest {
         }
 
         public void vehicleParking(String id, double x, double y, boolean bicyclePlaces, boolean carPlaces, List<VehicleParking.VehicleParkingEntranceCreator> entrances) {
+            vehicleParking(id, x, y, bicyclePlaces, carPlaces, null, entrances);
+        }
+
+        public void vehicleParking(String id, double x, double y, boolean bicyclePlaces, boolean carPlaces, TimeRestriction openingHours, List<VehicleParking.VehicleParkingEntranceCreator> entrances) {
             var vehicleParking = VehicleParking.builder()
-                .id(new FeedScopedId(TEST_FEED_ID, id))
-                .x(x)
-                .y(y)
-                .bicyclePlaces(bicyclePlaces)
-                .carPlaces(carPlaces)
-                .entrances(entrances)
-                .build();
+                    .id(new FeedScopedId(TEST_FEED_ID, id))
+                    .x(x)
+                    .y(y)
+                    .bicyclePlaces(bicyclePlaces)
+                    .carPlaces(carPlaces)
+                    .entrances(entrances)
+                    .openingHours(openingHours)
+                    .build();
 
             var vertices = VehicleParkingHelper.createVehicleParkingVertices(graph, vehicleParking);
             VehicleParkingHelper.linkVehicleParkingEntrances(vertices);

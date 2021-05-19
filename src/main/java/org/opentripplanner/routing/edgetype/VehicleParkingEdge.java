@@ -1,21 +1,22 @@
 package org.opentripplanner.routing.edgetype;
 
+import java.util.Locale;
 import lombok.Getter;
+import org.locationtech.jts.geom.LineString;
 import org.opentripplanner.routing.api.request.RoutingRequest;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.core.StateEditor;
+import org.opentripplanner.routing.core.TimeRestriction;
+import org.opentripplanner.routing.core.TimeRestrictionWithTimeSpan;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.vehicle_parking.VehicleParking;
 import org.opentripplanner.routing.vertextype.VehicleParkingEntranceVertex;
 
-import org.locationtech.jts.geom.LineString;
-import java.util.Locale;
-
 /**
  * Parking a vehicle edge.
  */
-public class VehicleParkingEdge extends Edge {
+public class VehicleParkingEdge extends Edge implements TimeRestrictedEdge {
 
     private static final long serialVersionUID = 1L;
 
@@ -29,6 +30,18 @@ public class VehicleParkingEdge extends Edge {
     public VehicleParkingEdge(VehicleParkingEntranceVertex fromVehicleParkingEntranceVertex, VehicleParkingEntranceVertex toVehicleParkingEntranceVertex) {
         super(fromVehicleParkingEntranceVertex, toVehicleParkingEntranceVertex);
         this.vehicleParking = fromVehicleParkingEntranceVertex.getVehicleParking();
+    }
+
+    private TimeRestriction getTimeRestriction(int parkingTime) {
+        var openingHours = vehicleParking.getOpeningHours();
+        if (openingHours == null) {
+            return null;
+        }
+
+        return TimeRestrictionWithTimeSpan.of(
+                vehicleParking.getOpeningHours(),
+                parkingTime
+        );
     }
 
     @Override
@@ -68,10 +81,19 @@ public class VehicleParkingEdge extends Edge {
             return null;
         }
 
+        var timeRestriction = getTimeRestriction(parkingTime);
+        if (isTraversalBlockedByTimeRestriction(s0, true, timeRestriction)) {
+            return null;
+        }
+
         StateEditor s0e = s0.edit(this);
+
         s0e.incrementWeight(parkingCost);
         s0e.incrementTimeInSeconds(parkingTime);
         s0e.setVehicleParked(false, mode);
+
+        updateEditorWithTimeRestriction(s0, s0e, timeRestriction, getVehicleParking());
+
         return s0e.makeState();
     }
 
@@ -103,7 +125,15 @@ public class VehicleParkingEdge extends Edge {
             return null;
         }
 
+        var timeRestriction = getTimeRestriction(parkingTime);
+        if (isTraversalBlockedByTimeRestriction(s0, false, timeRestriction)) {
+            return null;
+        }
+
         StateEditor s0e = s0.edit(this);
+
+        updateEditorWithTimeRestriction(s0, s0e, timeRestriction, getVehicleParking());
+
         s0e.incrementWeight(parkingCost);
         s0e.incrementTimeInSeconds(parkingTime);
         s0e.setVehicleParked(true, TraverseMode.WALK);
@@ -146,14 +176,7 @@ public class VehicleParkingEdge extends Edge {
         return false;
     }
 
-    public boolean equals(Object o) {
-        if (o instanceof VehicleParkingEdge) {
-            VehicleParkingEdge other = (VehicleParkingEdge) o;
-            return other.getFromVertex().equals(fromv) && other.getToVertex().equals(tov);
-        }
-        return false;
-    }
-
+    @Override
     public String toString() {
         return "VehicleParkingEdge(" + fromv + " -> " + tov + ")";
     }
