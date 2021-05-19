@@ -21,6 +21,7 @@ import org.opentripplanner.model.WgsCoordinate;
 import org.opentripplanner.model.WheelChairBoarding;
 import org.opentripplanner.routing.algorithm.astar.AStar;
 import org.opentripplanner.routing.api.request.RoutingRequest;
+import org.opentripplanner.routing.core.TimeRestriction;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.core.TraverseModeSet;
 import org.opentripplanner.routing.edgetype.ElevatorAlightEdge;
@@ -39,6 +40,7 @@ import org.opentripplanner.routing.edgetype.TemporaryFreeEdge;
 import org.opentripplanner.routing.edgetype.VehicleRentalEdge;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
+import org.opentripplanner.routing.graph.GraphIndex;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.location.TemporaryStreetLocation;
 import org.opentripplanner.routing.spt.GraphPath;
@@ -352,10 +354,14 @@ public abstract class GraphRoutingTest {
         }
 
         public VehicleParking vehicleParking(String id, double x, double y, boolean bicyclePlaces, boolean carPlaces, List<VehicleParkingEntranceCreator> entrances, String ... tags) {
-            return vehicleParking(id, x, y, bicyclePlaces, carPlaces, false, entrances, tags);
+            return vehicleParking(id, x, y, bicyclePlaces, carPlaces, false, null, entrances, tags);
         }
 
-        public VehicleParking vehicleParking(String id, double x, double y, boolean bicyclePlaces, boolean carPlaces, boolean wheelchairAccessibleCarPlaces, List<VehicleParkingEntranceCreator> entrances, String ... tags) {
+        public VehicleParking vehicleParking(String id, double x, double y, boolean bicyclePlaces, boolean carPlaces, TimeRestriction openingHours, List<VehicleParkingEntranceCreator> entrances, String ... tags) {
+            return vehicleParking(id, x, y, bicyclePlaces, carPlaces, false, openingHours, entrances);
+        }
+
+        public VehicleParking vehicleParking(String id, double x, double y, boolean bicyclePlaces, boolean carPlaces, boolean wheelchairAccessibleCarPlaces, TimeRestriction openingHours, List<VehicleParkingEntranceCreator> entrances, String ... tags) {
             var vehicleParking = VehicleParking.builder()
                 .id(new FeedScopedId(TEST_FEED_ID, id))
                 .x(x)
@@ -363,6 +369,7 @@ public abstract class GraphRoutingTest {
                 .bicyclePlaces(bicyclePlaces)
                 .carPlaces(carPlaces)
                 .entrances(entrances)
+                .openingHours(openingHours)
                 .wheelchairAccessibleCarPlaces(wheelchairAccessibleCarPlaces)
                 .tags(List.of(tags))
                 .build();
