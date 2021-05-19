@@ -51,8 +51,11 @@ public class PlaceInterfaceType {
             return schema.getObjectType("BikeRentalStation");
           }
           if (o instanceof VehicleParking) {
-            return schema.getObjectType(VehicleParkingType.NAME);
+            return schema.getObjectType(BikeParkType.NAME);
           }
+          //if (o instanceof CarPark) {
+          //    return (GraphQLObjectType) carParkType;
+          //}
           return null;
         })
         .build();
