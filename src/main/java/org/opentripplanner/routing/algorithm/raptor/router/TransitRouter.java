@@ -1,6 +1,7 @@
 package org.opentripplanner.routing.algorithm.raptor.router;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -78,7 +79,7 @@ public class TransitRouter {
 
         debugTimingAggregator.finishedPatternFiltering();
 
-        var accessEgresses = getAccessEgresses(transitLayer);
+        var accessEgresses = getAccessEgresses(transitLayer, requestTransitDataProvider.getStartOfTime());
 
         debugTimingAggregator.finishedAccessEgress(
                 accessEgresses.getAccesses().size(),
@@ -155,7 +156,8 @@ public class TransitRouter {
     }
 
     private AccessEgresses getAccessEgresses(
-            TransitLayer transitLayer
+            TransitLayer transitLayer,
+            ZonedDateTime startOfTime
     ) {
         var accessEgressMapper = new AccessEgressMapper(transitLayer.getStopIndex());
         var accessList = new ArrayList<AccessEgress>();
@@ -163,13 +165,13 @@ public class TransitRouter {
 
         var accessCalculator = (Runnable) () -> {
             debugTimingAggregator.startedAccessCalculating();
-            accessList.addAll(getAccessEgresses(accessEgressMapper, false));
+            accessList.addAll(getAccessEgresses(accessEgressMapper, startOfTime, false));
             debugTimingAggregator.finishedAccessCalculating();
         };
 
         var egressCalculator = (Runnable) () -> {
             debugTimingAggregator.startedEgressCalculating();
-            egressList.addAll(getAccessEgresses(accessEgressMapper, true));
+            egressList.addAll(getAccessEgresses(accessEgressMapper, startOfTime, true));
             debugTimingAggregator.finishedEgressCalculating();
         };
 
@@ -200,7 +202,7 @@ public class TransitRouter {
 
     private Collection<AccessEgress> getAccessEgresses(
             AccessEgressMapper accessEgressMapper,
-            boolean isEgress
+            ZonedDateTime startOfTime, boolean isEgress
     ) {
         var results = new ArrayList<AccessEgress>();
         var mode = isEgress ? request.modes.egressMode : request.modes.accessMode;
@@ -218,7 +220,7 @@ public class TransitRouter {
                     isEgress
             );
 
-            results.addAll(accessEgressMapper.mapNearbyStops(nearbyStops, isEgress));
+            results.addAll(accessEgressMapper.mapNearbyStops(nearbyStops, startOfTime, isEgress));
 
             // Special handling of flex accesses
             if (OTPFeature.FlexRouting.isOn() && mode == StreetMode.FLEXIBLE) {
@@ -228,7 +230,7 @@ public class TransitRouter {
                         isEgress
                 );
 
-                results.addAll(accessEgressMapper.mapFlexAccessEgresses(flexAccessList, isEgress));
+                results.addAll(accessEgressMapper.mapFlexAccessEgresses(flexAccessList, startOfTime, isEgress));
             }
         }
 
