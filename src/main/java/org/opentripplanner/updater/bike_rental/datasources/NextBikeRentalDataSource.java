@@ -1,6 +1,7 @@
 package org.opentripplanner.updater.bike_rental.datasources;
 
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
+import org.opentripplanner.updater.GenericXmlDataSource;
 import org.opentripplanner.updater.bike_rental.datasources.params.BikeRentalDataSourceParameters;
 import org.opentripplanner.util.NonLocalizedString;
 
@@ -13,18 +14,19 @@ import java.util.Map;
  * Check https://nextbike.net/maps/nextbike-live.xml full feed to find the city uid
  * to use for your data location.
  */
-class NextBikeRentalDataSource extends GenericXmlBikeRentalDataSource {
+class NextBikeRentalDataSource extends GenericXmlDataSource<BikeRentalStation> {
 
-    private String networkName;
+    private final String networkName;
 
     public NextBikeRentalDataSource(BikeRentalDataSourceParameters config) {
-        super(config,"//city/place");
+        super(config.getUrl(),"//city/place");
         // this feed sets values on place node attributes, rather than in child elements
         this.setReadAttributes(true);
         this.networkName = config.getNetwork("NextBike");
     }
 
-    public BikeRentalStation makeStation(Map<String, String> attributes) {
+    @Override
+    protected BikeRentalStation parseElement(Map<String, String> attributes) {
 
         // some place entries appear to actually be checked-out bikes, not stations
         if (attributes.get("bike") != null) {
@@ -33,7 +35,7 @@ class NextBikeRentalDataSource extends GenericXmlBikeRentalDataSource {
 
         BikeRentalStation brstation = new BikeRentalStation();
 
-        brstation.networks = new HashSet<String>();
+        brstation.networks = new HashSet<>();
         brstation.networks.add(this.networkName);
 
         brstation.id = attributes.get("number");

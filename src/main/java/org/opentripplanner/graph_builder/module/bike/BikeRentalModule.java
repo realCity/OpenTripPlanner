@@ -7,7 +7,7 @@ import org.opentripplanner.routing.bike_rental.BikeRentalStationService;
 import org.opentripplanner.routing.edgetype.BikeRentalEdge;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.vertextype.BikeRentalStationVertex;
-import org.opentripplanner.updater.bike_rental.BikeRentalDataSource;
+import org.opentripplanner.updater.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,11 +21,11 @@ import java.util.HashMap;
  */
 public class BikeRentalModule implements GraphBuilderModule {
 
-    private static Logger LOG = LoggerFactory.getLogger(BikeRentalModule.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BikeRentalModule.class);
 
-    private BikeRentalDataSource dataSource;
+    private DataSource<BikeRentalStation> dataSource;
 
-    public void setDataSource(BikeRentalDataSource dataSource) {
+    public void setDataSource(DataSource<BikeRentalStation> dataSource) {
         this.dataSource = dataSource;
     }
 
@@ -42,7 +42,7 @@ public class BikeRentalModule implements GraphBuilderModule {
             LOG.warn("No bike rental found from the data source.");
             return;
         }
-        Collection<BikeRentalStation> stations = dataSource.getStations();
+        Collection<BikeRentalStation> stations = dataSource.getUpdates();
 
         for (BikeRentalStation station : stations) {
             service.addBikeRentalStation(station);

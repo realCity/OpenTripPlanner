@@ -1,6 +1,7 @@
 package org.opentripplanner.updater.bike_rental.datasources;
 
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
+import org.opentripplanner.updater.GenericXmlDataSource;
 import org.opentripplanner.updater.bike_rental.datasources.params.BikeRentalDataSourceParameters;
 import org.opentripplanner.util.NonLocalizedString;
 
@@ -16,13 +17,14 @@ import java.util.Map;
  * 
  * @author laurent
  */
-class VCubDataSource extends GenericXmlBikeRentalDataSource {
+class VCubDataSource extends GenericXmlDataSource<BikeRentalStation> {
 
     public VCubDataSource(BikeRentalDataSourceParameters config) {
-        super(config,"//*[name()='bm:CI_VCUB_P']");
+        super(config.getUrl(),"//*[name()='bm:CI_VCUB_P']");
     }
 
-    public BikeRentalStation makeStation(Map<String, String> attributes) {
+    @Override
+    protected BikeRentalStation parseElement(Map<String, String> attributes) {
         BikeRentalStation brstation = new BikeRentalStation();
         brstation.id = attributes.get("bm:GID").trim();
         String[] coordinates = attributes.get("bm:geometry").trim().split(" ");
@@ -34,8 +36,7 @@ class VCubDataSource extends GenericXmlBikeRentalDataSource {
             return null;
         }
         brstation.name = new NonLocalizedString(attributes.get("bm:NOM"));
-        boolean connected = "CONNECTEE".equalsIgnoreCase(attributes.get("bm:ETAT"));
-        brstation.realTimeData = connected;
+        brstation.realTimeData = "CONNECTEE".equalsIgnoreCase(attributes.get("bm:ETAT"));
         String nbPlaces = attributes.get("bm:NBPLACES");
         if (nbPlaces != null) {
             brstation.spacesAvailable = Integer.parseInt(nbPlaces);
@@ -51,7 +52,7 @@ class VCubDataSource extends GenericXmlBikeRentalDataSource {
          * VCUB+. Apparently both network are compatible, VCUB+ only offer more renting options
          * which are not handled by OTP anyway.
          */
-        brstation.networks = new HashSet<String>();
+        brstation.networks = new HashSet<>();
         brstation.networks.add("VCUB");
         brstation.networks.add("VCUB+");
         return brstation;

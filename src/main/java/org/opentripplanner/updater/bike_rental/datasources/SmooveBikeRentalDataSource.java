@@ -2,7 +2,7 @@ package org.opentripplanner.updater.bike_rental.datasources;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
-import org.opentripplanner.updater.bike_rental.BikeRentalDataSource;
+import org.opentripplanner.updater.GenericJsonDataSource;
 import org.opentripplanner.updater.bike_rental.datasources.params.BikeRentalDataSourceParameters;
 import org.opentripplanner.util.NonLocalizedString;
 import org.slf4j.Logger;
@@ -10,14 +10,14 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of a BikeRentalDataSource for the Smoove GIR SabiWeb used in Helsinki.
- * @see BikeRentalDataSource
+ * @see GenericJsonDataSource
  */
-class SmooveBikeRentalDataSource extends GenericJsonBikeRentalDataSource {
+class SmooveBikeRentalDataSource extends GenericJsonDataSource<BikeRentalStation> {
 
     private static final Logger log = LoggerFactory.getLogger(SmooveBikeRentalDataSource.class);
 
     public SmooveBikeRentalDataSource(BikeRentalDataSourceParameters config) {
-        super(config,"result");
+        super(config.getUrl(),"result");
     }
 
     /**
@@ -38,7 +38,8 @@ class SmooveBikeRentalDataSource extends GenericJsonBikeRentalDataSource {
      * }
      * </pre>
      */
-    public BikeRentalStation makeStation(JsonNode node) {
+    @Override
+    protected BikeRentalStation parseElement(JsonNode node) {
         BikeRentalStation station = new BikeRentalStation();
         station.id = node.path("name").asText().split("\\s", 2)[0];
         station.name = new NonLocalizedString(node.path("name").asText().split("\\s", 2)[1]);

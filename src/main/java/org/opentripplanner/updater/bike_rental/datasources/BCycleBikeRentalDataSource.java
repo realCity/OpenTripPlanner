@@ -2,6 +2,7 @@ package org.opentripplanner.updater.bike_rental.datasources;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
+import org.opentripplanner.updater.GenericJsonDataSource;
 import org.opentripplanner.updater.bike_rental.datasources.params.BikeRentalDataSourceParameters;
 import org.opentripplanner.util.NonLocalizedString;
 
@@ -11,18 +12,19 @@ import java.util.HashSet;
 /**
  * Build a BikeRentalStation object from a B-Cycle data source JsonNode object.
  *
- * @see GenericJsonBikeRentalDataSource
+ * @see GenericJsonDataSource
  */
-class BCycleBikeRentalDataSource extends GenericJsonBikeRentalDataSource {
+class BCycleBikeRentalDataSource extends GenericJsonDataSource<BikeRentalStation> {
 
     private final String networkName;
 
     BCycleBikeRentalDataSource(BikeRentalDataSourceParameters config) {
-        super(config, "", "ApiKey", config.getApiKey());
+        super(config.getUrl(), "", "ApiKey", config.getApiKey());
         networkName = config.getNetwork("B-Cycle");
     }
 
-    public BikeRentalStation makeStation(JsonNode kioskNode) {
+    @Override
+    protected BikeRentalStation parseElement(JsonNode kioskNode) {
 
         if (!kioskNode.path("Status").asText().equals("Active")) {
             return null;

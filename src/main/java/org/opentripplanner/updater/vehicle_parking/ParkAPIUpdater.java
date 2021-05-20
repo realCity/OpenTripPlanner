@@ -1,117 +1,34 @@
 package org.opentripplanner.updater.vehicle_parking;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.routing.core.OsmOpeningHours;
 import org.opentripplanner.routing.core.TimeRestriction;
 import org.opentripplanner.routing.vehicle_parking.VehicleParking;
-import org.opentripplanner.util.HttpUtils;
+import org.opentripplanner.updater.GenericJsonDataSource;
 import org.opentripplanner.util.I18NString;
 import org.opentripplanner.util.NonLocalizedString;
 import org.opentripplanner.util.TranslatedString;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-@RequiredArgsConstructor
-class ParkAPIUpdater implements VehicleParkingDataSource {
-
-  private static final Logger log = LoggerFactory.getLogger(ParkAPIUpdater.class);
+class ParkAPIUpdater extends GenericJsonDataSource<VehicleParking> {
 
   private static final String JSON_PARSE_PATH = "lots";
 
-  private final String url;
   private final String feedId;
 
-  private List<VehicleParking> parks;
+  public ParkAPIUpdater(String url, String feedId) {
+    super(url, JSON_PARSE_PATH);
+    this.feedId = feedId;
+  }
 
   @Override
-  public boolean update() {
-    if (url == null) { return false; }
-
-    try (InputStream data = openInputStream()) {
-      if (data == null) {
-        log.warn("Failed to get data from url " + url);
-        return false;
-      }
-      parseJSON(data);
-    } catch (IllegalArgumentException e) {
-      log.warn("Error parsing bike rental feed from " + url, e);
-      return false;
-    } catch (JsonProcessingException e) {
-      log.warn("Error parsing bike rental feed from " + url + "(bad JSON of some sort)", e);
-      return false;
-    } catch (IOException e) {
-      log.warn("Error reading bike rental feed from " + url, e);
-      return false;
-    }
-    return true;
-  }
-
-  //TODO: extract common from here and bike_rental
-  private InputStream openInputStream() throws IOException {
-    URL downloadUrl = new URL(url);
-    String proto = downloadUrl.getProtocol();
-    if (proto.equals("http") || proto.equals("https")) {
-      return HttpUtils.getData(URI.create(url));
-    } else {
-      // Local file probably, try standard java
-      return downloadUrl.openStream();
-    }
-  }
-
-  private void parseJSON(InputStream dataStream) throws IllegalArgumentException, IOException {
-
-    ArrayList<VehicleParking> out = new ArrayList<>();
-
-    String rentalString = convertStreamToString(dataStream);
-
-    ObjectMapper mapper = new ObjectMapper();
-    JsonNode rootNode = mapper.readTree(rentalString);
-
-    if (!JSON_PARSE_PATH.equals("")) {
-      String delimiter = "/";
-      String[] parseElement = JSON_PARSE_PATH.split(delimiter);
-      for (String s : parseElement) {
-        rootNode = rootNode.path(s);
-      }
-
-      if (rootNode.isMissingNode()) {
-        throw new IllegalArgumentException("Could not find jSON elements " + JSON_PARSE_PATH);
-      }
-    }
-
-    for (JsonNode node : rootNode) {
-      if (node == null) {
-        continue;
-      }
-      VehicleParking vehicleParking = makeVehicleParking(node);
-      if (vehicleParking != null) {
-        out.add(vehicleParking);
-      }
-    }
-    parks = out;
-  }
-
-  private static String convertStreamToString(java.io.InputStream is) {
-    try (java.util.Scanner scanner = new java.util.Scanner(is).useDelimiter("\\A")) {
-     return scanner.hasNext() ? scanner.next() : "";
-    }
-  }
-
-  private VehicleParking makeVehicleParking(JsonNode jsonNode) {
+  protected VehicleParking parseElement(JsonNode jsonNode) {
 
     var totalPlaces = parseCapacity(jsonNode, "total");
     var totalWheelchairAccessiblePlaces = parseCapacity(jsonNode, "total:disabled");
@@ -214,10 +131,5 @@ class ParkAPIUpdater implements VehicleParkingDataSource {
       }
     }
     return tagList;
-  }
-
-  @Override
-  public List<VehicleParking> getVehicleParkings() {
-    return parks;
   }
 }

@@ -19,7 +19,7 @@ public class TestBicimadBikeRentalStationSource extends TestCase {
                     )
                 );
                 assertTrue(bicimadBikeRentalDataSource.update());
-                List<BikeRentalStation> rentalStations = bicimadBikeRentalDataSource.getStations();
+                List<BikeRentalStation> rentalStations = bicimadBikeRentalDataSource.getUpdates();
                 assertEquals(rentalStations.size(), 172);
                 for (BikeRentalStation rentalStation : rentalStations) {
                         System.out.println(rentalStation);

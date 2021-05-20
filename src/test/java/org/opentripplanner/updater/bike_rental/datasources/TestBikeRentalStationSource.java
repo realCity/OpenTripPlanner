@@ -19,7 +19,7 @@ public class TestBikeRentalStationSource extends TestCase {
             )
         );
         assertTrue(rennesSource.update());
-        List<BikeRentalStation> rentalStations = rennesSource.getStations();
+        List<BikeRentalStation> rentalStations = rennesSource.getUpdates();
         assertEquals(4, rentalStations.size());
         for (BikeRentalStation rentalStation : rentalStations) {
             System.out.println(rentalStation);
@@ -45,7 +45,7 @@ public class TestBikeRentalStationSource extends TestCase {
             )
         );
         assertTrue(source.update());
-        List<BikeRentalStation> rentalStations = source.getStations();
+        List<BikeRentalStation> rentalStations = source.getUpdates();
 
         // Invalid station without coordinates shoulf be ignored, so only 3
         assertEquals(3, rentalStations.size());

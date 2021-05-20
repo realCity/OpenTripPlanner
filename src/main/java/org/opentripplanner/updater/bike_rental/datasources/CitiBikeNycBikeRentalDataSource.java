@@ -2,6 +2,7 @@ package org.opentripplanner.updater.bike_rental.datasources;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
+import org.opentripplanner.updater.GenericJsonDataSource;
 import org.opentripplanner.updater.bike_rental.datasources.params.BikeRentalDataSourceParameters;
 import org.opentripplanner.util.NonLocalizedString;
 
@@ -11,18 +12,19 @@ import java.util.HashSet;
 /**
  * Build a BikeRentalStation object from CitiBike data source JsonNode object.
  *
- * @see GenericJsonBikeRentalDataSource
+ * @see GenericJsonDataSource
  */
-class CitiBikeNycBikeRentalDataSource extends GenericJsonBikeRentalDataSource {
+class CitiBikeNycBikeRentalDataSource extends GenericJsonDataSource<BikeRentalStation> {
 
     private final String networkName;
 
     public CitiBikeNycBikeRentalDataSource(BikeRentalDataSourceParameters config) {
-        super(config, "stationBeanList");
+        super(config.getUrl(), "stationBeanList");
         this.networkName = config.getNetwork("CitiBike");
     }
 
-    public BikeRentalStation makeStation(JsonNode stationNode) {
+    @Override
+    protected BikeRentalStation parseElement(JsonNode stationNode) {
 
         if (!stationNode.path("statusValue").asText().equals("In Service")) {
             return null;

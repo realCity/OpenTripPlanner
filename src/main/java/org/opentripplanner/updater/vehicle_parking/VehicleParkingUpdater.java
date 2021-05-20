@@ -13,6 +13,7 @@ import org.opentripplanner.routing.vehicle_parking.VehicleParking;
 import org.opentripplanner.routing.vehicle_parking.VehicleParkingHelper;
 import org.opentripplanner.routing.vehicle_parking.VehicleParkingService;
 import org.opentripplanner.routing.vertextype.VehicleParkingEntranceVertex;
+import org.opentripplanner.updater.DataSource;
 import org.opentripplanner.updater.GraphUpdaterManager;
 import org.opentripplanner.updater.GraphWriterRunnable;
 import org.opentripplanner.updater.PollingGraphUpdater;
@@ -29,7 +30,7 @@ import java.util.stream.Collectors;
 
 /**
  * Graph updater that dynamically sets availability information on vehicle parking lots.
- * This updater fetches data from a single {@link VehicleParkingDataSource}.
+ * This updater fetches data from a single {@link DataSource}.
  */
 public class VehicleParkingUpdater extends PollingGraphUpdater {
 
@@ -41,7 +42,7 @@ public class VehicleParkingUpdater extends PollingGraphUpdater {
 
     private final Map<VehicleParking, List<DisposableEdgeCollection>> tempEdgesByPark = new HashMap<>();
 
-    private final VehicleParkingDataSource source;
+    private final DataSource<VehicleParking> source;
 
     private VertexLinker linker;
 
@@ -49,7 +50,7 @@ public class VehicleParkingUpdater extends PollingGraphUpdater {
 
     private List<VehicleParking> oldVehicleParkings = new ArrayList<>();
 
-    public VehicleParkingUpdater(VehicleParkingUpdaterParameters parameters, VehicleParkingDataSource source) {
+    public VehicleParkingUpdater(VehicleParkingUpdaterParameters parameters, DataSource<VehicleParking> source) {
         super(parameters);
         this.source = source;
 
@@ -76,7 +77,7 @@ public class VehicleParkingUpdater extends PollingGraphUpdater {
             LOG.debug("No updates");
             return;
         }
-        List<VehicleParking> vehicleParkings = source.getVehicleParkings();
+        List<VehicleParking> vehicleParkings = source.getUpdates();
 
         // Create graph writer runnable to apply these stations to the graph
         VehicleParkingGraphWriterRunnable graphWriterRunnable = new VehicleParkingGraphWriterRunnable(vehicleParkings, oldVehicleParkings);

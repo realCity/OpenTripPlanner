@@ -11,6 +11,7 @@ import org.opentripplanner.routing.edgetype.StreetBikeRentalLink;
 import org.opentripplanner.graph_builder.linking.DisposableEdgeCollection;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.vertextype.BikeRentalStationVertex;
+import org.opentripplanner.updater.DataSource;
 import org.opentripplanner.updater.GraphUpdaterManager;
 import org.opentripplanner.updater.GraphWriterRunnable;
 import org.opentripplanner.updater.PollingGraphUpdater;
@@ -40,7 +41,7 @@ public class BikeRentalUpdater extends PollingGraphUpdater {
 
     Map<BikeRentalStation, DisposableEdgeCollection> tempEdgesByStation = new HashMap<>();
 
-    private final BikeRentalDataSource source;
+    private final DataSource<BikeRentalStation> source;
 
     private VertexLinker linker;
 
@@ -53,7 +54,7 @@ public class BikeRentalUpdater extends PollingGraphUpdater {
         // Configure updater
         LOG.info("Setting up bike rental updater.");
 
-        BikeRentalDataSource source = BikeRentalDataSourceFactory.create(parameters.sourceParameters());
+        var source = BikeRentalDataSourceFactory.create(parameters.sourceParameters());
 
         this.source = source;
         this.network = parameters.getNetworks();
@@ -84,7 +85,7 @@ public class BikeRentalUpdater extends PollingGraphUpdater {
             LOG.debug("No updates");
             return;
         }
-        List<BikeRentalStation> stations = source.getStations();
+        List<BikeRentalStation> stations = source.getUpdates();
 
         // Create graph writer runnable to apply these stations to the graph
         BikeRentalGraphWriterRunnable graphWriterRunnable = new BikeRentalGraphWriterRunnable(stations);

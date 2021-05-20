@@ -3,7 +3,7 @@ package org.opentripplanner.updater.bike_rental.datasources;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
-import org.opentripplanner.updater.bike_rental.BikeRentalDataSource;
+import org.opentripplanner.updater.DataSource;
 import org.opentripplanner.updater.bike_rental.datasources.params.BikeRentalDataSourceParameters;
 import org.opentripplanner.util.HttpUtils;
 import org.opentripplanner.util.NonLocalizedString;
@@ -15,12 +15,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 // TODO This class could probably inherit from GenericJSONBikeRentalDataSource
-class CityBikesBikeRentalDataSource implements BikeRentalDataSource {
+class CityBikesBikeRentalDataSource implements DataSource<BikeRentalStation> {
 
     private static final Logger log = LoggerFactory.getLogger(BixiBikeRentalDataSource.class);
 
@@ -41,8 +41,7 @@ class CityBikesBikeRentalDataSource implements BikeRentalDataSource {
                 return false;
             }
 
-            Reader reader = new BufferedReader(new InputStreamReader(stream,
-                    Charset.forName("UTF-8")));
+            Reader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
             StringBuilder builder = new StringBuilder();
             char[] buffer = new char[4096];
             int charactersRead;
@@ -84,7 +83,7 @@ class CityBikesBikeRentalDataSource implements BikeRentalDataSource {
     }
 
     @Override
-    public synchronized List<BikeRentalStation> getStations() {
+    public synchronized List<BikeRentalStation> getUpdates() {
         return stations;
     }
 

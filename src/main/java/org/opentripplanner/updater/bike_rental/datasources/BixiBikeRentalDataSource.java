@@ -1,17 +1,19 @@
 package org.opentripplanner.updater.bike_rental.datasources;
 
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
+import org.opentripplanner.updater.GenericXmlDataSource;
 import org.opentripplanner.updater.bike_rental.datasources.params.BikeRentalDataSourceParameters;
 import org.opentripplanner.util.NonLocalizedString;
 
 import java.util.Map;
 
-class BixiBikeRentalDataSource extends GenericXmlBikeRentalDataSource {
+class BixiBikeRentalDataSource extends GenericXmlDataSource<BikeRentalStation> {
     public BixiBikeRentalDataSource(BikeRentalDataSourceParameters config) {
-        super(config,"//stations/station");
+        super(config.getUrl(),"//stations/station");
     }
 
-    public BikeRentalStation makeStation(Map<String, String> attributes) {
+    @Override
+    protected BikeRentalStation parseElement(Map<String, String> attributes) {
         if (!"true".equals(attributes.get("installed"))) {
             return null;
         }

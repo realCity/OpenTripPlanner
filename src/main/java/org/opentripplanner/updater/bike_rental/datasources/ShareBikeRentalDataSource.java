@@ -2,6 +2,7 @@ package org.opentripplanner.updater.bike_rental.datasources;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
+import org.opentripplanner.updater.GenericJsonDataSource;
 import org.opentripplanner.updater.bike_rental.datasources.params.BikeRentalDataSourceParameters;
 import org.opentripplanner.util.NonLocalizedString;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -19,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-class ShareBikeRentalDataSource extends GenericJsonBikeRentalDataSource {
+class ShareBikeRentalDataSource extends GenericJsonDataSource<BikeRentalStation> {
 
 	private static final Logger log = LoggerFactory.getLogger(ShareBikeRentalDataSource.class);
 
@@ -28,7 +30,7 @@ class ShareBikeRentalDataSource extends GenericJsonBikeRentalDataSource {
 	private Map<String, List<String>> urlParameters = new HashMap<>();
 
 	public ShareBikeRentalDataSource(BikeRentalDataSourceParameters config) {
-		super(config, "result/LiveStationData");
+		super(config.getUrl(), "result/LiveStationData");
 		setUrl(config.getUrl());
 	}
 
@@ -72,7 +74,7 @@ class ShareBikeRentalDataSource extends GenericJsonBikeRentalDataSource {
 	 */
 
 	@Override
-	public BikeRentalStation makeStation(JsonNode rentalStationNode) {
+	protected BikeRentalStation parseElement(JsonNode rentalStationNode) {
 
 		if(networkID == null) {
 			// Get SystemID url parameter as StationIDs are not globally unique for
@@ -96,7 +98,7 @@ class ShareBikeRentalDataSource extends GenericJsonBikeRentalDataSource {
 		BikeRentalStation brstation = new BikeRentalStation();
 
 		
-        brstation.networks = new HashSet<String>();
+        brstation.networks = new HashSet<>();
         brstation.networks.add(this.networkID);
 		
 		brstation.id = networkID+"_"+rentalStationNode.path("StationID").asText();
@@ -109,18 +111,18 @@ class ShareBikeRentalDataSource extends GenericJsonBikeRentalDataSource {
 		return brstation;
 	}
 
-	public static Map<String, List<String>> splitQuery(URL url) throws UnsupportedEncodingException {
-		final Map<String, List<String>> query_pairs = new LinkedHashMap<String, List<String>>();
+	private static Map<String, List<String>> splitQuery(URL url) throws UnsupportedEncodingException {
+		final Map<String, List<String>> query_pairs = new LinkedHashMap<>();
 		if(url.getQuery() != null) {
 			final String[] pairs = url.getQuery().split("&");
 			for (String pair : pairs) {
 				final int idx = pair.indexOf("=");
-				final String key = idx > 0 ? URLDecoder.decode(pair.substring(0, idx), "UTF-8") : pair;
+				final String key = idx > 0 ? URLDecoder.decode(pair.substring(0, idx), StandardCharsets.UTF_8) : pair;
 				if (!query_pairs.containsKey(key)) {
-					query_pairs.put(key, new LinkedList<String>());
+					query_pairs.put(key, new LinkedList<>());
 				}
 				final String value = idx > 0 && pair.length() > idx + 1
-						? URLDecoder.decode(pair.substring(idx + 1), "UTF-8") : null;
+						? URLDecoder.decode(pair.substring(idx + 1), StandardCharsets.UTF_8) : null;
 				query_pairs.get(key).add(value);
 			}
 		}
