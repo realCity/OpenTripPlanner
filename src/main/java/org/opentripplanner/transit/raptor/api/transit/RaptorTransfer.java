@@ -22,6 +22,8 @@ public interface RaptorTransfer {
      */
     int stop();
 
+    int cost();
+
     /**
      * The time duration to walk or travel the path in seconds. This is not the entire duration
      * from the journey origin, but just:

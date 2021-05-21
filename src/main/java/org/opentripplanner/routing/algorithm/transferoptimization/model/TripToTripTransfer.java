@@ -33,6 +33,10 @@ public class TripToTripTransfer<T extends RaptorTripSchedule> {
     return sameStop() ? 0 : transfer.durationInSeconds();
   }
 
+  public int cost() {
+    return sameStop() ? 0 : transfer.cost();
+  }
+
   public boolean sameStop() {
     return from.stop() == to.stop();
   }
