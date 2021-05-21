@@ -21,6 +21,7 @@ interactive_otp_main.json
 
 # Directories
 .idea/
+.run/
 .venv/
 _site/
 build/
