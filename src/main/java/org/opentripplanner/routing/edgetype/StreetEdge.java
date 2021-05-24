@@ -378,8 +378,16 @@ public class StreetEdge extends Edge implements Cloneable, CarPickupableEdge {
         if (isStairs()) {
             weight *= options.stairsReluctance;
         } else {
-            // TODO: this is being applied even when biking or driving.
-            weight *= options.walkReluctance;
+            switch (traverseMode) {
+                case CAR:
+                    weight *= options.carReluctance;
+                    break;
+                case BICYCLE:
+                    weight *= options.bikeReluctance;
+                    break;
+                default:
+                    weight *= options.walkReluctance;
+            }
         }
 
         StateEditor s1 = s0.edit(this);

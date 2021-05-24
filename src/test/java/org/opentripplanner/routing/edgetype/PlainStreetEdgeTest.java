@@ -38,7 +38,7 @@ public class PlainStreetEdgeTest {
         proto.carSpeed = 15.0f;
         proto.walkSpeed = 1.0;
         proto.bikeSpeed = 5.0f;
-        proto.setWalkReluctance(1.0);
+        proto.setNonTransitReluctance(1.0);
         proto.stairsReluctance = (1.0);
         proto.turnReluctance = (1.0);
         proto.setStreetSubRequestModes(TraverseModeSet.allModes());

@@ -366,6 +366,10 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
      */
     public double walkReluctance = 2.0;
 
+    public double bikeReluctance = 2.0;
+
+    public double carReluctance = 2.0;
+
     /** Used instead of walk reluctance for stairs */
     public double stairsReluctance = 2.0;
 
@@ -1333,9 +1337,11 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
         }
     }
 
-    public void setWalkReluctance(double walkReluctance) {
-        if (walkReluctance > 0) {
-            this.walkReluctance = walkReluctance;
+    public void setNonTransitReluctance(double nonTransitReluctance) {
+        if (nonTransitReluctance > 0) {
+            this.bikeReluctance = nonTransitReluctance;
+            this.walkReluctance = nonTransitReluctance;
+            this.carReluctance = nonTransitReluctance;
             // Do not set bikeWalkingOptions.walkReluctance here, because that needs a higher value.
         }
     }

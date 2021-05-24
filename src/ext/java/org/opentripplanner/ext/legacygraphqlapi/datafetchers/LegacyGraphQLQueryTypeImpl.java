@@ -609,7 +609,7 @@ public class LegacyGraphQLQueryTypeImpl
       callWith.argument("maxPreTransitTime", request::setMaxPreTransitTime);
       // callWith.argument("carParkCarLegWeight", request::setCarParkCarLegWeight);
       // callWith.argument("itineraryFiltering", request::setItineraryFiltering);
-      callWith.argument("walkReluctance", request::setWalkReluctance);
+      callWith.argument("walkReluctance", request::setNonTransitReluctance);
       // callWith.argument("walkOnStreetReluctance", request::setWalkOnStreetReluctance);
       callWith.argument("waitReluctance", request::setWaitReluctance);
       callWith.argument("waitAtBeginningFactor", request::setWaitAtBeginningFactor);
