@@ -1,10 +1,13 @@
 package org.opentripplanner.routing.algorithm.raptor.router;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Set;
 import org.junit.Test;
 import org.opentripplanner.routing.api.request.RequestModes;
 import org.opentripplanner.routing.api.request.StreetMode;
-
-import static org.junit.Assert.*;
 
 public class FilterTransitWhenDirectModeIsEmptyTest {
 
@@ -14,9 +17,9 @@ public class FilterTransitWhenDirectModeIsEmptyTest {
 
     var subject = new FilterTransitWhenDirectModeIsEmpty(modes);
 
-    assertEquals(StreetMode.BIKE, subject.resolveDirectMode());
+    assertEquals(Set.of(StreetMode.BIKE), subject.resolveDirectMode());
     assertFalse(subject.removeWalkAllTheWayResults());
-    assertEquals(StreetMode.BIKE, subject.originalDirectMode());
+    assertEquals(Set.of(StreetMode.BIKE), subject.originalDirectMode());
   }
 
   @Test
@@ -25,19 +28,19 @@ public class FilterTransitWhenDirectModeIsEmptyTest {
 
     var subject = new FilterTransitWhenDirectModeIsEmpty(modes);
 
-    assertEquals(StreetMode.WALK, subject.resolveDirectMode());
+    assertEquals(Set.of(StreetMode.WALK), subject.resolveDirectMode());
     assertFalse(subject.removeWalkAllTheWayResults());
-    assertEquals(StreetMode.WALK, subject.originalDirectMode());
+    assertEquals(Set.of(StreetMode.WALK), subject.originalDirectMode());
   }
 
   @Test
   public void directModeIsEmpty() {
-    var modes = new RequestModes(null, null, null, null, null);
+    var modes = new RequestModes((StreetMode) null, null, null, null, null);
 
     var subject = new FilterTransitWhenDirectModeIsEmpty(modes);
 
-    assertEquals(StreetMode.WALK, subject.resolveDirectMode());
+    assertEquals(Set.of(StreetMode.WALK), subject.resolveDirectMode());
     assertTrue(subject.removeWalkAllTheWayResults());
-    assertNull(subject.originalDirectMode());
+    assertEquals(Set.of(), subject.originalDirectMode());
   }
 }

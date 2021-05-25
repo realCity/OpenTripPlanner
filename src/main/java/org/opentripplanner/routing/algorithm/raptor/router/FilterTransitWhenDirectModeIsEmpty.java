@@ -1,6 +1,7 @@
 package org.opentripplanner.routing.algorithm.raptor.router;
 
 
+import java.util.Set;
 import org.opentripplanner.routing.api.request.RequestModes;
 import org.opentripplanner.routing.api.request.StreetMode;
 
@@ -52,25 +53,25 @@ import org.opentripplanner.routing.api.request.StreetMode;
  * NOT: {@code Origin ~ Walk 120m ~ Destination }
  */
 public class FilterTransitWhenDirectModeIsEmpty {
-  private final StreetMode originalDirectMode;
+  private final Set<StreetMode> originalDirectModes;
 
   public FilterTransitWhenDirectModeIsEmpty(RequestModes modes) {
-    this.originalDirectMode = modes.directMode;
+    this.originalDirectModes = modes.directModes;
   }
 
-  public StreetMode resolveDirectMode() {
-    return directSearchEmpty() ? StreetMode.WALK : originalDirectMode;
+  public Set<StreetMode> resolveDirectMode() {
+    return directSearchEmpty() ? Set.of(StreetMode.WALK) : originalDirectModes;
   }
 
   public boolean removeWalkAllTheWayResults() {
     return directSearchEmpty();
   }
 
-  public StreetMode originalDirectMode() {
-    return originalDirectMode;
+  public Set<StreetMode> originalDirectMode() {
+    return originalDirectModes;
   }
 
   private boolean directSearchEmpty() {
-    return originalDirectMode == null;
+    return originalDirectModes.isEmpty();
   }
 }
