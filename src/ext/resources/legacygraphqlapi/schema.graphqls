@@ -1908,6 +1908,12 @@ type QueryType {
         Which bike rental networks can be used. By default, all networks are allowed.
         """
         allowedBikeRentalNetworks: [String]
+
+        """
+        If the visiting time for a VehicleParking is inside this interval,
+        the ApiVehicleParkingWithEntrance#closesSoon flag will be marked true.
+        """
+        vehicleParkingClosesSoonSeconds: Int
     ): Plan
 }
 
