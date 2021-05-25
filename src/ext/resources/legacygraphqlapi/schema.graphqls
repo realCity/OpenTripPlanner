@@ -852,6 +852,9 @@ enum ApiRequestMode {
     """CAR"""
     CAR
 
+    """COACH"""
+    COACH
+
     """FERRY"""
     FERRY
 
@@ -886,6 +889,7 @@ enum TraverseMode {
     BUS
     CABLE_CAR
     CAR
+    COACH
     FERRY
     FUNICULAR
     GONDOLA
@@ -907,6 +911,10 @@ enum TransitMode {
     RAIL
     SUBWAY
     TRAM
+
+    WALK    @deprecated(reason: "The values may be specified, but is ignored by OTP2")
+    BICYCLE @deprecated(reason: "The values may be specified, but is ignored by OTP2")
+    CAR     @deprecated(reason: "The values may be specified, but is ignored by OTP2")
 }
 
 """An object with an ID"""
@@ -1726,7 +1734,7 @@ type QueryType {
         transportModes: [TransportMode]
 
         """
-        The weight multipliers for transit modes. WALK, BICYCLE, CAR, TRANSIT and LEG_SWITCH are not included.
+        The weight multipliers for transit modes. WALK, BICYCLE, CAR and TRANSIT are not included.
         """
         modeWeight: InputModeWeight
 

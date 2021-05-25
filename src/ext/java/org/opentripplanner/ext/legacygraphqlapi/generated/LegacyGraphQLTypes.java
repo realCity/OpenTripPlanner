@@ -107,6 +107,7 @@ public class LegacyGraphQLTypes {
     Bus("BUS"),
     CableCar("CABLE_CAR"),
     Car("CAR"),
+    Coach("COACH"),
     Ferry("FERRY"),
     Flex("FLEX"),
     Funicular("FUNICULAR"),
@@ -1222,8 +1223,11 @@ public class LegacyGraphQLTypes {
     Gondola("GONDOLA"),
     Rail("RAIL"),
     Subway("SUBWAY"),
-    Tram("TRAM");
-    
+    Tram("TRAM"),
+    Walk("WALK"),
+    Bicycle("BICYCLE"),
+    Car("CAR");
+
     public final String label;
      
     LegacyGraphQLTransitMode(String label) {
@@ -1272,6 +1276,7 @@ public class LegacyGraphQLTypes {
     Bus("BUS"),
     CableCar("CABLE_CAR"),
     Car("CAR"),
+    Coach("COACH"),
     Ferry("FERRY"),
     Funicular("FUNICULAR"),
     Gondola("GONDOLA"),
