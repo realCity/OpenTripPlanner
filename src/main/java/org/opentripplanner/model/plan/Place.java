@@ -204,7 +204,7 @@ public class Place {
         );
     }
 
-    public static Place forVehicleParkingEntrance(VehicleParkingEntranceVertex vertex, String name) {
+    public static Place forVehicleParkingEntrance(VehicleParkingEntranceVertex vertex, String name, boolean closesSoon) {
         return new Place(
                 name,
                 null,
@@ -217,6 +217,7 @@ public class Place {
                 VehicleParkingWithEntrance.builder()
                         .vehicleParking(vertex.getVehicleParking())
                         .entrance(vertex.getParkingEntrance())
+                        .closesSoon(closesSoon)
                         .build()
         );
     }

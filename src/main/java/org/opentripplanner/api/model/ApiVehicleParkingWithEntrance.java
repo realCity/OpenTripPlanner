@@ -78,6 +78,14 @@ public class ApiVehicleParkingWithEntrance {
      */
     public final ApiVehicleParkingSpaces availability;
 
+    /**
+     * True if the difference of visiting time for a  {@link org.opentripplanner.routing.vehicle_parking.VehicleParking VehicleParking}
+     * and the closing time is inside the request's
+     * {@link org.opentripplanner.routing.api.request.RoutingRequest#vehicleParkingClosesSoonSeconds RoutingRequest#vehicleParkingClosesSoonSeconds}
+     * interval.
+     */
+    public final boolean closesSoon;
+
     ApiVehicleParkingWithEntrance(
             String id,
             String name,
@@ -92,7 +100,8 @@ public class ApiVehicleParkingWithEntrance {
             boolean hasCarPlaces,
             boolean hasWheelchairAccessibleCarPlaces,
             ApiVehicleParkingSpaces capacity,
-            ApiVehicleParkingSpaces availability
+            ApiVehicleParkingSpaces availability,
+            boolean closesSoon
     ) {
         this.id = id;
         this.name = name;
@@ -108,6 +117,7 @@ public class ApiVehicleParkingWithEntrance {
         this.hasWheelchairAccessibleCarPlaces = hasWheelchairAccessibleCarPlaces;
         this.capacity = capacity;
         this.availability = availability;
+        this.closesSoon = closesSoon;
     }
 
     public static ApiVehicleParkingWithEntranceBuilder builder() {
@@ -130,6 +140,7 @@ public class ApiVehicleParkingWithEntrance {
         private boolean hasWheelchairAccessibleCarPlaces;
         private ApiVehicleParkingSpaces capacity;
         private ApiVehicleParkingSpaces availability;
+        private boolean closesSoon;
 
         ApiVehicleParkingWithEntranceBuilder() {}
 
@@ -213,11 +224,18 @@ public class ApiVehicleParkingWithEntrance {
             return this;
         }
 
+        public ApiVehicleParkingWithEntranceBuilder closesSoon(
+                boolean closesSoon
+        ) {
+            this.closesSoon = closesSoon;
+            return this;
+        }
+
         public ApiVehicleParkingWithEntrance build() {
             return new ApiVehicleParkingWithEntrance(
                     id, name, entranceId, entranceName, detailsUrl,
                     imageUrl, note, tags, hasBicyclePlaces, hasAnyCarPlaces, hasCarPlaces,
-                    hasWheelchairAccessibleCarPlaces, capacity, availability
+                    hasWheelchairAccessibleCarPlaces, capacity, availability, closesSoon
             );
         }
     }
