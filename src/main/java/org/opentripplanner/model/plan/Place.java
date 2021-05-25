@@ -149,12 +149,13 @@ public class Place {
                 .build();
     }
 
-    public static Place forVehicleParkingEntrance(VehicleParkingEntranceVertex vertex, String name) {
+    public static Place forVehicleParkingEntrance(VehicleParkingEntranceVertex vertex, String name, boolean closesSoon) {
         return defaults(vertex, name)
                 .vertexType(VertexType.VEHICLEPARKING)
                 .vehicleParkingWithEntrance(VehicleParkingWithEntrance.builder()
                         .vehicleParking(vertex.getVehicleParking())
                         .entrance(vertex.getParkingEntrance())
+                        .closesSoon(closesSoon)
                         .build())
                 .build();
     }

@@ -83,6 +83,7 @@ public class RoutingRequestMapper {
         request.useBikeRentalAvailabilityInformation = c.asBoolean("useBikeRentalAvailabilityInformation", dft.useBikeRentalAvailabilityInformation);
         request.useRequestedDateTimeInMaxHours = c.asBoolean("useRequestedDateTimeInMaxHours", dft.useRequestedDateTimeInMaxHours);
         request.useUnpreferredRoutesPenalty = c.asInt("useUnpreferredRoutesPenalty", dft.useUnpreferredRoutesPenalty);
+        request.vehicleParkingClosesSoonSeconds = c.asInt("vehicleParkingClosesSoonSeconds", dft.vehicleParkingClosesSoonSeconds);
         request.waitAtBeginningFactor = c.asDouble("waitAtBeginningFactor", dft.waitAtBeginningFactor);
         request.waitReluctance = c.asDouble("waitReluctance", dft.waitReluctance);
         request.walkBoardCost = c.asInt("walkBoardCost", dft.walkBoardCost);
