@@ -297,6 +297,21 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
      */
     private Map<TransitMode, Double> transitReluctanceForMode = new HashMap<>();
 
+    private Map<TraverseMode, Double> streetReluctanceForMode = new HashMap<>();
+
+    /**
+     * Initial cost per mode. Use this to add an initial cost for StreetModes, to discourage its use
+     * for short legs.
+     * <p>
+     * If not set, no initial cost is applied.
+     */
+    private Map<StreetMode, Integer> initialCostForMode = new HashMap<>();
+
+    /**
+     * Initical cost for street searches. Will be overridden by {@code initialCostForMode}.
+     */
+    public int initialCost = 0;
+
     /** A multiplier for how bad walking is, compared to being in transit for equal lengths of time.
      *  Defaults to 2. Empirically, values between 10 and 20 seem to correspond well to the concept
      *  of not wanting to walk too much without asking for totally ridiculous itineraries, but this
@@ -785,6 +800,15 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
         return Collections.unmodifiableMap(transitReluctanceForMode);
     }
 
+    public void setInitialCostForMode(Map<StreetMode, Integer> initialCostForMode) {
+        this.initialCostForMode.clear();
+        this.initialCostForMode.putAll(initialCostForMode);
+    }
+
+    public Map<StreetMode, Integer> getInitialCostForMode() {
+        return Collections.unmodifiableMap(initialCostForMode);
+    }
+
     public void setWalkBoardCost(int walkBoardCost) {
         if (walkBoardCost < 0) {
             this.walkBoardCost = 0;
@@ -1014,6 +1038,7 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
     public RoutingRequest getStreetSearchRequest(StreetMode streetMode) {
         RoutingRequest streetRequest = this.clone();
         streetRequest.streetSubRequestModes = new TraverseModeSet();
+        streetRequest.initialCost = getInitialCostForMode().getOrDefault(streetMode, 0);
 
         if (streetMode != null) {
             switch (streetMode) {

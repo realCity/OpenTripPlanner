@@ -3,6 +3,7 @@ package org.opentripplanner.standalone.config;
 import org.opentripplanner.model.TransitMode;
 import org.opentripplanner.routing.api.request.RequestModes;
 import org.opentripplanner.routing.api.request.RoutingRequest;
+import org.opentripplanner.routing.api.request.StreetMode;
 import org.opentripplanner.routing.api.request.TransferOptimizationRequest;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.slf4j.Logger;
@@ -64,6 +65,7 @@ public class RoutingRequestMapper {
         request.geoidElevation = c.asBoolean("geoidElevation", dft.geoidElevation);
         request.ignoreRealtimeUpdates = c.asBoolean("ignoreRealtimeUpdates", dft.ignoreRealtimeUpdates);
         request.carPickup = c.asBoolean("kissAndRide", dft.carPickup);
+        request.setInitialCostForMode(c.asEnumMap("initialCostForMode", StreetMode.class, NodeAdapter::asInt));
         request.locale = c.asLocale("locale", dft.locale);
         // 'maxTransfers' is configured in the Raptor tuning parameters, not here
         request.maxDirectStreetDurationSeconds = c.asDouble("maxDirectStreetDurationSeconds", dft.maxDirectStreetDurationSeconds);

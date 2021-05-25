@@ -167,7 +167,7 @@ public class State implements Cloneable {
         boolean bikeRentalFloatingState,
         boolean keptRentalBicycleAtDestination
     ) {
-        this.weight = 0;
+        this.weight = options.initialCost;
         this.vertex = vertex;
         this.backEdge = backEdge;
         this.backState = null;
