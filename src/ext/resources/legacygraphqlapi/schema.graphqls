@@ -1095,10 +1095,10 @@ type Place {
     bikeRentalStation: BikeRentalStation
 
     """The bike parking related to the place"""
-    bikePark: VehicleParking
+    bikePark: BikePark
 
     """The car parking related to the place"""
-    carPark: VehicleParking
+    carPark: CarPark
 }
 
 type placeAtDistance implements Node {

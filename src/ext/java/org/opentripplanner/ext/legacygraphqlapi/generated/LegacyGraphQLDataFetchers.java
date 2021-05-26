@@ -240,8 +240,8 @@ public class LegacyGraphQLDataFetchers {
     public DataFetcher<Long> departureTime();
     public DataFetcher<Object> stop();
     public DataFetcher<BikeRentalStation> bikeRentalStation();
-    public DataFetcher<VehicleParking> bikePark();
-    public DataFetcher<VehicleParking> carPark();
+    public DataFetcher<Object> bikePark();
+    public DataFetcher<Object> carPark();
   }
   
   /** Interface for places, e.g. stops, stations, parking areas.. */
