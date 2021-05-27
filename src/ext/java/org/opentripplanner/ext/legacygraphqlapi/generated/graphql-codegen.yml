@@ -29,7 +29,7 @@ config:
     AlertCauseType: String
     AlertEffectType: String
     AlertSeverityLevelType: String
-    BikePark: org.opentripplanner.routing.bike_park.BikePark#BikePark
+    BikePark: Object
     BikeRentalStation: org.opentripplanner.routing.bike_rental.BikeRentalStation#BikeRentalStation
     BikesAllowed: String
     CarPark: Object
@@ -67,3 +67,6 @@ config:
     TranslatedString: java.util.Map#Map.Entry<String, String>
     Trip: org.opentripplanner.model.Trip#Trip
     VertexType: String
+    VehicleParking: org.opentripplanner.routing.vehicle_parking.VehicleParking#VehicleParking
+    VehiclePlaces: org.opentripplanner.routing.vehicle_parking.VehicleParking#VehicleParking.VehiclePlaces
+    VehicleParkingState: org.opentripplanner.routing.vehicle_parking.VehicleParking#VehicleParking.VehicleParkingState

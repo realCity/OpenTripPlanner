@@ -9,7 +9,7 @@ public class VertexTypeMapper {
         if(domain == null) { return null; }
         switch (domain) {
             case NORMAL: return ApiVertexType.NORMAL;
-            case BIKEPARK: return ApiVertexType.BIKEPARK;
+            case VEHICLEPARKING: return ApiVertexType.VEHICLEPARKING;
             case BIKESHARE: return ApiVertexType.BIKESHARE;
             case TRANSIT: return ApiVertexType.TRANSIT;
             default:
