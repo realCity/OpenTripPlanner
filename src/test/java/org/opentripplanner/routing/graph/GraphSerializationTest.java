@@ -138,6 +138,7 @@ public class GraphSerializationTest {
     private static void assertNoDifferences (Graph g1, Graph g2) {
         // Make some exclusions because some classes are inherently transient or contain unordered lists we can't yet compare.
         ObjectDiffer objectDiffer = new ObjectDiffer();
+        objectDiffer.skipTransientFields();
         // Skip incoming and outgoing edge lists. These are unordered lists which will not compare properly.
         // The edges themselves will be compared via another field, and the edge lists are reconstructed after deserialization.
         // Some tests re-build the graph which will result in build times different by as little as a few milliseconds.
