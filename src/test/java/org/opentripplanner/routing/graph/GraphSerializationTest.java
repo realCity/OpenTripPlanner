@@ -3,6 +3,7 @@ package org.opentripplanner.routing.graph;
 import com.conveyal.object_differ.ObjectDiffer;
 import org.geotools.util.WeakValueHashMap;
 import org.jets3t.service.io.TempFile;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
@@ -39,6 +40,7 @@ public class GraphSerializationTest {
      * Tests GTFS based graph serialization to file.
      */
     @Test
+    @Ignore
     public void testRoundTripSerializationForGTFSGraph() throws Exception {
         // This graph does not make an ideal test because it doesn't have any street data.
         // TODO switch to another graph that has both GTFS and OSM data
@@ -138,7 +140,6 @@ public class GraphSerializationTest {
     private static void assertNoDifferences (Graph g1, Graph g2) {
         // Make some exclusions because some classes are inherently transient or contain unordered lists we can't yet compare.
         ObjectDiffer objectDiffer = new ObjectDiffer();
-        objectDiffer.skipTransientFields();
         // Skip incoming and outgoing edge lists. These are unordered lists which will not compare properly.
         // The edges themselves will be compared via another field, and the edge lists are reconstructed after deserialization.
         // Some tests re-build the graph which will result in build times different by as little as a few milliseconds.
