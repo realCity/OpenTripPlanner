@@ -122,6 +122,6 @@ public class GermanyWayPropertySetSource implements WayPropertySetSource {
 
     @Override
     public IntersectionTraversalCostModel getIntersectionTraversalCostModel() {
-        return new SimpleIntersectionTraversalCostModel(drivingDirection);
+        return new NorwayIntersectionTraversalCostModel(drivingDirection);
     }
 }
