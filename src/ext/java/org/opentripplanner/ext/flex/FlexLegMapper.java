@@ -30,5 +30,6 @@ public class FlexLegMapper {
       leg.alightRule = GraphPathToItineraryMapper.getBoardAlightMessage(3);
 
       leg.bookingInfo = flexTripEdge.getFlexTrip().getBookingInfo(leg.from.stopIndex);
+      leg.generalizedCost = flexTripEdge.getTimeInSeconds();
   }
 }

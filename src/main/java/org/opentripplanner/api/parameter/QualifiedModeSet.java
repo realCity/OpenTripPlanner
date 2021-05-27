@@ -36,6 +36,7 @@ public class QualifiedModeSet implements Serializable {
         StreetMode accessMode = null;
         StreetMode egressMode = null;
         StreetMode directMode = null;
+        StreetMode transferMode = null;
         Set<TransitMode> transitModes = new HashSet<>();
 
         // Set transit modes
@@ -86,22 +87,26 @@ public class QualifiedModeSet implements Serializable {
             switch (qMode.mode) {
                 case WALK:
                     accessMode = StreetMode.WALK;
+                    transferMode = StreetMode.WALK;
                     egressMode = StreetMode.WALK;
                     directMode = StreetMode.WALK;
                     break;
                 case BICYCLE:
                     if (qMode.qualifiers.contains(Qualifier.RENT)) {
                         accessMode = StreetMode.BIKE_RENTAL;
+                        transferMode = StreetMode.BIKE_RENTAL;
                         egressMode = StreetMode.BIKE_RENTAL;
                         directMode = StreetMode.BIKE_RENTAL;
                     }
                     else if (qMode.qualifiers.contains(Qualifier.PARK)) {
                         accessMode = StreetMode.BIKE_TO_PARK;
+                        transferMode = StreetMode.WALK;
                         egressMode = StreetMode.WALK;
                         directMode = StreetMode.BIKE_TO_PARK;
                     }
                     else {
                         accessMode = StreetMode.BIKE;
+                        transferMode = StreetMode.BIKE;
                         egressMode = StreetMode.BIKE;
                         directMode = StreetMode.BIKE;
                     }
@@ -109,26 +114,31 @@ public class QualifiedModeSet implements Serializable {
                 case CAR:
                     if (qMode.qualifiers.contains(Qualifier.RENT)) {
                         accessMode = StreetMode.CAR_RENTAL;
+                        transferMode = StreetMode.CAR_RENTAL;
                         egressMode = StreetMode.CAR_RENTAL;
                         directMode = StreetMode.CAR_RENTAL;
                     }
                     else if (qMode.qualifiers.contains(Qualifier.PARK)) {
                         accessMode = StreetMode.CAR_TO_PARK;
+                        transferMode = StreetMode.WALK;
                         egressMode = StreetMode.WALK;
                         directMode = StreetMode.CAR_TO_PARK;
                     }
                     else if (qMode.qualifiers.contains(Qualifier.PICKUP)) {
                         accessMode = StreetMode.WALK;
+                        transferMode = StreetMode.WALK;
                         egressMode = StreetMode.CAR_PICKUP;
                         directMode = StreetMode.CAR_PICKUP;
                     }
                     else if (qMode.qualifiers.contains(Qualifier.DROPOFF)) {
                         accessMode = StreetMode.CAR_PICKUP;
+                        transferMode = StreetMode.WALK;
                         egressMode = StreetMode.WALK;
                         directMode = StreetMode.CAR_PICKUP;
                     }
                     else {
                         accessMode = StreetMode.WALK;
+                        transferMode = StreetMode.WALK;
                         egressMode = StreetMode.WALK;
                         directMode = StreetMode.CAR;
                     }
@@ -149,14 +159,13 @@ public class QualifiedModeSet implements Serializable {
             }
         }
 
-        RequestModes requestModes = new RequestModes(
+        return new RequestModes(
             accessMode,
+            transferMode,
             egressMode,
             directMode,
             transitModes
         );
-
-        return requestModes;
     }
     
     public String toString() {

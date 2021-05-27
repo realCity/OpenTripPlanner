@@ -90,7 +90,7 @@ public class NearbyStopFinder {
      * This is intentional: we don't want to return the next stop down the line for trip patterns that pass through the
      * origin vertex.
      */
-    public Set<NearbyStop> findNearbyStopsConsideringPatterns(Vertex vertex, boolean reverseDirection) {
+    public Set<NearbyStop> findNearbyStopsConsideringPatterns(Vertex vertex, RoutingRequest routingRequest, boolean reverseDirection) {
 
         /* Track the closest stop on each pattern passing nearby. */
         MinMap<TripPattern, NearbyStop> closestStopForPattern = new MinMap<TripPattern, NearbyStop>();
@@ -99,7 +99,7 @@ public class NearbyStopFinder {
         MinMap<FlexTrip, NearbyStop> closestStopForFlexTrip = new MinMap<>();
 
         /* Iterate over nearby stops via the street network or using straight-line distance, depending on the graph. */
-        for (NearbyStop nearbyStop : findNearbyStops(vertex, reverseDirection)) {
+        for (NearbyStop nearbyStop : findNearbyStops(vertex, routingRequest.clone(), reverseDirection)) {
             StopLocation ts1 = nearbyStop.stop;
 
             if (ts1 instanceof Stop){
@@ -129,9 +129,11 @@ public class NearbyStopFinder {
      * If the origin vertex is a StopVertex, the result will include it; this characteristic is essential for
      * associating the correct stop with each trip pattern in the vicinity.
      */
-    public List<NearbyStop> findNearbyStops(Vertex vertex, boolean reverseDirection) {
+    public List<NearbyStop> findNearbyStops(
+        Vertex vertex, RoutingRequest routingRequest, boolean reverseDirection
+    ) {
         if (useStreets) {
-            return findNearbyStopsViaStreets(vertex, reverseDirection);
+            return findNearbyStopsViaStreets(Set.of(vertex), reverseDirection, true, routingRequest);
         }
         Coordinate c0 = vertex.getCoordinate();
         return directGraphFinder.findClosestStops(c0.y, c0.x, radiusMeters);
@@ -226,7 +228,6 @@ public class NearbyStopFinder {
                         (TransitStopVertex) vertex,
                         0,
                         Collections.emptyList(),
-                        null,
                         new State(vertex, routingRequest)
                     ));
             }
@@ -249,17 +250,6 @@ public class NearbyStopFinder {
             reverseDirection,
             removeTempEdges,
             routingRequest
-        );
-    }
-
-    public List<NearbyStop> findNearbyStopsViaStreets(
-        Vertex originVertex,
-        boolean reverseDirection
-    ) {
-        return findNearbyStopsViaStreets(
-                Collections.singleton(originVertex),
-                reverseDirection,
-                true
         );
     }
 
