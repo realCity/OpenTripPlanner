@@ -268,7 +268,19 @@ public class TripTimes implements Serializable, Comparable<TripTimes>, Cloneable
      * trip down the line.
      */
     public int sortIndex() {
-        return getArrivalTime(0);
+        if (realTimeState == RealTimeState.CANCELED) {
+            return -1;
+        }
+
+        int arrivalTime = getArrivalTime(0);
+        if (arrivalTime >= 0) {
+            return arrivalTime;
+        }
+        int departureTime = getDepartureTime(0);
+        if (departureTime >= 0) {
+            return departureTime;
+        }
+        throw new IllegalStateException("Failed to sort trip, initial (stop = 0) arrival and departure is -1");
     }
 
     /** @return the time in seconds after midnight that the vehicle arrives at the stop. */
