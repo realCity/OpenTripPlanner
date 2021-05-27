@@ -507,7 +507,7 @@ public abstract class GraphPathToItineraryMapper {
             LOG.trace("Added bike share Id {} to place", place.bikeShareId);
             place.vertexType = VertexType.BIKESHARE;
         } else if (vertex instanceof VehicleParkingEntranceVertex) {
-            place.vertexType = VertexType.VEHICLEPARK;
+            place.vertexType = VertexType.VEHICLEPARKING;
         } else {
             place.vertexType = VertexType.NORMAL;
         }
