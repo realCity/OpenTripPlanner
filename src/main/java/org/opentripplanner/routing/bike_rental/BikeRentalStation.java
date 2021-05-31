@@ -63,6 +63,9 @@ public class BikeRentalStation implements Serializable, Cloneable {
     @JsonIgnore
     public Locale locale = ResourceBundleSingleton.INSTANCE.getLocale(null);
 
+    @JsonSerialize
+    public RentalUris rentalUris;
+
     /**
      * FIXME nonstandard definition of equals, relying on only the station field.
      * We should probably be keying collections on station ID rather than the station object with nonstandard equals.
@@ -98,5 +101,18 @@ public class BikeRentalStation implements Serializable, Cloneable {
     @JsonSerialize
     public String getName() {
         return name.toString(locale);
+    }
+
+    public static class RentalUris {
+
+        public final String android;
+        public final String ios;
+        public final String web;
+
+        public RentalUris(String android, String ios, String web) {
+            this.android = android;
+            this.ios = ios;
+            this.web = web;
+        }
     }
 }
