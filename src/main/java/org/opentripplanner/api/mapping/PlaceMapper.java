@@ -1,13 +1,17 @@
 package org.opentripplanner.api.mapping;
 
-import org.opentripplanner.api.model.ApiPlace;
-import org.opentripplanner.model.plan.Place;
-import org.opentripplanner.model.plan.StopArrival;
-
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.opentripplanner.api.model.ApiPlace;
+import org.opentripplanner.api.model.ApiVehicleParkingWithEntrance;
+import org.opentripplanner.api.model.ApiVehicleParkingWithEntrance.ApiVehicleParkingPlaces;
+import org.opentripplanner.model.plan.Place;
+import org.opentripplanner.model.plan.StopArrival;
+import org.opentripplanner.model.plan.VehicleParkingWithEntrance;
+import org.opentripplanner.routing.vehicle_parking.VehicleParking.VehiclePlaces;
 
 public class PlaceMapper {
 
@@ -26,23 +30,71 @@ public class PlaceMapper {
 
         ApiPlace api = new ApiPlace();
 
-        api.name = domain.name;
-        api.stopId = FeedScopedIdMapper.mapToApi(domain.stopId);
-        api.stopCode = domain.stopCode;
-        api.platformCode = domain.platformCode;
-        if(domain.coordinate != null) {
-            api.lon = domain.coordinate.longitude();
-            api.lat = domain.coordinate.latitude();
+        api.name = domain.getName();
+        api.orig = domain.getOrig();
+        if(domain.getCoordinate() != null) {
+            api.lon = domain.getCoordinate().longitude();
+            api.lat = domain.getCoordinate().latitude();
         }
+
+        api.vertexType = VertexTypeMapper.mapVertexType(domain.getVertexType());
+
         api.arrival = arrival;
         api.departure = departure;
-        api.orig = domain.orig;
-        api.zoneId = domain.zoneId;
-        api.stopIndex = domain.stopIndex;
-        api.stopSequence = domain.stopSequence;
-        api.vertexType = VertexTypeMapper.mapVertexType(domain.vertexType);
-        api.bikeShareId = domain.bikeShareId;
+
+        switch (domain.getVertexType()) {
+            case NORMAL:
+                break;
+            case BIKESHARE:
+                api.bikeShareId = domain.getBikeRentalStation().id;
+                break;
+            case VEHICLEPARKING:
+                api.vehicleParking = mapVehicleParking(domain.getVehicleParkingWithEntrance());
+                break;
+            case TRANSIT:
+                api.stopId = FeedScopedIdMapper.mapToApi(domain.getStop().getId());
+                api.stopCode = domain.getStop().getCode();
+                api.platformCode = domain.getStop().getPlatformCode();
+                api.zoneId = domain.getStop().getFirstZoneAsString();
+                api.stopIndex = domain.getStopIndex();
+                api.stopSequence = domain.getStopSequence();
+                break;
+        }
 
         return api;
+    }
+
+    private static ApiVehicleParkingWithEntrance mapVehicleParking(VehicleParkingWithEntrance vehicleParkingWithEntrance) {
+        var vp = vehicleParkingWithEntrance.getVehicleParking();
+        var e = vehicleParkingWithEntrance.getEntrance();
+
+        return ApiVehicleParkingWithEntrance.builder()
+                .id(FeedScopedIdMapper.mapToApi(vp.getId()))
+                .name(vp.getName().toString())
+                .entranceId(FeedScopedIdMapper.mapToApi(e.getEntranceId()))
+                .entranceName(vp.getName().toString())
+                .detailsUrl(vp.getDetailsUrl())
+                .imageUrl(vp.getImageUrl())
+                .note(vp.getNote() != null ? vp.getNote().toString() : null)
+                .tags(new ArrayList<>(vp.getTags()))
+                .hasBicyclePlaces(vp.hasBicyclePlaces())
+                .hasAnyCarPlaces(vp.hasAnyCarPlaces())
+                .hasCarPlaces(vp.hasCarPlaces())
+                .hasWheelchairAccessibleCarPlaces(vp.hasWheelchairAccessibleCarPlaces())
+                .availability(mapVehicleParkingPlaces(vp.getAvailability()))
+                .capacity(mapVehicleParkingPlaces(vp.getCapacity()))
+                .build();
+    }
+
+    private static ApiVehicleParkingPlaces mapVehicleParkingPlaces(VehiclePlaces availability) {
+        if (availability == null) {
+            return null;
+        }
+
+        return ApiVehicleParkingPlaces.builder()
+                .bicycleSpaces(availability.getBicycleSpaces())
+                .carSpaces(availability.getCarSpaces())
+                .wheelchairAccessibleCarSpaces(availability.getWheelchairAccessibleCarSpaces())
+                .build();
     }
 }

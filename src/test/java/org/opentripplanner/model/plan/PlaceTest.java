@@ -1,10 +1,11 @@
 package org.opentripplanner.model.plan;
 
-import org.junit.Test;
-import org.opentripplanner.model.FeedScopedId;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+import org.opentripplanner.model.FeedScopedId;
+import org.opentripplanner.model.Stop;
 
 public class PlaceTest {
 
@@ -39,8 +40,9 @@ public class PlaceTest {
     }
 
     private static Place place(String name, String stopId) {
-        Place p = new Place(null, null, name);
-        p.stopId = new FeedScopedId("S", stopId);
-        return p;
+        return Place.builder()
+                .name(name)
+                .stop(new Stop(new FeedScopedId("S", stopId), null, null, null, null, null, null, null, null, null, null, null))
+                .build();
     }
 }

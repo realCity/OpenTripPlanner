@@ -309,7 +309,7 @@ public class Itinerary {
      */
     public String toStr() {
         PathStringBuilder buf = new PathStringBuilder();
-        buf.stop(firstLeg().from.name);
+        buf.stop(firstLeg().from.getName());
 
         for (Leg leg : legs) {
             buf.sep();
@@ -324,7 +324,7 @@ public class Itinerary {
             }
 
             buf.sep();
-            buf.stop(leg.to.name);
+            buf.stop(leg.to.getName());
         }
         return buf.toString() + " [cost: " + generalizedCost + "]";
     }

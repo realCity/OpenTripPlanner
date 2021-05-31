@@ -144,6 +144,7 @@ public class StreetLinkerModule implements GraphBuilderModule {
 
       if (graph.containsVertex(vehicleParkingEntranceVertex.getParkingEntrance().getVertex())) {
         VehicleParkingHelper.linkToGraph(vehicleParkingEntranceVertex);
+        vehicleParkingEntranceVertex.getParkingEntrance().setVertex(null);
         continue;
       }
 

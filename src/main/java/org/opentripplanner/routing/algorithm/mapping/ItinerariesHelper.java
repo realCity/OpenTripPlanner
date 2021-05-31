@@ -25,9 +25,9 @@ public class ItinerariesHelper {
                 continue;
             }
             Leg firstLeg = it.legs.get(0);
-            firstLeg.from.orig = request.from.label;
+            firstLeg.from.setOrig(request.from.label);
             Leg lastLeg = it.legs.get(it.legs.size() - 1);
-            lastLeg.to.orig = request.to.label;
+            lastLeg.to.setOrig(request.to.label);
         }
     }
 }

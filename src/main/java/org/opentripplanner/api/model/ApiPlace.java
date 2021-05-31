@@ -77,6 +77,11 @@ public class ApiPlace {
     public String bikeShareId;
 
     /**
+     * 
+     */
+    public ApiVehicleParkingWithEntrance vehicleParking;
+
+    /**
      * Returns the geometry in GeoJSON format
      */
     String getGeometry() {

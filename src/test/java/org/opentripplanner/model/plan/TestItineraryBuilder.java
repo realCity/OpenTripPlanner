@@ -1,11 +1,8 @@
 package org.opentripplanner.model.plan;
 
-import org.opentripplanner.model.FeedScopedId;
-import org.opentripplanner.model.Route;
-import org.opentripplanner.model.TransitMode;
-import org.opentripplanner.model.Trip;
-import org.opentripplanner.routing.core.TraverseMode;
-import org.opentripplanner.util.time.TimeUtils;
+import static java.time.ZoneOffset.UTC;
+import static org.opentripplanner.routing.core.TraverseMode.BICYCLE;
+import static org.opentripplanner.routing.core.TraverseMode.WALK;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -13,10 +10,12 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
-
-import static java.time.ZoneOffset.UTC;
-import static org.opentripplanner.routing.core.TraverseMode.BICYCLE;
-import static org.opentripplanner.routing.core.TraverseMode.WALK;
+import org.opentripplanner.model.FeedScopedId;
+import org.opentripplanner.model.Route;
+import org.opentripplanner.model.TransitMode;
+import org.opentripplanner.model.Trip;
+import org.opentripplanner.routing.core.TraverseMode;
+import org.opentripplanner.util.time.TimeUtils;
 
 /**
  * This is a helper class to allow unit-testing on Itineraries. The builder does not necessarily
@@ -99,17 +98,20 @@ public class TestItineraryBuilder implements PlanTestConstants {
   /**
    * Add a bus leg to the itinerary.
    */
+  public TestItineraryBuilder bus(int tripId, int startTime, int endTime, int fromStopIndex, int toStopIndex, Place to) {
+    return transit(BUS_ROUTE, tripId, startTime, endTime, fromStopIndex, toStopIndex, to);
+  }
+
   public TestItineraryBuilder bus(int tripId, int startTime, int endTime, Place to) {
-    return transit(BUS_ROUTE, tripId, startTime, endTime, to);
+    return bus(tripId, startTime, endTime, TRIP_FROM_STOP_INDEX, TRIP_TO_STOP_INDEX, to);
   }
 
   /**
    * Add a rail/train leg to the itinerary
    */
   public TestItineraryBuilder rail(int tripId, int startTime, int endTime, Place to) {
-    return transit(RAIL_ROUTE, tripId, startTime, endTime, to);
+    return transit(RAIL_ROUTE, tripId, startTime, endTime, TRIP_FROM_STOP_INDEX, TRIP_TO_STOP_INDEX, to);
   }
-
 
   public Itinerary egress(int walkDuration) {
     walk(walkDuration, null);
@@ -134,24 +136,24 @@ public class TestItineraryBuilder implements PlanTestConstants {
 
   /* private methods */
 
-  private TestItineraryBuilder transit(Route route, int tripId, int start, int end, Place to) {
+  private TestItineraryBuilder transit(Route route, int tripId, int start, int end, int fromStopIndex, int toStopIndex, Place to) {
     if(lastPlace == null) { throw new IllegalStateException("Trip from place is unknown!"); }
     int waitTime = start - lastEndTime(start);
     cost += cost(WAIT_RELUCTANCE_FACTOR, waitTime);
     cost += cost(1.0f, end - start) + BOARD_COST;
-    Leg leg = leg(new Leg(trip(tripId, route)), start, end, to);
+    Leg leg = leg(new Leg(trip(tripId, route)), start, end, fromStopIndex, toStopIndex, to);
     leg.serviceDate = SERVICE_DATE;
     return this;
   }
 
   private Leg streetLeg(TraverseMode mode, int startTime, int endTime, Place to) {
-    return leg(new Leg(mode), startTime, endTime, to);
+    return leg(new Leg(mode), startTime, endTime, null, null, to);
   }
 
-  private Leg leg(Leg leg, int startTime, int endTime, Place to) {
-    leg.from = stop(lastPlace, TRIP_FROM_STOP_INDEX);
+  private Leg leg(Leg leg, int startTime, int endTime, Integer fromStopIndex, Integer toStopIndex, Place to) {
+    leg.from = stop(lastPlace, fromStopIndex);
     leg.startTime = GregorianCalendar.from(newTime(startTime));
-    leg.to = stop(to, TRIP_TO_STOP_INDEX);
+    leg.to = stop(to, toStopIndex);
     leg.endTime = GregorianCalendar.from(newTime(endTime));
     leg.distanceMeters = speed(leg.mode) * (endTime - startTime);
     legs.add(leg);
@@ -195,10 +197,12 @@ public class TestItineraryBuilder implements PlanTestConstants {
     return route;
   }
 
-  private static Place stop(Place source, int stopIndex) {
-    Place p = new Place(source.coordinate.latitude(), source.coordinate.longitude(), source.name);
-    p.stopId = source.stopId;
-    p.stopIndex = stopIndex;
-    return p;
+  private static Place stop(Place source, Integer stopIndex) {
+    return Place.builder()
+            .name(source.getName())
+            .coordinate(source.getCoordinate())
+            .stop(source.getStop())
+            .stopIndex(stopIndex)
+            .build();
   }
 }

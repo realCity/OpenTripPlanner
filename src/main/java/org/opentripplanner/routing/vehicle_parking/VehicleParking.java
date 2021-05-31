@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import org.opentripplanner.common.RepeatingTimePeriod;
 import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.routing.vertextype.StreetVertex;
@@ -153,7 +154,8 @@ public class VehicleParking implements Serializable {
 
     // Used to explicitly specify the intersection to link to instead of using (x, y)
     @EqualsAndHashCode.Exclude
-    private final transient StreetVertex vertex;
+    @Setter
+    private transient StreetVertex vertex;
 
     // If this entrance should be linked to car accessible streets
     private final boolean carAccessible;

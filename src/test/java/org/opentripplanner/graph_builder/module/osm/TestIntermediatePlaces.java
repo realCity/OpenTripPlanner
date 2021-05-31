@@ -1,5 +1,13 @@
 package org.opentripplanner.graph_builder.module.osm;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Calendar;
+import java.util.List;
+import java.util.TimeZone;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -11,23 +19,14 @@ import org.opentripplanner.model.plan.Place;
 import org.opentripplanner.model.plan.TripPlan;
 import org.opentripplanner.routing.algorithm.mapping.GraphPathToItineraryMapper;
 import org.opentripplanner.routing.algorithm.mapping.TripPlanMapper;
+import org.opentripplanner.routing.api.request.RoutingRequest;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.core.TraverseModeSet;
-import org.opentripplanner.routing.api.request.RoutingRequest;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.impl.GraphPathFinder;
 import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.standalone.config.RouterConfig;
 import org.opentripplanner.standalone.server.Router;
-
-import java.util.Calendar;
-import java.util.List;
-import java.util.TimeZone;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for planning with intermediate places
@@ -170,8 +169,8 @@ public class TestIntermediatePlaces {
                     legIndex < itinerary.legs.size());
                 leg = itinerary.legs.get(legIndex);
                 legIndex++;
-            } while (Math.abs(leg.to.coordinate.latitude() - location.lat) > DELTA
-                || Math.abs(leg.to.coordinate.longitude() - location.lng) > DELTA);
+            } while (Math.abs(leg.to.getCoordinate().latitude() - location.lat) > DELTA
+                || Math.abs(leg.to.getCoordinate().longitude() - location.lng) > DELTA);
         }
     }
 
@@ -179,10 +178,10 @@ public class TestIntermediatePlaces {
     private void validateLegsSpatially(TripPlan plan, Itinerary itinerary) {
         Place place = plan.from;
         for (Leg leg : itinerary.legs) {
-            assertEquals(place.coordinate, leg.from.coordinate);
+            assertEquals(place.getCoordinate(), leg.from.getCoordinate());
             place = leg.to;
         }
-        assertEquals(place.coordinate, plan.to.coordinate);
+        assertEquals(place.getCoordinate(), plan.to.getCoordinate());
     }
 
     // Check that the start time and end time of each leg are consistent
@@ -214,7 +213,7 @@ public class TestIntermediatePlaces {
     }
 
     private void assertLocationIsVeryCloseToPlace(GenericLocation location, Place place) {
-        assertEquals(location.lat, place.coordinate.latitude(), DELTA);
-        assertEquals(location.lng, place.coordinate.longitude(), DELTA);
+        assertEquals(location.lat, place.getCoordinate().latitude(), DELTA);
+        assertEquals(location.lng, place.getCoordinate().longitude(), DELTA);
     }
 }

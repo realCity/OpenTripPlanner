@@ -19,14 +19,12 @@ import org.opentripplanner.common.model.P2;
 import org.opentripplanner.ext.flex.FlexLegMapper;
 import org.opentripplanner.ext.flex.edgetype.FlexTripEdge;
 import org.opentripplanner.model.BikeRentalStationInfo;
-import org.opentripplanner.model.Stop;
 import org.opentripplanner.model.StreetNote;
 import org.opentripplanner.model.WgsCoordinate;
 import org.opentripplanner.model.plan.Itinerary;
 import org.opentripplanner.model.plan.Leg;
 import org.opentripplanner.model.plan.Place;
 import org.opentripplanner.model.plan.RelativeDirection;
-import org.opentripplanner.model.plan.VertexType;
 import org.opentripplanner.model.plan.WalkStep;
 import org.opentripplanner.routing.api.request.RoutingRequest;
 import org.opentripplanner.routing.core.RoutingContext;
@@ -44,11 +42,11 @@ import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.location.TemporaryStreetLocation;
 import org.opentripplanner.routing.spt.GraphPath;
-import org.opentripplanner.routing.vertextype.VehicleParkingEntranceVertex;
 import org.opentripplanner.routing.vertextype.BikeRentalStationVertex;
 import org.opentripplanner.routing.vertextype.ExitVertex;
 import org.opentripplanner.routing.vertextype.StreetVertex;
 import org.opentripplanner.routing.vertextype.TransitStopVertex;
+import org.opentripplanner.routing.vertextype.VehicleParkingEntranceVertex;
 import org.opentripplanner.util.OTPFeature;
 import org.opentripplanner.util.PolylineEncoder;
 import org.slf4j.Logger;
@@ -292,7 +290,11 @@ public abstract class GraphPathToItineraryMapper {
         TimeZone timeZone = leg.startTime.getTimeZone();
         leg.agencyTimeZoneOffset = timeZone.getOffset(leg.startTime.getTimeInMillis());
 
-        addPlaces(leg, states, requestedLocale);
+        if (flexEdge != null) {
+            FlexLegMapper.addFlexPlaces(leg, flexEdge, requestedLocale);
+        } else {
+            addPlaces(leg, states, requestedLocale);
+        }
 
         CoordinateArrayListSequence coordinates = makeCoordinates(edges);
         Geometry geometry = GeometryUtils.getGeometryFactory().createLineString(coordinates);
@@ -468,24 +470,18 @@ public abstract class GraphPathToItineraryMapper {
         Vertex firstVertex = states[0].getVertex();
         Vertex lastVertex = states[states.length - 1].getVertex();
 
-        Stop firstStop = firstVertex instanceof TransitStopVertex ?
-                ((TransitStopVertex) firstVertex).getStop(): null;
-        Stop lastStop = lastVertex instanceof TransitStopVertex ?
-                ((TransitStopVertex) lastVertex).getStop(): null;
-
-        leg.from = makePlace(firstVertex, firstStop, requestedLocale);
-        leg.to = makePlace(lastVertex, lastStop, requestedLocale);
+        leg.from = makePlace(firstVertex, requestedLocale);
+        leg.to = makePlace(lastVertex, requestedLocale);
     }
 
     /**
      * Make a {@link Place} to add to a {@link Leg}.
      *
      * @param vertex The {@link Vertex} at the {@link State}.
-     * @param stop The {@link Stop} associated with the {@link Vertex}.
      * @param requestedLocale The locale to use for all text attributes.
      * @return The resulting {@link Place} object.
      */
-    private static Place makePlace(Vertex vertex, Stop stop, Locale requestedLocale) {
+    private static Place makePlace(Vertex vertex, Locale requestedLocale) {
         String name = vertex.getName(requestedLocale);
 
         //This gets nicer names instead of osm:node:id when changing mode of transport
@@ -494,29 +490,16 @@ public abstract class GraphPathToItineraryMapper {
         if (vertex instanceof StreetVertex && !(vertex instanceof TemporaryStreetLocation)) {
             name = ((StreetVertex) vertex).getIntersectionName(requestedLocale).toString(requestedLocale);
         }
-        Place place = new Place(
-                vertex.getLat(),
-                vertex.getLon(),
-                name
-        );
 
         if (vertex instanceof TransitStopVertex) {
-            place.stopId = stop.getId();
-            place.stopCode = stop.getCode();
-            place.platformCode = stop.getPlatformCode();
-            place.zoneId = stop.getFirstZoneAsString();
-            place.vertexType = VertexType.TRANSIT;
+            return Place.forStop((TransitStopVertex) vertex, name);
         } else if(vertex instanceof BikeRentalStationVertex) {
-            place.bikeShareId = ((BikeRentalStationVertex) vertex).getId();
-            LOG.trace("Added bike share Id {} to place", place.bikeShareId);
-            place.vertexType = VertexType.BIKESHARE;
+            return Place.forBikeRentalStation((BikeRentalStationVertex) vertex, name);
         } else if (vertex instanceof VehicleParkingEntranceVertex) {
-            place.vertexType = VertexType.VEHICLEPARKING;
+            return Place.forVehicleParkingEntrance((VehicleParkingEntranceVertex) vertex, name);
         } else {
-            place.vertexType = VertexType.NORMAL;
+            return Place.normal(vertex, name);
         }
-
-        return place;
     }
 
     /**
