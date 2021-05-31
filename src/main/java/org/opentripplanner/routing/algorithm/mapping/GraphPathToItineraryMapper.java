@@ -212,7 +212,7 @@ public abstract class GraphPathToItineraryMapper {
             var parkingChange = backState.isVehicleParked() != forwardState.isVehicleParked();
             var rentalChange = isRentalPickUp(backState) || isRentalDropOff(backState);
 
-            if (rentalChange || parkingChange) {
+            if (parkingChange) {
                 /* Remove the state for actually parking (traversing VehicleParkingEdge) from the
                  * states so that the leg from/to edges correspond to the actual entrances.
                  * The actual time for parking is added to the walking leg in generateLeg().
@@ -221,7 +221,7 @@ public abstract class GraphPathToItineraryMapper {
                 legsIndexes.add(legIndexPairs);
                 legIndexPairs = new int[] {i + 1, states.length - 1};
             }
-            else if (modeChange) {
+            else if (modeChange || rentalChange) {
                 legIndexPairs[1] = i;
                 legsIndexes.add(legIndexPairs);
                 legIndexPairs = new int[] {i, states.length - 1};
