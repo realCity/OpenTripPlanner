@@ -2,6 +2,7 @@ package org.opentripplanner.model.plan;
 
 import static java.time.ZoneOffset.UTC;
 import static org.opentripplanner.routing.core.TraverseMode.BICYCLE;
+import static org.opentripplanner.routing.core.TraverseMode.CAR;
 import static org.opentripplanner.routing.core.TraverseMode.WALK;
 
 import java.time.LocalDate;
@@ -82,6 +83,12 @@ public class TestItineraryBuilder implements PlanTestConstants {
   public TestItineraryBuilder bicycle(int startTime, int endTime, Place to) {
     cost += cost(BICYCLE_RELUCTANCE_FACTOR, endTime - startTime);
     streetLeg(BICYCLE, startTime, endTime, to);
+    return this;
+  }
+
+  public TestItineraryBuilder drive(int startTime, int endTime, Place to) {
+    cost += cost(CAR_RELUCTANCE_FACTOR, endTime - startTime);
+    streetLeg(CAR, startTime, endTime, to);
     return this;
   }
 
@@ -171,6 +178,7 @@ public class TestItineraryBuilder implements PlanTestConstants {
       case BICYCLE: return BICYCLE_SPEED;
       case BUS: return BUS_SPEED;
       case RAIL: return RAIL_SPEED;
+      case CAR: return CAR_SPEED;
       default: throw new IllegalStateException("Unsupported mode: " + mode);
     }
   }
