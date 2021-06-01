@@ -9,12 +9,14 @@ import org.opentripplanner.api.mapping.ServiceDateMapper;
 import org.opentripplanner.ext.legacygraphqlapi.LegacyGraphQLRequestContext;
 import org.opentripplanner.ext.legacygraphqlapi.generated.LegacyGraphQLDataFetchers;
 import org.opentripplanner.model.Agency;
+import org.opentripplanner.model.BookingInfo;
 import org.opentripplanner.model.Route;
 import org.opentripplanner.model.Trip;
 import org.opentripplanner.model.plan.Leg;
 import org.opentripplanner.model.plan.StopArrival;
 import org.opentripplanner.model.plan.WalkStep;
 import org.opentripplanner.routing.RoutingService;
+import org.opentripplanner.routing.alertpatch.TransitAlert;
 import org.opentripplanner.util.model.EncodedPolylineBean;
 
 public class LegacyGraphQLLegImpl implements LegacyGraphQLDataFetchers.LegacyGraphQLLeg {
@@ -178,6 +180,21 @@ public class LegacyGraphQLLegImpl implements LegacyGraphQLDataFetchers.LegacyGra
   @Override
   public DataFetcher<Boolean> interlineWithPreviousLeg() {
     return environment -> getSource(environment).interlineWithPreviousLeg;
+  }
+
+  @Override
+  public DataFetcher<Iterable<TransitAlert>> alerts() {
+    return environment -> getSource(environment).transitAlerts;
+  }
+
+  @Override
+  public DataFetcher<BookingInfo> dropOffBookingInfo() {
+    return environment -> getSource(environment).dropOffBookingInfo;
+  }
+
+  @Override
+  public DataFetcher<BookingInfo> pickupBookingInfo() {
+    return environment -> getSource(environment).pickupBookingInfo;
   }
 
   private RoutingService getRoutingService(DataFetchingEnvironment environment) {
