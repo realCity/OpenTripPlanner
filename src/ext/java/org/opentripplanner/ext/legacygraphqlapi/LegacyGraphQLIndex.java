@@ -28,7 +28,10 @@ import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLAgency
 import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLAlertImpl;
 import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLBikeParkImpl;
 import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLBikeRentalStationImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLBookingInfoImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLBookingTimeImpl;
 import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLCarParkImpl;
+import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLContactInfoImpl;
 import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLCoordinatesImpl;
 import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLDepartureRowImpl;
 import org.opentripplanner.ext.legacygraphqlapi.datafetchers.LegacyGraphQLFeedImpl;
@@ -113,6 +116,9 @@ class LegacyGraphQLIndex {
           .type(IntrospectionTypeWiring.build(LegacyGraphQLTranslatedStringImpl.class))
           .type(IntrospectionTypeWiring.build(LegacyGraphQLTripImpl.class))
           .type(IntrospectionTypeWiring.build(LegacyGraphQLVehicleParkingImpl.class))
+          .type(IntrospectionTypeWiring.build(LegacyGraphQLContactInfoImpl.class))
+          .type(IntrospectionTypeWiring.build(LegacyGraphQLBookingTimeImpl.class))
+          .type(IntrospectionTypeWiring.build(LegacyGraphQLBookingInfoImpl.class))
           .build();
       SchemaGenerator schemaGenerator = new SchemaGenerator();
       return schemaGenerator.makeExecutableSchema(typeRegistry, runtimeWiring);
