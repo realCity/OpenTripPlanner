@@ -254,12 +254,14 @@ public abstract class GraphRoutingTest {
         public BikeRentalStation bikeRentalStationEntity(
                 String id,
                 double latitude,
-                double longitude
+                double longitude,
+                Set<String> networks
         ) {
             var bikeRentalStation = new BikeRentalStation();
             bikeRentalStation.id = id;
             bikeRentalStation.x = longitude;
             bikeRentalStation.y = latitude;
+            bikeRentalStation.networks = networks;
             bikeRentalStation.isKeepingBicycleRentalAtDestinationAllowed = false;
             return bikeRentalStation;
         }
@@ -272,9 +274,9 @@ public abstract class GraphRoutingTest {
         ) {
             var vertex = new BikeRentalStationVertex(
                     graph,
-                    bikeRentalStationEntity(id, latitude, longitude)
+                    bikeRentalStationEntity(id, latitude, longitude, networks)
             );
-            new BikeRentalEdge(vertex, networks);
+            new BikeRentalEdge(vertex);
             return vertex;
         }
 

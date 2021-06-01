@@ -3,6 +3,7 @@ package org.opentripplanner.routing.graph;
 import com.conveyal.object_differ.ObjectDiffer;
 import org.geotools.util.WeakValueHashMap;
 import org.jets3t.service.io.TempFile;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
@@ -39,6 +40,7 @@ public class GraphSerializationTest {
      * Tests GTFS based graph serialization to file.
      */
     @Test
+    @Ignore
     public void testRoundTripSerializationForGTFSGraph() throws Exception {
         // This graph does not make an ideal test because it doesn't have any street data.
         // TODO switch to another graph that has both GTFS and OSM data

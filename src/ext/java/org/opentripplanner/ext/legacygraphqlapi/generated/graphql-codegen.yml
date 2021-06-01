@@ -31,8 +31,12 @@ config:
     AlertSeverityLevelType: String
     BikePark: Object
     BikeRentalStation: org.opentripplanner.routing.bike_rental.BikeRentalStation#BikeRentalStation
+    BikeRentalStationUris: org.opentripplanner.routing.bike_rental.BikeRentalStation#BikeRentalStation.RentalUris
     BikesAllowed: String
+    BookingInfo: org.opentripplanner.model.BookingInfo
+    BookingTime: org.opentripplanner.model.BookingTime
     CarPark: Object
+    ContactInfo: org.opentripplanner.model.ContactInfo
     Cluster: Object
     Coordinates: org.locationtech.jts.geom.Coordinate#Coordinate
     debugOutput: org.opentripplanner.api.resource.DebugOutput#DebugOutput

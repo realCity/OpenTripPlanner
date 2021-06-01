@@ -45,6 +45,8 @@ type Alert implements Node {
     """
     id: ID!
 
+    alertId: String
+
     """hashcode from the original GTFS-RT alert"""
     alertHash: Int
 
@@ -325,7 +327,7 @@ type BikeRentalStation implements Node & PlaceInterface {
 
     """
     A description of the current state of this bike rental station, e.g. "Station on"
-  """
+    """
     state: String
 
     """
@@ -350,6 +352,15 @@ type BikeRentalStation implements Node & PlaceInterface {
 
     """If true, bikes can be returned even if spacesAvailable is zero or bikes > capacity."""
     allowOverloading: Boolean
+
+    """Platform-specific URLs to begin renting a bike from this station."""
+    rentalUris: BikeRentalStationUris
+}
+
+type BikeRentalStationUris {
+    android: String
+    ios: String
+    web: String
 }
 
 enum BikesAllowed {
@@ -882,6 +893,12 @@ type Leg {
     and passenger can stay inside the vehicle.
     """
     interlineWithPreviousLeg: Boolean
+
+    alerts: [Alert]
+
+    dropOffBookingInfo: BookingInfo
+
+    pickupBookingInfo: BookingInfo
 }
 
 """Identifies whether this stop represents a stop or station."""
@@ -912,6 +929,9 @@ enum Mode {
 
     """CAR"""
     CAR
+
+    """CARPOOL"""
+    CARPOOL
 
     """FERRY"""
     FERRY
@@ -1060,6 +1080,32 @@ enum PickupDropoffType {
 
     """Must coordinate with driver to arrange pickup / drop off."""
     COORDINATE_WITH_DRIVER
+}
+
+type ContactInfo {
+    contactPerson: String
+    phoneNumber: String
+    eMail: String
+    faxNumber: String
+    infoUrl: String
+    bookingUrl: String
+    additionalDetails: String
+}
+
+type BookingTime {
+    time: String
+    daysPrior: Int
+}
+
+type BookingInfo {
+    contactInfo: ContactInfo
+    earliestBookingTime: BookingTime
+    latestBookingTime: BookingTime
+    minimumBookingNoticeSeconds: Long
+    maximumBookingNoticeSeconds: Long
+    message: String
+    pickupMessage: String
+    dropOffMessage: String
 }
 
 type Place {

@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,13 +32,13 @@ import org.opentripplanner.model.Route;
 import org.opentripplanner.model.TransitMode;
 import org.opentripplanner.routing.algorithm.transferoptimization.api.TransferOptimizationParameters;
 import org.opentripplanner.routing.core.BicycleOptimizeType;
-import org.opentripplanner.routing.core.TimeRestrictionWithOffset;
-import org.opentripplanner.routing.core.intersection_model.IntersectionTraversalCostModel;
 import org.opentripplanner.routing.core.RouteMatcher;
 import org.opentripplanner.routing.core.RoutingContext;
 import org.opentripplanner.routing.core.State;
+import org.opentripplanner.routing.core.TimeRestrictionWithOffset;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.core.TraverseModeSet;
+import org.opentripplanner.routing.core.intersection_model.IntersectionTraversalCostModel;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
@@ -189,7 +189,8 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
         StreetMode.WALK,
         StreetMode.WALK,
         StreetMode.WALK,
-        Collections.emptySet()
+        StreetMode.WALK,
+        EnumSet.allOf(TransitMode.class)
     );
 
     /**
@@ -331,6 +332,18 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
 
     /** Configure the transfer optimization */
     public final TransferOptimizationParameters transferOptimization = new TransferOptimizationRequest(this);
+
+    /**
+     * Transit reluctance per mode. Use this to add a advantage(<1.0) to specific modes, or to add
+     * a penalty to other modes (> 1.0). The type used here it the internal model
+     * {@link TransitMode} make sure to create a mapping for this before using it on the API.
+     * <p>
+     * If set, the alight-slack-for-mode override the default value {@code 1.0}.
+     * <p>
+     * This is a scalar multiplied with the time in second on board the transit vehicle. Default
+     * value is not-set(empty map).
+     */
+    private Map<TransitMode, Double> transitReluctanceForMode = new HashMap<>();
 
     /** A multiplier for how bad walking is, compared to being in transit for equal lengths of time.
      *  Defaults to 2. Empirically, values between 10 and 20 seem to correspond well to the concept
@@ -767,8 +780,6 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
         // http://en.wikipedia.org/wiki/Speed_limit
         carSpeed = 40; // 40 m/s, 144 km/h, above the maximum (finite) driving speed limit worldwide
         // Default to walk for access/egress/direct modes and all transit modes
-        this.modes = new RequestModes(StreetMode.WALK, StreetMode.WALK, StreetMode.WALK, new HashSet<>(
-            Arrays.asList(TransitMode.values())));
         bikeWalkingOptions = this;
 
         // So that they are never null.
@@ -854,6 +865,15 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
 
     public void setWheelchairAccessible(boolean wheelchairAccessible) {
         this.wheelchairAccessible = wheelchairAccessible;
+    }
+
+    public void setTransitReluctanceForMode(Map<TransitMode, Double> reluctanceForMode) {
+        transitReluctanceForMode.clear();
+        transitReluctanceForMode.putAll(reluctanceForMode);
+    }
+
+    public Map<TransitMode, Double> transitReluctanceForMode() {
+        return Collections.unmodifiableMap(transitReluctanceForMode);
     }
 
     /** @return the (soft) maximum walk distance */
@@ -1462,7 +1482,7 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
      * @see RoutingRequest#isCloseToStartOrEnd(Vertex)
      * @see DominanceFunction#betterOrEqualAndComparable(State, State)
      */
-    private final int MAX_CLOSENESS_METERS = 500;
+    private static final int MAX_CLOSENESS_METERS = 500;
     private Envelope fromEnvelope;
     private Envelope toEnvelope;
 

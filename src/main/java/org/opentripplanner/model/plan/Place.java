@@ -96,9 +96,10 @@ public class Place {
     public String toStringShort() {
         StringBuilder buf = new StringBuilder(name);
         if(stop != null) {
-            buf.append(", ").append(stop.getId());
+            buf.append(" (").append(stop.getId()).append(")");
+        } else {
+            buf.append(" ").append(coordinate.toString());
         }
-        buf.append(" ").append(coordinate.toString());
 
         return buf.toString();
     }

@@ -5,6 +5,7 @@ import java.time.ZonedDateTime;
 import org.opentripplanner.model.base.ToStringBuilder;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.core.TimeRestrictionWithOffset;
+import org.opentripplanner.transit.raptor.api.transit.RaptorCostConverter;
 import org.opentripplanner.transit.raptor.api.transit.RaptorTransfer;
 
 public class AccessEgress implements RaptorTransfer {
@@ -40,6 +41,11 @@ public class AccessEgress implements RaptorTransfer {
   @Override
   public int stop() {
     return toFromStop;
+  }
+
+  @Override
+  public int cost() {
+    return RaptorCostConverter.toRaptorCost(lastState.getWeight());
   }
 
   @Override

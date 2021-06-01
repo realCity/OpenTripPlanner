@@ -210,6 +210,7 @@ public abstract class GraphPathToItineraryMapper {
 
             var modeChange = backMode != forwardMode && backMode != null && forwardMode != null;
             var parkingChange = backState.isVehicleParked() != forwardState.isVehicleParked();
+            var rentalChange = isRentalPickUp(backState) || isRentalDropOff(backState);
 
             if (parkingChange) {
                 /* Remove the state for actually parking (traversing VehicleParkingEdge) from the
@@ -220,7 +221,7 @@ public abstract class GraphPathToItineraryMapper {
                 legsIndexes.add(legIndexPairs);
                 legIndexPairs = new int[] {i + 1, states.length - 1};
             }
-            else if (modeChange) {
+            else if (modeChange || rentalChange) {
                 legIndexPairs[1] = i;
                 legsIndexes.add(legIndexPairs);
                 legIndexPairs = new int[] {i, states.length - 1};
@@ -236,9 +237,11 @@ public abstract class GraphPathToItineraryMapper {
         for (int i = 0; i < legsStates.length; i++) {
             legIndexPairs = legsIndexes.get(i);
             legsStates[i] = new State[legIndexPairs[1] - legIndexPairs[0] + 1];
-            for (int j = 0; j <= legIndexPairs[1] - legIndexPairs[0]; j++) {
-                legsStates[i][j] = states[legIndexPairs[0] + j];
-            }
+            if (legIndexPairs[1] - legIndexPairs[0] + 1 >= 0)
+                System.arraycopy(
+                        states, legIndexPairs[0], legsStates[i], 0,
+                        legIndexPairs[1] - legIndexPairs[0] + 1
+                );
         }
 
         return legsStates;
@@ -298,11 +301,13 @@ public abstract class GraphPathToItineraryMapper {
 
         leg.legGeometry = PolylineEncoder.createEncodings(geometry);
 
+        leg.generalizedCost = (int) (states[states.length - 1].getWeight() - states[0].getWeight());
+
         // Interlining information is now in a separate field in Graph, not in edges.
         // But in any case, with Raptor this method is only being used to translate non-transit legs of paths.
         leg.interlineWithPreviousLeg = false;
 
-        leg.rentedBike = states[0].isBikeRenting() && states[states.length - 1].isBikeRenting();
+        leg.rentedBike = states[0].isBikeRenting();
 
         if (leg.rentedBike) {
             Set<String> bikeRentalNetworks = states[0].getBikeRentalNetworks();
@@ -518,17 +523,17 @@ public abstract class GraphPathToItineraryMapper {
 
         State onBikeRentalState = null, offBikeRentalState = null;
 
+        if (isRentalPickUp(states[states.length - 1])) {
+            onBikeRentalState = states[states.length - 1];
+        }
+        if (isRentalDropOff(states[0])) {
+            offBikeRentalState = states[0];
+        }
+
         for (int i = 0; i < states.length - 1; i++) {
             State backState = states[i];
             State forwardState = states[i + 1];
             Edge edge = forwardState.getBackEdge();
-
-            if (edge instanceof BikeRentalEdge && forwardState.bikeRentalNotStarted()) {
-                onBikeRentalState = forwardState;
-            }
-            if (edge instanceof BikeRentalEdge && !forwardState.bikeRentalNotStarted()) {
-                offBikeRentalState = forwardState;
-            }
 
             boolean createdNewStep = false, disableZagRemovalForThisStep = false;
             if (edge instanceof FreeEdge) {
@@ -796,14 +801,23 @@ public abstract class GraphPathToItineraryMapper {
         // add bike rental information if applicable
         if(onBikeRentalState != null && !steps.isEmpty()) {
             steps.get(steps.size()-1).bikeRentalOnStation = 
-                    new BikeRentalStationInfo((BikeRentalStationVertex) onBikeRentalState.getBackEdge().getToVertex());
+                    new BikeRentalStationInfo((BikeRentalStationVertex) onBikeRentalState.getVertex());
         }
         if(offBikeRentalState != null && !steps.isEmpty()) {
             steps.get(0).bikeRentalOffStation = 
-                    new BikeRentalStationInfo((BikeRentalStationVertex) offBikeRentalState.getBackEdge().getFromVertex());
+                    new BikeRentalStationInfo((BikeRentalStationVertex) offBikeRentalState.getVertex());
         }
 
         return steps;
+    }
+
+    private static boolean isRentalPickUp(State state) {
+        return state.getBackEdge() instanceof BikeRentalEdge && (state.getBackState() == null || !state.getBackState()
+                .isBikeRenting());
+    }
+
+    private static boolean isRentalDropOff(State state) {
+        return state.getBackEdge() instanceof BikeRentalEdge && state.getBackState().isBikeRenting();
     }
 
     private static boolean isLink(Edge edge) {

@@ -194,6 +194,15 @@ class GbfsBikeRentalDataSource implements DataSource<BikeRentalStation> {
             brstation.name =  new NonLocalizedString(stationNode.path("name").asText());
             brstation.isKeepingBicycleRentalAtDestinationAllowed = allowKeepingRentedBicycleAtDestination;
             brstation.isCarStation = routeAsCar;
+
+            if (stationNode.has("rental_uris")) {
+                var rentalUrisObject = stationNode.path("rental_uris");
+                String androidUri = rentalUrisObject.has("android") ? rentalUrisObject.get("android").asText() : null;
+                String iosUri = rentalUrisObject.has("ios") ? rentalUrisObject.get("ios").asText() : null;
+                String webUri = rentalUrisObject.has("web") ? rentalUrisObject.get("web").asText() : null;
+                brstation.rentalUris = new BikeRentalStation.RentalUris(androidUri, iosUri, webUri);
+            }
+
             return brstation;
         }
     }
