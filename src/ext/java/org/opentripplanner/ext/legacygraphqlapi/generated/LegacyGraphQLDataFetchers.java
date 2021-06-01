@@ -111,6 +111,17 @@ public class LegacyGraphQLDataFetchers {
         public DataFetcher<Integer> capacity();
 
         public DataFetcher<Boolean> allowOverloading();
+
+        public DataFetcher<BikeRentalStation.RentalUris> rentalUris();
+    }
+
+    public interface LegacyGraphQLBikeRentalStationUris {
+
+        public DataFetcher<String> android();
+
+        public DataFetcher<String> ios();
+
+        public DataFetcher<String> web();
     }
 
     /**
