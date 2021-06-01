@@ -352,6 +352,15 @@ type BikeRentalStation implements Node & PlaceInterface {
 
     """If true, bikes can be returned even if spacesAvailable is zero or bikes > capacity."""
     allowOverloading: Boolean
+
+    """Platform-specific URLs to begin renting a bike from this station."""
+    rentalUris: BikeRentalStationUris
+}
+
+type BikeRentalStationUris {
+    android: String
+    ios: String
+    web: String
 }
 
 enum BikesAllowed {
