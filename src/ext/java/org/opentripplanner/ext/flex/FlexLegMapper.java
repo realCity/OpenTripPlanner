@@ -20,7 +20,9 @@ public class FlexLegMapper {
         leg.boardRule = GraphPathToItineraryMapper.getBoardAlightMessage(2);
         leg.alightRule = GraphPathToItineraryMapper.getBoardAlightMessage(3);
 
-        leg.bookingInfo = flexTripEdge.getFlexTrip().getBookingInfo(leg.from.getStopIndex());
+        leg.dropOffBookingInfo = flexTripEdge.getFlexTrip().getDropOffBookingInfo(leg.from.getStopIndex());
+        leg.pickupBookingInfo = flexTripEdge.getFlexTrip().getPickupBookingInfo(leg.from.getStopIndex());
+
         leg.generalizedCost = flexTripEdge.getTimeInSeconds();
     }
 
