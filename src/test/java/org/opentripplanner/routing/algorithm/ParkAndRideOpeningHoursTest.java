@@ -41,7 +41,7 @@ public class ParkAndRideOpeningHoursTest extends GraphRoutingTest {
 
                 biLink(A, S);
 
-                vehicleParking("CarPark #1", 47.500, 19.001, false, true,
+                vehicleParking("CarPark #1", 47.500, 19.001, false, true, false,
                         openingHours,
                         List.of(vehicleParkingEntrance(A, "CarPark #1 Entrance A", true, true))
                 );

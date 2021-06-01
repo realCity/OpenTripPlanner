@@ -299,19 +299,24 @@ public abstract class GraphRoutingTest {
         }
 
         public void vehicleParking(String id, double x, double y, boolean bicyclePlaces, boolean carPlaces, List<VehicleParking.VehicleParkingEntranceCreator> entrances) {
-            vehicleParking(id, x, y, bicyclePlaces, carPlaces, null, entrances);
+            vehicleParking(id, x, y, bicyclePlaces, carPlaces, false, null, entrances);
         }
 
-        public void vehicleParking(String id, double x, double y, boolean bicyclePlaces, boolean carPlaces, TimeRestriction openingHours, List<VehicleParking.VehicleParkingEntranceCreator> entrances) {
+        public void vehicleParking(String id, double x, double y, boolean bicyclePlaces, boolean carPlaces, boolean wheelchairAccessiblePlaces, List<VehicleParking.VehicleParkingEntranceCreator> entrances) {
+            vehicleParking(id, x, y, bicyclePlaces, carPlaces, wheelchairAccessiblePlaces, null, entrances);
+        }
+
+        public void vehicleParking(String id, double x, double y, boolean bicyclePlaces, boolean carPlaces, boolean wheelchairAccessiblePlaces, TimeRestriction openingHours, List<VehicleParking.VehicleParkingEntranceCreator> entrances) {
             var vehicleParking = VehicleParking.builder()
-                    .id(new FeedScopedId(TEST_FEED_ID, id))
-                    .x(x)
-                    .y(y)
-                    .bicyclePlaces(bicyclePlaces)
-                    .carPlaces(carPlaces)
-                    .entrances(entrances)
-                    .openingHours(openingHours)
-                    .build();
+                .id(new FeedScopedId(TEST_FEED_ID, id))
+                .x(x)
+                .y(y)
+                .bicyclePlaces(bicyclePlaces)
+                .carPlaces(carPlaces)
+                .entrances(entrances)
+                .openingHours(openingHours)
+                .wheelchairAccessibleCarPlaces(wheelchairAccessiblePlaces)
+                .build();
 
             var vertices = VehicleParkingHelper.createVehicleParkingVertices(graph, vehicleParking);
             VehicleParkingHelper.linkVehicleParkingEntrances(vertices);
