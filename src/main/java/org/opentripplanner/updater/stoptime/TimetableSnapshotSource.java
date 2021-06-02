@@ -234,7 +234,8 @@ public class TimetableSnapshotSource implements TimetableSnapshotProvider {
                         applied = handleCanceledTrip(tripUpdate, feedId, serviceDate);
                         break;
                     case MODIFIED:
-                        applied = validateAndHandleModifiedTrip(graph, tripUpdate, feedId, serviceDate);
+                        LOG.info("Skipped MODIFIED TripUpdate for {}", new FeedScopedId(feedId, tripDescriptor.getTripId()));
+                        applied = false;
                         break;
                 }
 
