@@ -42,7 +42,7 @@ public class LegacyGraphQLLegImpl implements LegacyGraphQLDataFetchers.LegacyGra
   }
 
   @Override
-  public DataFetcher<String> mode() {
+  public DataFetcher<Object> mode() {
     return environment -> getSource(environment).mode.name();
   }
 

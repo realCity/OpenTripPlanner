@@ -148,7 +148,7 @@ public class LegacyGraphQLStopImpl implements LegacyGraphQLDataFetchers.LegacyGr
   }
 
   @Override
-  public DataFetcher<String> vehicleMode() {
+  public DataFetcher<Object> vehicleMode() {
     return environment -> getValue(
         environment,
         stop -> {
