@@ -3,8 +3,10 @@ package org.opentripplanner.model.plan;
 import org.opentripplanner.model.StopLocation;
 import org.opentripplanner.model.WgsCoordinate;
 import org.opentripplanner.model.base.ToStringBuilder;
-import org.opentripplanner.routing.vehicle_rental.VehicleRentalPlace;
+import org.opentripplanner.routing.api.request.RoutingRequest;
+import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.graph.Vertex;
+import org.opentripplanner.routing.vehicle_rental.VehicleRentalPlace;
 import org.opentripplanner.routing.vertextype.TransitStopVertex;
 import org.opentripplanner.routing.vertextype.VehicleParkingEntranceVertex;
 import org.opentripplanner.routing.vertextype.VehicleRentalStationVertex;
@@ -204,7 +206,16 @@ public class Place {
         );
     }
 
-    public static Place forVehicleParkingEntrance(VehicleParkingEntranceVertex vertex, String name, boolean closesSoon) {
+    public static Place forVehicleParkingEntrance(VehicleParkingEntranceVertex vertex, String name, boolean closesSoon, RoutingRequest request) {
+        TraverseMode traverseMode = null;
+        if (request.streetSubRequestModes.getCar()) {
+            traverseMode = TraverseMode.CAR;
+        } else if (request.streetSubRequestModes.getBicycle()) {
+            traverseMode = TraverseMode.BICYCLE;
+        }
+
+        boolean realTime = request.useVehicleParkingAvailabilityInformation
+                && vertex.getVehicleParking().hasRealTimeDataForMode(traverseMode, request.wheelchairAccessible);
         return new Place(
                 name,
                 null,
@@ -218,6 +229,7 @@ public class Place {
                         .vehicleParking(vertex.getVehicleParking())
                         .entrance(vertex.getParkingEntrance())
                         .closesSoon(closesSoon)
+                        .realtime(realTime)
                         .build()
         );
     }

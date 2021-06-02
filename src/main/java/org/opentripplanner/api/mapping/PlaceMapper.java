@@ -88,6 +88,7 @@ public class PlaceMapper {
                 .availability(mapVehicleParkingSpaces(vp.getAvailability()))
                 .capacity(mapVehicleParkingSpaces(vp.getCapacity()))
                 .closesSoon(vehicleParkingWithEntrance.isClosesSoon())
+                .realtime(vehicleParkingWithEntrance.isRealtime())
                 .build();
     }
 

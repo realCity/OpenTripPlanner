@@ -512,7 +512,7 @@ public abstract class GraphPathToItineraryMapper {
                 closesSoon = !vehicleParking.getOpeningHours()
                         .isTraverseableAt(limit.toLocalDateTime());
             }
-            return Place.forVehicleParkingEntrance((VehicleParkingEntranceVertex) vertex, name, closesSoon);
+            return Place.forVehicleParkingEntrance((VehicleParkingEntranceVertex) vertex, name, closesSoon, state.getOptions());
         } else {
             return Place.normal(vertex, name);
         }

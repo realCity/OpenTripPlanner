@@ -86,6 +86,11 @@ public class ApiVehicleParkingWithEntrance {
      */
     public final boolean closesSoon;
 
+    /**
+     * True if realtime information is used for checking availability.
+     */
+    public final boolean realtime;
+
     ApiVehicleParkingWithEntrance(
             String id,
             String name,
@@ -101,7 +106,8 @@ public class ApiVehicleParkingWithEntrance {
             boolean hasWheelchairAccessibleCarPlaces,
             ApiVehicleParkingSpaces capacity,
             ApiVehicleParkingSpaces availability,
-            boolean closesSoon
+            boolean closesSoon,
+            boolean realtime
     ) {
         this.id = id;
         this.name = name;
@@ -118,6 +124,7 @@ public class ApiVehicleParkingWithEntrance {
         this.capacity = capacity;
         this.availability = availability;
         this.closesSoon = closesSoon;
+        this.realtime = realtime;
     }
 
     public static ApiVehicleParkingWithEntranceBuilder builder() {
@@ -141,6 +148,7 @@ public class ApiVehicleParkingWithEntrance {
         private ApiVehicleParkingSpaces capacity;
         private ApiVehicleParkingSpaces availability;
         private boolean closesSoon;
+        private boolean realtime;
 
         ApiVehicleParkingWithEntranceBuilder() {}
 
@@ -231,11 +239,18 @@ public class ApiVehicleParkingWithEntrance {
             return this;
         }
 
+        public ApiVehicleParkingWithEntranceBuilder realtime(
+                boolean realtime
+        ) {
+            this.realtime = realtime;
+            return this;
+        }
+
         public ApiVehicleParkingWithEntrance build() {
             return new ApiVehicleParkingWithEntrance(
                     id, name, entranceId, entranceName, detailsUrl,
                     imageUrl, note, tags, hasBicyclePlaces, hasAnyCarPlaces, hasCarPlaces,
-                    hasWheelchairAccessibleCarPlaces, capacity, availability, closesSoon
+                    hasWheelchairAccessibleCarPlaces, capacity, availability, closesSoon, realtime
             );
         }
     }
