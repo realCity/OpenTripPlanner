@@ -2036,6 +2036,11 @@ type QueryType {
         When doing bike-and-ride or park-and-ride search what tags must a vehicle parking contain?
         """
         requiredVehicleParkingTags: [String]
+
+        """
+        Whether or not vehicle parking availability information will be used to plan park and ride trips
+        """
+        useVehicleParkingAvailabilityInformation: Boolean
     ): Plan
 }
 
