@@ -439,6 +439,7 @@ public class LegacyGraphQLTypes {
     Rail("RAIL"),
     Subway("SUBWAY"),
     Tram("TRAM"),
+    Carpool("CARPOOL"),
     Walk("WALK"),
     Bicycle("BICYCLE"),
     Car("CAR");
@@ -1420,7 +1421,8 @@ public class LegacyGraphQLTypes {
     Subway("SUBWAY"),
     Tram("TRAM"),
     Transit("TRANSIT"),
-    Walk("WALK");
+    Walk("WALK"),
+    Carpool("CARPOOL");
     
     public final String label;
      

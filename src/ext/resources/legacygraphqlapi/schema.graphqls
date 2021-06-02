@@ -979,6 +979,7 @@ enum TraverseMode {
     TRAM
     TRANSIT
     WALK
+    CARPOOL
 }
 
 enum TransitMode {
@@ -992,6 +993,7 @@ enum TransitMode {
     RAIL
     SUBWAY
     TRAM
+    CARPOOL
 
     WALK    @deprecated(reason: "The values may be specified, but is ignored by OTP2")
     BICYCLE @deprecated(reason: "The values may be specified, but is ignored by OTP2")
