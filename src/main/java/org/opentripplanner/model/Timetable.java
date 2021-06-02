@@ -340,6 +340,14 @@ public class Timetable implements Serializable {
                                 newTimes.updateDepartureDelay(i, delay);
                             }
                         }
+                        if (newTimes.getDepartureTime(i) < newTimes.getArrivalTime(i)) {
+                            LOG.warn("Departure time at index {} is earlier then the arrival time for {}", i, newTimes.trip.getId());
+                            return null;
+                        }
+                        if (i > 0 && newTimes.getArrivalTime(i) <= newTimes.getDepartureTime(i - 1)) {
+                            LOG.warn("Arrival time at index {} is earlier or equal to the previous departure time for {}", i, newTimes.trip.getId());
+                            return null;
+                        }
                     }
 
                     if (updates.hasNext()) {
