@@ -81,6 +81,7 @@ public class PlaceMapper {
                 .hasAnyCarPlaces(vp.hasAnyCarPlaces())
                 .hasCarPlaces(vp.hasCarPlaces())
                 .hasWheelchairAccessibleCarPlaces(vp.hasWheelchairAccessibleCarPlaces())
+                .realtime(vehicleParkingWithEntrance.isRealtime())
                 .availability(mapVehicleParkingPlaces(vp.getAvailability()))
                 .capacity(mapVehicleParkingPlaces(vp.getCapacity()))
                 .closesSoon(vehicleParkingWithEntrance.isClosesSoon())

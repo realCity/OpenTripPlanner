@@ -18,4 +18,9 @@ public class VehicleParkingWithEntrance {
      * interval.
      */
     public final boolean closesSoon;
+
+    /**
+     * Was realtime data used when parking at this VehicleParking.
+     */
+    private final boolean realtime;
 }

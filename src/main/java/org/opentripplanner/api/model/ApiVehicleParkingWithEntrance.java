@@ -70,6 +70,11 @@ public class ApiVehicleParkingWithEntrance {
     public final boolean hasWheelchairAccessibleCarPlaces;
 
     /**
+     * True if realtime information is used for checking availability.
+     */
+    public final boolean realtime;
+
+    /**
      * The capacity of the vehicle parking, if known. Maybe {@code null} if unknown.
      */
     public final ApiVehicleParkingPlaces capacity;
