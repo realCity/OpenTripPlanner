@@ -268,8 +268,13 @@ public class LegacyGraphQLQueryTypeImpl
 
       List<TransitMode> filterByModes = args.getLegacyGraphQLFilterByModes() != null ? StreamSupport
           .stream(args.getLegacyGraphQLFilterByModes().spliterator(), false)
-          .map(mode -> mode.label)
-          .map(TransitMode::valueOf)
+          .map(mode -> {
+            // This exists to ignore deprecated values which could be specified in OTP1,
+            // but which are no longer valid values in OTP2.
+            try { return TransitMode.valueOf(mode.label); }
+            catch (Exception e) { return null; }
+          })
+          .filter(Objects::nonNull)
           .collect(Collectors.toList()) : null;
       List<PlaceType> filterByPlaceTypes =
           args.getLegacyGraphQLFilterByPlaceTypes() != null ? StreamSupport

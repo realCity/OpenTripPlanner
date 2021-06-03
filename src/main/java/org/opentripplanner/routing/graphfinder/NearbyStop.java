@@ -2,6 +2,9 @@ package org.opentripplanner.routing.graphfinder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 import org.locationtech.jts.geom.LineString;
 import org.opentripplanner.model.StopLocation;
 import org.opentripplanner.routing.core.State;
@@ -43,8 +46,31 @@ public class NearbyStop implements Comparable<NearbyStop> {
     return (int) (this.distance) - (int) (that.distance);
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) { return true; }
+    if (o == null || getClass() != o.getClass()) { return false; }
+    final NearbyStop that = (NearbyStop) o;
+    return Double.compare(that.distance, distance) == 0
+            && stop.equals(that.stop)
+            && Objects.equals(edges, that.edges)
+            && Objects.equals(geometry, that.geometry)
+            && Objects.equals(state, that.state);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(stop, distance, edges, geometry, state);
+  }
+
   public String toString() {
-    return String.format("stop %s at %.1f meters", stop, distance);
+    return String.format(
+            "stop %s at %.1f meters%s%s%s",
+            stop, distance,
+            edges != null ? " (" + edges.size() + " edges)" : "",
+            geometry != null ? " w/geometry" : "",
+            state != null ? " w/state" : ""
+    );
   }
 
   /**
