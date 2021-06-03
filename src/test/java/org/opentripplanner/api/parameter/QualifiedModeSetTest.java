@@ -1,6 +1,11 @@
 package org.opentripplanner.api.parameter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.Test;
+import org.opentripplanner.routing.api.request.RequestModes;
+
+import javax.ws.rs.BadRequestException;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.opentripplanner.routing.api.request.StreetMode.BIKE;
 import static org.opentripplanner.routing.api.request.StreetMode.BIKE_RENTAL;
@@ -23,14 +28,14 @@ public class QualifiedModeSetTest {
     public void singleWalk() {
         QualifiedModeSet modeSet = new QualifiedModeSet("WALK");
         assertEquals(Set.of(new QualifiedMode("WALK")), modeSet.qModes);
-        assertEquals(new RequestModes(WALK, WALK, WALK, WALK, Set.of()), modeSet.getRequestModes());
+        assertEquals(new RequestModes(WALK, WALK, WALK, Set.of()), modeSet.getRequestModes());
     }
 
     @Test
     public void multipleWalks() {
         QualifiedModeSet modeSet = new QualifiedModeSet("WALK,WALK,WALK");
         assertEquals(Set.of(new QualifiedMode("WALK")), modeSet.qModes);
-        assertEquals(new RequestModes(WALK, WALK, WALK, WALK, Set.of()), modeSet.getRequestModes());
+        assertEquals(new RequestModes(WALK, WALK, WALK, Set.of()), modeSet.getRequestModes());
     }
 
     @Test
@@ -40,7 +45,7 @@ public class QualifiedModeSetTest {
                 new QualifiedMode("WALK"),
                 new QualifiedMode("BICYCLE")
         ), modeSet.qModes);
-        assertEquals(new RequestModes(BIKE, BIKE, BIKE, BIKE, Set.of()), modeSet.getRequestModes());
+        assertEquals(new RequestModes(BIKE, BIKE, BIKE, Set.of()), modeSet.getRequestModes());
     }
 
     @Test
@@ -60,7 +65,7 @@ public class QualifiedModeSetTest {
                 new QualifiedMode("WALK"),
                 new QualifiedMode("BICYCLE_PARK")
         ), modeSet.qModes);
-        assertEquals(new RequestModes(BIKE_TO_PARK, WALK, WALK, BIKE_TO_PARK, Set.of()), modeSet.getRequestModes());
+        assertEquals(new RequestModes(BIKE_TO_PARK, WALK, BIKE_TO_PARK, Set.of()), modeSet.getRequestModes());
     }
 
     @Test
@@ -70,7 +75,7 @@ public class QualifiedModeSetTest {
                 new QualifiedMode("WALK"),
                 new QualifiedMode("BICYCLE")
         ), modeSet.qModes);
-        assertEquals(new RequestModes(BIKE, BIKE, BIKE, BIKE, Set.of()), modeSet.getRequestModes());
+        assertEquals(new RequestModes(BIKE, BIKE, BIKE, Set.of()), modeSet.getRequestModes());
     }
 
     @Test
