@@ -92,7 +92,7 @@ public class PlannerResource extends RoutingResource {
 
             response.debugOutput = res.getDebugAggregator().finishedRendering();
         }
-        catch (Exception e) {
+        catch (Throwable e) {
             LOG.error("System error", e);
             PlannerError error = new PlannerError();
             error.setMsg(Message.SYSTEM_ERROR);
