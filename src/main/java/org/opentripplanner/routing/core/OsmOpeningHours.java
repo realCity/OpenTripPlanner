@@ -22,6 +22,8 @@ import org.opentripplanner.util.I18NString;
 @RequiredArgsConstructor
 public class OsmOpeningHours implements I18NString, TimeRestriction, Serializable {
 
+    private static final int MAX_SEARCH_DAYS = 6;
+
     private final List<Rule> rules;
 
     @Override
@@ -31,12 +33,17 @@ public class OsmOpeningHours implements I18NString, TimeRestriction, Serializabl
 
     @Override
     public Optional<LocalDateTime> earliestDepartureTime(LocalDateTime now) {
-        return OpeningHoursEvaluator.isOpenNext(now, rules);
+        return OpeningHoursEvaluator.isOpenNext(now, rules, MAX_SEARCH_DAYS);
     }
 
     @Override
     public Optional<LocalDateTime> latestArrivalTime(LocalDateTime now) {
-        return OpeningHoursEvaluator.wasLastOpen(now, rules);
+        try {
+            return OpeningHoursEvaluator.wasLastOpen(now, rules, MAX_SEARCH_DAYS);
+        } catch (Throwable e) {
+            System.out.println("Err: " + this);
+            throw e;
+        }
     }
 
     public static OsmOpeningHours parseFromOsm(String openingHours)
