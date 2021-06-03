@@ -52,7 +52,6 @@ public class NearbyStop implements Comparable<NearbyStop> {
     if (o == null || getClass() != o.getClass()) { return false; }
     final NearbyStop that = (NearbyStop) o;
     return Double.compare(that.distance, distance) == 0
-            && distanceIndependentTime == that.distanceIndependentTime
             && stop.equals(that.stop)
             && Objects.equals(edges, that.edges)
             && Objects.equals(geometry, that.geometry)
@@ -61,14 +60,13 @@ public class NearbyStop implements Comparable<NearbyStop> {
 
   @Override
   public int hashCode() {
-    return Objects.hash(stop, distance, distanceIndependentTime, edges, geometry, state);
+    return Objects.hash(stop, distance, edges, geometry, state);
   }
 
   public String toString() {
     return String.format(
-            "stop %s at %.1f meters%s%s%s%s",
+            "stop %s at %.1f meters%s%s%s",
             stop, distance,
-            distanceIndependentTime > 0 ? " +" + distanceIndependentTime + " seconds" : "",
             edges != null ? " (" + edges.size() + " edges)" : "",
             geometry != null ? " w/geometry" : "",
             state != null ? " w/state" : ""
