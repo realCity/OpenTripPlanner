@@ -10,8 +10,10 @@ import graphql.schema.DataFetchingEnvironmentImpl;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -700,6 +702,10 @@ public class LegacyGraphQLQueryTypeImpl
       callWith.argument("bikeSwitchCost", (Integer v) -> request.bikeSwitchCost = v);
       callWith.argument("allowKeepingRentedBicycleAtDestination", (Boolean v) -> request.allowKeepingRentedBicycleAtDestination = v);
       callWith.argument("keepingRentedBicycleAtDestinationCost", (Integer v) -> request.keepingRentedBicycleAtDestinationCost = v);
+      callWith.argument("allowedBikeRentalNetworks", (Collection<String> v) -> request.allowedBikeRentalNetworks = new HashSet<>(v));
+      callWith.argument("bannedBikeRentalNetworks", (Collection<String> v) -> request.bannedBikeRentalNetworks = new HashSet<>(v));
+      callWith.argument("requiredVehicleParkingTags", (Collection<String> v) -> request.requiredVehicleParkingTags = new HashSet<>(v));
+      callWith.argument("bannedVehicleParkingTags", (Collection<String> v) -> request.bannedVehicleParkingTags = new HashSet<>(v));
 
       // callWith.argument("modeWeight.TRAM", (Double v) -> request.setModeWeight(TraverseMode.TRAM, v));
       // callWith.argument("modeWeight.SUBWAY", (Double v) -> request.setModeWeight(TraverseMode.SUBWAY, v));
@@ -775,11 +781,6 @@ public class LegacyGraphQLQueryTypeImpl
       if (hasArgument(environment,  "allowedTicketTypes")) {
         // request.allowedFares = Sets.newHashSet();
         // ((List<String>)environment.getArgument("allowedTicketTypes")).forEach(ticketType -> request.allowedFares.add(ticketType.replaceFirst("_", ":")));
-      }
-
-      if (hasArgument(environment, "allowedBikeRentalNetworks")) {
-        // ArrayList<String> allowedBikeRentalNetworks = environment.getArgument("allowedBikeRentalNetworks");
-        // request.allowedBikeRentalNetworks = new HashSet<>(allowedBikeRentalNetworks);
       }
 
       if (request.bikeRental && !hasArgument(environment, "bikeSpeed")) {

@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,6 +37,11 @@ public class BikeRentalTest extends GraphRoutingTest {
     private BikeRentalStationVertex B1, B2;
     private StreetEdge SE1, SE2, SE3;
 
+    private String NETWORK1 = "network-1";
+    private String NETWORK2 = "network-2";
+    private String NETWORK3 = "network-3";
+    private String NETWORK4 = "network-4";
+
     @BeforeEach
     public void setUp() {
         // Generate a very simple graph
@@ -59,8 +66,8 @@ public class BikeRentalTest extends GraphRoutingTest {
                 T1 = streetLocation("T1", 47.500, 18.999, false);
                 T2 = streetLocation("T1", 47.530, 18.999, true);
 
-                B1 = bikeRentalStation("B1", 47.510, 19.001);
-                B2 = bikeRentalStation("B2", 47.520, 19.001);
+                B1 = bikeRentalStation("B1", 47.510, 19.001, NETWORK1, NETWORK2, NETWORK3);
+                B2 = bikeRentalStation("B2", 47.520, 19.001, NETWORK1, NETWORK2, NETWORK4);
 
                 biLink(A, S1);
                 biLink(D, E1);
@@ -345,6 +352,79 @@ public class BikeRentalTest extends GraphRoutingTest {
         );
     }
 
+    @Test
+    public void noPathIfNoAllowedNetworks() {
+        assertNoRental(B, C, Set.of(), Set.of(NETWORK3));
+    }
+
+    @Test
+    public void pathIfWithOnlyAllowedNetworks() {
+        assertPathWithNetwork(B, C, Set.of(), Set.of(NETWORK1), Set.of(NETWORK1));
+    }
+
+    @Test
+    public void noPathIfAllNetworksBanned() {
+        assertNoRental(B, C, Set.of(NETWORK1, NETWORK2), Set.of());
+    }
+
+    @Test
+    public void pathIfWithoutBannedNetworks() {
+        assertPathWithNetwork(B, C, Set.of(NETWORK3), Set.of(), Set.of(NETWORK1, NETWORK2));
+    }
+
+    @Test
+    public void pathWithoutBannedWithAllowedNetworks() {
+        assertPathWithNetwork(B, C, Set.of(NETWORK1), Set.of(NETWORK1, NETWORK2), Set.of(NETWORK2));
+    }
+
+    private void assertNoRental(StreetVertex fromVertex, StreetVertex toVertex, Set<String> bannedNetworks, Set<String> allowedNetworks) {
+        Consumer<RoutingRequest> setter = options -> {
+            options.allowedBikeRentalNetworks = allowedNetworks;
+            options.bannedBikeRentalNetworks = bannedNetworks;
+        };
+
+        assertEquals(
+                List.of(
+                        "WALK - BEFORE_RENTING - BC street (1,503.76, 752)"
+                ),
+                runStreetSearchAndCreateDescriptor(fromVertex, toVertex, false, setter),
+                "departAt"
+        );
+
+        assertEquals(
+                List.of(
+                        "WALK - HAVE_RENTED - BC street (1,503.76, 752)"
+                ),
+                runStreetSearchAndCreateDescriptor(fromVertex, toVertex, true, setter),
+                "arriveBy"
+        );
+    }
+
+    private void assertPathWithNetwork(StreetVertex fromVertex, StreetVertex toVertex, Set<String> bannedNetworks, Set<String> allowedNetworks, Set<String> usedNetworks) {
+        Consumer<RoutingRequest> setter = options -> {
+            options.allowedBikeRentalNetworks = allowedNetworks;
+            options.bannedBikeRentalNetworks = bannedNetworks;
+        };
+
+        assertEquals(
+                List.of(
+                        "BICYCLE - RENTING_FROM_STATION - BC street (464.00, 242)",
+                        "null - HAVE_RENTED - B2 (499.00, 257)"
+                ),
+                runStreetSearchAndCreateDescriptor(fromVertex, toVertex, false, setter),
+                "departAt"
+        );
+
+        assertEquals(
+                List.of(
+                        "BICYCLE - RENTING_FROM_STATION - BC street (464.00, 242)",
+                        "null - HAVE_RENTED - B2 (499.00, 257)"
+                ),
+                runStreetSearchAndCreateDescriptor(fromVertex, toVertex, true, setter),
+                "arriveBy"
+        );
+    }
+
     private void assertPath(Vertex fromVertex, Vertex toVertex, String... descriptor) {
         assertPath(fromVertex, toVertex, true, List.of(descriptor), List.of(descriptor));
     }
@@ -417,16 +497,28 @@ public class BikeRentalTest extends GraphRoutingTest {
             boolean useAvailabilityInformation,
             int keepRentedBicycleCost
     ) {
+        return runStreetSearchAndCreateDescriptor(fromVertex, toVertex, arriveBy, options -> {
+            options.useBikeRentalAvailabilityInformation = useAvailabilityInformation;
+            options.allowKeepingRentedBicycleAtDestination = keepRentedBicycleCost > 0;
+            options.keepingRentedBicycleAtDestinationCost = keepRentedBicycleCost;
+        });
+    }
+
+    private List<String> runStreetSearchAndCreateDescriptor(
+            Vertex fromVertex,
+            Vertex toVertex,
+            boolean arriveBy,
+            Consumer<RoutingRequest> optionsSetter
+    ) {
         var options = new RoutingRequest();
         options.arriveBy = arriveBy;
         options.bikeRentalPickupTime = 42;
         options.bikeRentalPickupCost = 62;
         options.bikeRentalDropoffCost = 33;
         options.bikeRentalDropoffTime = 15;
-        options.useBikeRentalAvailabilityInformation = useAvailabilityInformation;
         options.worstTime = arriveBy ? Long.MIN_VALUE : Long.MAX_VALUE;
-        options.allowKeepingRentedBicycleAtDestination = keepRentedBicycleCost > 0;
-        options.keepingRentedBicycleAtDestinationCost = keepRentedBicycleCost;
+
+        optionsSetter.accept(options);
 
         return runStreetSearchAndCreateDescriptor(
                 fromVertex, toVertex, arriveBy, options, StreetMode.BIKE_RENTAL);

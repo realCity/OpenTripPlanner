@@ -1960,6 +1960,21 @@ type QueryType {
         the ApiVehicleParkingWithEntrance#closesSoon flag will be marked true.
         """
         vehicleParkingClosesSoonSeconds: Int
+
+        """
+        Which bike rental networks may not be used. By default, all networks are allowed.
+        """
+        bannedBikeRentalNetworks: [String]
+
+        """
+        When doing bike-and-ride or park-and-ride search what tags can not have a vehicle parking?
+        """
+        bannedVehicleParkingTags: [String]
+
+        """
+        When doing bike-and-ride or park-and-ride search what tags must a vehicle parking contain?
+        """
+        requiredVehicleParkingTags: [String]
     ): Plan
 }
 

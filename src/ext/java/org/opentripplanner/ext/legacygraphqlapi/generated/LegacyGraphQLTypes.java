@@ -969,7 +969,10 @@ public class LegacyGraphQLTypes {
     private Boolean _compactLegsByReversedSearch;
     private Iterable<String> _allowedBikeRentalNetworks;
     private Integer _vehicleParkingClosesSoonSeconds;
-  
+    private Iterable<String> _bannedBikeRentalNetworks;
+    private Iterable<String> _bannedVehicleParkingTags;
+    private Iterable<String> _requiredVehicleParkingTags;
+
     public LegacyGraphQLQueryTypePlanArgs(Map<String, Object> args) {
       if (args != null) {
         this._date = (String) args.get("date");
@@ -1035,6 +1038,9 @@ public class LegacyGraphQLTypes {
         this._compactLegsByReversedSearch = (Boolean) args.get("compactLegsByReversedSearch");
         this._allowedBikeRentalNetworks = (Iterable<String>) args.get("allowedBikeRentalNetworks");
         this._vehicleParkingClosesSoonSeconds = (Integer) args.get("vehicleParkingClosesSoonSeconds");
+        this._bannedBikeRentalNetworks = (Iterable<String>) args.get("bannedBikeRentalNetworks");
+        this._bannedVehicleParkingTags = (Iterable<String>) args.get("bannedVehicleParkingTags");
+        this._requiredVehicleParkingTags = (Iterable<String>) args.get("requiredVehicleParkingTags");
       }
     }
 
@@ -1093,6 +1099,9 @@ public class LegacyGraphQLTypes {
     public Boolean getLegacyGraphQLCompactLegsByReversedSearch() { return this._compactLegsByReversedSearch; }
     public Iterable<String> getLegacyGraphQLAllowedBikeRentalNetworks() { return this._allowedBikeRentalNetworks; }
     public Integer getLegacyGraphQLVehicleParkingClosesSoonSeconds() { return this._vehicleParkingClosesSoonSeconds; }
+    public Iterable<String> getLegacyGraphQLBannedBikeRentalNetworks() { return this._bannedBikeRentalNetworks; }
+    public Iterable<String> getLegacyGraphQLBannedVehicleParkingTags() { return this._bannedVehicleParkingTags; }
+    public Iterable<String> getLegacyGraphQLRequiredVehicleParkingTags() { return this._requiredVehicleParkingTags; }
   }
   public enum LegacyGraphQLRealtimeState {
     Scheduled("SCHEDULED"),

@@ -37,6 +37,7 @@ import org.opentripplanner.routing.location.TemporaryStreetLocation;
 import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.routing.spt.ShortestPathTree;
 import org.opentripplanner.routing.vehicle_parking.VehicleParking;
+import org.opentripplanner.routing.vehicle_parking.VehicleParking.VehicleParkingEntranceCreator;
 import org.opentripplanner.routing.vehicle_parking.VehicleParkingHelper;
 import org.opentripplanner.routing.vertextype.BikeRentalStationVertex;
 import org.opentripplanner.routing.vertextype.IntersectionVertex;
@@ -255,13 +256,14 @@ public abstract class GraphRoutingTest {
                 String id,
                 double latitude,
                 double longitude,
-                Set<String> networks
+                String ... networks
         ) {
             var bikeRentalStation = new BikeRentalStation();
             bikeRentalStation.id = id;
+            bikeRentalStation.name = new NonLocalizedString(id);
             bikeRentalStation.x = longitude;
             bikeRentalStation.y = latitude;
-            bikeRentalStation.networks = networks;
+            bikeRentalStation.networks = Set.of(networks);
             bikeRentalStation.isKeepingBicycleRentalAtDestinationAllowed = false;
             return bikeRentalStation;
         }
@@ -270,7 +272,7 @@ public abstract class GraphRoutingTest {
                 String id,
                 double latitude,
                 double longitude,
-                Set<String> networks
+                String ... networks
         ) {
             var vertex = new BikeRentalStationVertex(
                     graph,
@@ -285,7 +287,7 @@ public abstract class GraphRoutingTest {
                 double latitude,
                 double longitude
         ) {
-            return bikeRentalStation(id, latitude, longitude, Set.of(TEST_BIKE_RENTAL_NETWORK));
+            return bikeRentalStation(id, latitude, longitude, TEST_BIKE_RENTAL_NETWORK);
         }
 
         public StreetBikeRentalLink link(StreetVertex from, BikeRentalStationVertex to) {
@@ -300,15 +302,15 @@ public abstract class GraphRoutingTest {
             return List.of(link(from, to), link(to, from));
         }
 
-        public void vehicleParking(String id, double x, double y, boolean bicyclePlaces, boolean carPlaces, List<VehicleParking.VehicleParkingEntranceCreator> entrances) {
-            vehicleParking(id, x, y, bicyclePlaces, carPlaces, false, null, entrances);
+        public void vehicleParking(String id, double x, double y, boolean bicyclePlaces, boolean carPlaces, List<VehicleParking.VehicleParkingEntranceCreator> entrances, String ... tags) {
+            vehicleParking(id, x, y, bicyclePlaces, carPlaces, false, null, entrances, tags);
         }
 
-        public void vehicleParking(String id, double x, double y, boolean bicyclePlaces, boolean carPlaces, boolean wheelchairAccessiblePlaces, List<VehicleParking.VehicleParkingEntranceCreator> entrances) {
-            vehicleParking(id, x, y, bicyclePlaces, carPlaces, wheelchairAccessiblePlaces, null, entrances);
+        public void vehicleParking(String id, double x, double y, boolean bicyclePlaces, boolean carPlaces, boolean wheelchairAccessiblePlaces, List<VehicleParking.VehicleParkingEntranceCreator> entrances, String ... tags) {
+            vehicleParking(id, x, y, bicyclePlaces, carPlaces, wheelchairAccessiblePlaces, null, entrances, tags);
         }
 
-        public void vehicleParking(String id, double x, double y, boolean bicyclePlaces, boolean carPlaces, boolean wheelchairAccessiblePlaces, TimeRestriction openingHours, List<VehicleParking.VehicleParkingEntranceCreator> entrances) {
+        public VehicleParking vehicleParking(String id, double x, double y, boolean bicyclePlaces, boolean carPlaces, boolean wheelchairAccessiblePlaces, TimeRestriction openingHours, List<VehicleParkingEntranceCreator> entrances, String ... tags) {
             var vehicleParking = VehicleParking.builder()
                 .id(new FeedScopedId(TEST_FEED_ID, id))
                 .x(x)
@@ -318,11 +320,13 @@ public abstract class GraphRoutingTest {
                 .entrances(entrances)
                 .openingHours(openingHours)
                 .wheelchairAccessibleCarPlaces(wheelchairAccessiblePlaces)
+                .tags(List.of(tags))
                 .build();
 
             var vertices = VehicleParkingHelper.createVehicleParkingVertices(graph, vehicleParking);
             VehicleParkingHelper.linkVehicleParkingEntrances(vertices);
             vertices.forEach(v -> biLink(v.getParkingEntrance().getVertex(), v));
+            return vehicleParking;
         }
 
         public VehicleParking.VehicleParkingEntranceCreator vehicleParkingEntrance(StreetVertex streetVertex, String id, boolean carAccessible, boolean walkAccessible) {

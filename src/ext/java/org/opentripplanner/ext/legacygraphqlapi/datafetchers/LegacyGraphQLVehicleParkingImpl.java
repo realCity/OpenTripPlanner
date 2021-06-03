@@ -9,8 +9,10 @@ import org.opentripplanner.routing.vehicle_parking.VehicleParking;
 public class LegacyGraphQLVehicleParkingImpl implements LegacyGraphQLDataFetchers.LegacyGraphQLVehicleParking {
     @Override
     public DataFetcher<Relay.ResolvedGlobalId> id() {
-        return environment -> new Relay.ResolvedGlobalId("VehicleParking",
-            getSource(environment).getId().toString());
+        return environment -> new Relay.ResolvedGlobalId(
+                "VehicleParking",
+                getSource(environment).getId().toString()
+        );
     }
 
     @Override

@@ -1,6 +1,8 @@
 package org.opentripplanner.routing.edgetype;
 
+import java.util.Set;
 import org.locationtech.jts.geom.LineString;
+import org.opentripplanner.routing.api.request.RoutingRequest;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.core.StateEditor;
 import org.opentripplanner.routing.graph.Edge;
@@ -63,11 +65,33 @@ public class StreetBikeRentalLink extends Edge {
             return null;
         }
 
+        if (networkIsNotAllowed(s0.getOptions(), bikeRentalStationVertex.getStation().networks)) {
+            return null;
+        }
+
         StateEditor s1 = s0.edit(this);
         //assume bike rental stations are more-or-less on-street
         s1.incrementWeight(1);
         s1.setBackMode(null);
         return s1.makeState();
+    }
+
+    private boolean networkIsNotAllowed(RoutingRequest options, Set<String> networks) {
+        if (
+                !options.bannedBikeRentalNetworks.isEmpty()
+                && options.bannedBikeRentalNetworks.containsAll(networks)
+        ) {
+            return true;
+        }
+
+        if (
+                !options.allowedBikeRentalNetworks.isEmpty()
+                && options.allowedBikeRentalNetworks.stream().noneMatch(networks::contains)
+        ) {
+            return false;
+        }
+
+        return false;
     }
 
     public Vertex getFromVertex() {
