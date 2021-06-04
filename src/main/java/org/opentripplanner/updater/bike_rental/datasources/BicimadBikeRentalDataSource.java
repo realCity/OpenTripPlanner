@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
-import org.opentripplanner.updater.bike_rental.BikeRentalDataSource;
+import org.opentripplanner.updater.DataSource;
 import org.opentripplanner.updater.bike_rental.datasources.params.BikeRentalDataSourceParameters;
 import org.opentripplanner.util.HttpUtils;
 import org.opentripplanner.util.NonLocalizedString;
@@ -20,11 +20,11 @@ import java.util.List;
 /**
  * Implementation of a BikeRentalDataSource for the BICIMAD API.
  *
- * @see BikeRentalDataSource
+ * @see DataSource
  */
-class BicimadBikeRentalDataSource implements BikeRentalDataSource {
+class BicimadBikeRentalDataSource implements DataSource<BikeRentalStation> {
 
-  private static final Logger log = LoggerFactory.getLogger(GenericJsonBikeRentalDataSource.class);
+  private static final Logger log = LoggerFactory.getLogger(BicimadBikeRentalDataSource.class);
 
   private static final String jsonExternalParsePath = "data";
 
@@ -147,7 +147,7 @@ class BicimadBikeRentalDataSource implements BikeRentalDataSource {
   }
 
   @Override
-  public synchronized List<BikeRentalStation> getStations() {
+  public synchronized List<BikeRentalStation> getUpdates() {
     return stations;
   }
 

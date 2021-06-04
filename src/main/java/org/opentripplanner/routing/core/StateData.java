@@ -1,8 +1,8 @@
 package org.opentripplanner.routing.core;
 
-import org.opentripplanner.routing.api.request.RoutingRequest;
-
+import java.util.List;
 import java.util.Set;
+import org.opentripplanner.routing.api.request.RoutingRequest;
 
 /**
  * StateData contains the components of search state that are unlikely to be changed as often as
@@ -23,6 +23,22 @@ public class StateData implements Cloneable {
     protected boolean mayKeepRentedBicycleAtDestination;
 
     protected CarPickupState carPickupState;
+
+    /**
+     * Time restrictions encountered while traversing edges.
+     */
+    protected List<TimeRestrictionWithOffset> timeRestrictions;
+
+    /**
+     * The sources of the time restrictions. This is used for state domination, so that
+     * <p>
+     * 1) it is possible to have two {@link org.opentripplanner.routing.algorithm.raptor.transit.AccessEgress}es
+     * to the same stop, but with different {@link org.opentripplanner.routing.vehicle_parking.VehicleParking}
+     * entities.
+     *
+     * 2) states with the same restriction-source don't dominate each other.
+     */
+    protected Set<Object> timeRestrictionSources;
 
     protected RoutingRequest opt;
 

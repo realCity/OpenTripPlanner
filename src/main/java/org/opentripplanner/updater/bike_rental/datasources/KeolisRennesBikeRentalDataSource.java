@@ -1,17 +1,19 @@
 package org.opentripplanner.updater.bike_rental.datasources;
 
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
+import org.opentripplanner.updater.GenericXmlDataSource;
 import org.opentripplanner.updater.bike_rental.datasources.params.BikeRentalDataSourceParameters;
 import org.opentripplanner.util.NonLocalizedString;
 
 import java.util.Map;
 
-class KeolisRennesBikeRentalDataSource extends GenericXmlBikeRentalDataSource {
+class KeolisRennesBikeRentalDataSource extends GenericXmlDataSource<BikeRentalStation> {
     public KeolisRennesBikeRentalDataSource(BikeRentalDataSourceParameters config) {
-        super(config,"//opendata/answer/data/station");
+        super(config.getUrl(),"//opendata/answer/data/station");
     }
 
-    public BikeRentalStation makeStation(Map<String, String> attributes) {
+    @Override
+    protected BikeRentalStation parseElement(Map<String, String> attributes) {
         //FIXME: I have no idea what state actually means
         if (!"1".equals(attributes.get("state"))) {
             return null;

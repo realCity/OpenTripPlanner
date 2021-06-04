@@ -3,18 +3,19 @@ package org.opentripplanner.updater.bike_rental.datasources;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
+import org.opentripplanner.updater.GenericJsonDataSource;
 import org.opentripplanner.updater.bike_rental.datasources.params.BikeRentalDataSourceParameters;
 import org.opentripplanner.util.NonLocalizedString;
 
 import java.util.ArrayList;
 import java.util.List;
 
-class UIPBikeRentalDataSource extends GenericJsonBikeRentalDataSource {
+class UIPBikeRentalDataSource extends GenericJsonDataSource<BikeRentalStation> {
 
     private String baseURL = null;
 
     public UIPBikeRentalDataSource(BikeRentalDataSourceParameters config) {
-        super(config, "stations", "Client-Identifier", config.getApiKey());
+        super(config.getUrl(), "stations", "Client-Identifier", config.getApiKey());
     }
 
     /**
@@ -25,7 +26,7 @@ class UIPBikeRentalDataSource extends GenericJsonBikeRentalDataSource {
      *
      */
     @Override
-    public BikeRentalStation makeStation(JsonNode rentalStationNode) {
+    protected BikeRentalStation parseElement(JsonNode rentalStationNode) {
         BikeRentalStation brstation = new BikeRentalStation();
 
         brstation.id = rentalStationNode.path("id").asText();
@@ -45,10 +46,10 @@ class UIPBikeRentalDataSource extends GenericJsonBikeRentalDataSource {
         if(!super.update()){
             return false;
         }
-        List<BikeRentalStation> stations = super.getStations();
+        List<BikeRentalStation> stations = super.getUpdates();
 
         // update stations with availability info
-        super.stations = new ArrayList<>();
+        super.updates = new ArrayList<>();
         if(baseURL == null){
             baseURL = getUrl();
         }
@@ -57,8 +58,8 @@ class UIPBikeRentalDataSource extends GenericJsonBikeRentalDataSource {
             return false;
         }
 
-        List<BikeRentalStation> stationsAvailability = super.getStations();
-        super.stations = mergeStationInfo(stations, stationsAvailability);
+        List<BikeRentalStation> stationsAvailability = super.getUpdates();
+        super.updates = mergeStationInfo(stations, stationsAvailability);
         setUrl(baseURL);
         return true;
     }

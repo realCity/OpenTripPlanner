@@ -472,21 +472,19 @@ public abstract class GraphPathToItineraryMapper {
      * @param states The states that go with the leg
      */
     private static void addPlaces(Leg leg, State[] states, Locale requestedLocale) {
-        Vertex firstVertex = states[0].getVertex();
-        Vertex lastVertex = states[states.length - 1].getVertex();
-
-        leg.from = makePlace(firstVertex, requestedLocale);
-        leg.to = makePlace(lastVertex, requestedLocale);
+        leg.from = makePlace(states[0], requestedLocale);
+        leg.to = makePlace(states[states.length - 1], requestedLocale);
     }
 
     /**
      * Make a {@link Place} to add to a {@link Leg}.
      *
-     * @param vertex The {@link Vertex} at the {@link State}.
+     * @param state The {@link State}.
      * @param requestedLocale The locale to use for all text attributes.
      * @return The resulting {@link Place} object.
      */
-    private static Place makePlace(Vertex vertex, Locale requestedLocale) {
+    private static Place makePlace(State state, Locale requestedLocale) {
+        Vertex vertex = state.getVertex();
         String name = vertex.getName(requestedLocale);
 
         //This gets nicer names instead of osm:node:id when changing mode of transport
@@ -501,7 +499,16 @@ public abstract class GraphPathToItineraryMapper {
         } else if(vertex instanceof BikeRentalStationVertex) {
             return Place.forBikeRentalStation((BikeRentalStationVertex) vertex, name);
         } else if (vertex instanceof VehicleParkingEntranceVertex) {
-            return Place.forVehicleParkingEntrance((VehicleParkingEntranceVertex) vertex, name);
+            var vehicleParking = ((VehicleParkingEntranceVertex) vertex).getVehicleParking();
+            var limit = state.getTimeAsZonedDateTime()
+                    .plusSeconds(state.getOptions().vehicleParkingClosesSoonSeconds);
+            var closesSoon = false;
+            if (vehicleParking.getOpeningHours() != null) {
+                // This ignores the parking being closed for less than vehicleParkingClosesSoonSeconds
+                closesSoon = !vehicleParking.getOpeningHours()
+                        .isTraverseableAt(limit.toLocalDateTime());
+            }
+            return Place.forVehicleParkingEntrance((VehicleParkingEntranceVertex) vertex, name, closesSoon);
         } else {
             return Place.normal(vertex, name);
         }

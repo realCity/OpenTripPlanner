@@ -11,8 +11,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.opentripplanner.common.RepeatingTimePeriod;
 import org.opentripplanner.model.FeedScopedId;
+import org.opentripplanner.routing.core.TimeRestriction;
 import org.opentripplanner.routing.vertextype.StreetVertex;
 import org.opentripplanner.util.I18NString;
 
@@ -49,10 +49,9 @@ public class VehicleParking implements Serializable {
    */
   private final List<String> tags;
 
-  // TODO: this would need to be parsed from the OSM format
-  private final RepeatingTimePeriod openingHours;
+  private final TimeRestriction openingHours;
 
-  private final RepeatingTimePeriod feeHours;
+  private final TimeRestriction feeHours;
 
   private final I18NString note;
 

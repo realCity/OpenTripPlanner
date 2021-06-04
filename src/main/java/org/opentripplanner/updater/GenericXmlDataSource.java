@@ -1,40 +1,36 @@
-package org.opentripplanner.updater.bike_rental.datasources;
+package org.opentripplanner.updater;
 
-import org.opentripplanner.routing.bike_rental.BikeRentalStation;
-import org.opentripplanner.updater.bike_rental.BikeRentalDataSource;
-import org.opentripplanner.updater.bike_rental.datasources.params.BikeRentalDataSourceParameters;
 import org.opentripplanner.util.xml.XmlDataListDownloader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-abstract class GenericXmlBikeRentalDataSource implements BikeRentalDataSource {
+public abstract class GenericXmlDataSource<T> implements DataSource<T> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GenericXmlBikeRentalDataSource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GenericXmlDataSource.class);
 
     private final String url;
 
-    List<BikeRentalStation> stations = new ArrayList<>();
+    List<T> stations;
 
-    private final XmlDataListDownloader<BikeRentalStation> xmlDownloader;
+    private final XmlDataListDownloader<T> xmlDownloader;
 
 
-    public GenericXmlBikeRentalDataSource(BikeRentalDataSourceParameters config, String path) {
-        url = config.getUrl();
+    public GenericXmlDataSource(String url, String path) {
+        this.url = url;
         xmlDownloader = new XmlDataListDownloader<>();
         xmlDownloader.setPath(path);
         /* TODO Do not make this class abstract, but instead make the client
          * provide itself the factory?
          */
-        xmlDownloader.setDataFactory(this::makeStation);
+        xmlDownloader.setDataFactory(this::parseElement);
     }
 
     @Override
     public boolean update() {
-        List<BikeRentalStation> newStations = xmlDownloader.download(url, false);
+        List<T> newStations = xmlDownloader.download(url, false);
         if (newStations != null) {
             synchronized(this) {
                 stations = newStations;
@@ -46,7 +42,7 @@ abstract class GenericXmlBikeRentalDataSource implements BikeRentalDataSource {
     }
 
     @Override
-    public synchronized List<BikeRentalStation> getStations() {
+    public synchronized List<T> getUpdates() {
         return stations;
     }
 
@@ -55,7 +51,7 @@ abstract class GenericXmlBikeRentalDataSource implements BikeRentalDataSource {
         xmlDownloader.setReadAttributes(readAttributes);
     }
 
-    public abstract BikeRentalStation makeStation(Map<String, String> attributes);
+    protected abstract T parseElement(Map<String, String> attributes);
 
     @Override
     public String toString() {

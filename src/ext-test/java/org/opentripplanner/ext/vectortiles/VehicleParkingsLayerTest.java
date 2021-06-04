@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import ch.poole.openinghoursparser.OpeningHoursParseException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -15,11 +16,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
-import org.opentripplanner.common.RepeatingTimePeriod;
 import org.opentripplanner.common.model.T2;
 import org.opentripplanner.ext.vectortiles.layers.vehicleparkings.DigitransitVehicleParkingPropertyMapper;
 import org.opentripplanner.ext.vectortiles.layers.vehicleparkings.VehicleParkingsLayerBuilder;
 import org.opentripplanner.model.FeedScopedId;
+import org.opentripplanner.routing.core.OsmOpeningHours;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.vehicle_parking.VehicleParking;
 import org.opentripplanner.routing.vehicle_parking.VehicleParking.VehiclePlaces;
@@ -43,7 +44,7 @@ public class VehicleParkingsLayerTest {
     private VehicleParking vehicleParking;
 
     @Before
-    public void setUp() {
+    public void setUp() throws OpeningHoursParseException {
         vehicleParking = VehicleParking.builder()
                 .id(new FeedScopedId("id", "id"))
                 .name(TranslatedString.getI18NString(Map.of("", "name", "de", "DE")))
@@ -56,8 +57,7 @@ public class VehicleParkingsLayerTest {
                 .detailsUrl("details")
                 .note(new NonLocalizedString("note"))
                 .tags(List.of("tag1", "tag2"))
-                .openingHours(
-                        RepeatingTimePeriod.parseFromOsmTurnRestriction("Monday", "Friday", "07:30", "09:30"))
+                .openingHours(OsmOpeningHours.parseFromOsm("Mo-Fr 07:30-9:30"))
                 .feeHours(null)
                 .state(VehicleParking.VehicleParkingState.OPERATIONAL)
                 .capacity(VehiclePlaces.builder().bicycleSpaces(5).carSpaces(6).build())

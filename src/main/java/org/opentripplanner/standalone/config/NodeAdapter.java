@@ -1,6 +1,7 @@
 package org.opentripplanner.standalone.config;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.HashSet;
 import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.routing.api.request.RequestFunctions;
 import org.opentripplanner.util.OtpAppException;
@@ -465,4 +466,20 @@ public class NodeAdapter {
         return result;
     }
 
+    public Set<String> asStringSet(
+            String paramName,
+            Set<String> defaultValue
+    ) {
+        if (!exist(paramName)) { return Set.of(); }
+
+        JsonNode param = param(paramName);
+        if (param.isArray()) {
+            Set<String> result = new HashSet<>(param.size());
+            for (JsonNode it : param) {
+                result.add(it.asText());
+            }
+            return result;
+        }
+        return defaultValue;
+    }
 }

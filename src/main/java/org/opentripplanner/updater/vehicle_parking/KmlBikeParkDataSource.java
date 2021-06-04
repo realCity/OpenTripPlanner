@@ -2,6 +2,7 @@ package org.opentripplanner.updater.vehicle_parking;
 
 import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.routing.vehicle_parking.VehicleParking;
+import org.opentripplanner.updater.DataSource;
 import org.opentripplanner.util.NonLocalizedString;
 import org.opentripplanner.util.xml.XmlDataListDownloader;
 import org.slf4j.Logger;
@@ -20,7 +21,7 @@ import java.util.Locale;
  * @author laurent
  * @author GoAbout
  */
-class KmlBikeParkDataSource implements VehicleParkingDataSource {
+class KmlBikeParkDataSource implements DataSource<VehicleParking> {
 
     private static final Logger LOG = LoggerFactory.getLogger(KmlBikeParkDataSource.class);
 
@@ -36,11 +37,11 @@ class KmlBikeParkDataSource implements VehicleParkingDataSource {
 
     private List<VehicleParking> bikeParks;
 
-    public KmlBikeParkDataSource(Parameters config) {
-        this.url = config.getUrl();
-        this.feedId = config.getFeedId();
-        this.namePrefix = config.getNamePrefix();
-        this.zip = config.zip();
+    public KmlBikeParkDataSource(String url, String feedId, String namePrefix, boolean zip) {
+        this.url = url;
+        this.feedId = feedId;
+        this.namePrefix = namePrefix;
+        this.zip = zip;
 
         xmlDownloader = new XmlDataListDownloader<>();
         xmlDownloader
@@ -55,7 +56,7 @@ class KmlBikeParkDataSource implements VehicleParkingDataSource {
                 return null;
             }
 
-            var name = (namePrefix != null ? namePrefix : "") + attributes.get("name").trim();
+            var name = (this.namePrefix != null ? this.namePrefix : "") + attributes.get("name").trim();
             String[] coords = attributes.get("Point").trim().split(",");
             var x = Double.parseDouble(coords[0]);
             var y = Double.parseDouble(coords[1]);
@@ -68,9 +69,9 @@ class KmlBikeParkDataSource implements VehicleParkingDataSource {
                     .name(localizedName)
                     .x(x)
                     .y(y)
-                    .id(new FeedScopedId(feedId, id))
+                    .id(new FeedScopedId(this.feedId, id))
                     .entrance((builder) -> builder
-                            .entranceId(new FeedScopedId(feedId, id))
+                            .entranceId(new FeedScopedId(this.feedId, id))
                             .name(localizedName)
                             .x(x)
                             .y(y))
@@ -97,19 +98,12 @@ class KmlBikeParkDataSource implements VehicleParkingDataSource {
     }
 
     @Override
-    public synchronized List<VehicleParking> getVehicleParkings() {
+    public synchronized List<VehicleParking> getUpdates() {
         return bikeParks;
     }
 
     @Override
     public String toString() {
         return getClass().getName() + "(" + url + ")";
-    }
-
-    public interface Parameters {
-        String getUrl();
-        String getFeedId();
-        String getNamePrefix();
-        boolean zip();
     }
 }

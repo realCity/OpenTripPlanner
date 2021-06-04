@@ -1,13 +1,14 @@
 package org.opentripplanner.updater.bike_rental.datasources;
 
-import org.opentripplanner.updater.bike_rental.BikeRentalDataSource;
+import org.opentripplanner.routing.bike_rental.BikeRentalStation;
+import org.opentripplanner.updater.DataSource;
 import org.opentripplanner.updater.bike_rental.datasources.params.BikeRentalDataSourceParameters;
 import org.opentripplanner.updater.bike_rental.datasources.params.GbfsBikeRentalDataSourceParameters;
 import org.opentripplanner.updater.bike_rental.datasources.params.GenericKmlBikeRentalDataSourceParameters;
 
 public class BikeRentalDataSourceFactory {
 
-  public static BikeRentalDataSource create(BikeRentalDataSourceParameters source) {
+  public static DataSource<BikeRentalStation> create(BikeRentalDataSourceParameters source) {
     switch (source.getSourceType()) {
       case JCDECAUX:      return new JCDecauxBikeRentalDataSource(source);
       case B_CYCLE:       return new BCycleBikeRentalDataSource(source);

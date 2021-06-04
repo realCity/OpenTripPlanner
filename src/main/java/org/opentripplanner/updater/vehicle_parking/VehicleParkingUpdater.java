@@ -13,6 +13,7 @@ import org.opentripplanner.routing.vehicle_parking.VehicleParking;
 import org.opentripplanner.routing.vehicle_parking.VehicleParkingHelper;
 import org.opentripplanner.routing.vehicle_parking.VehicleParkingService;
 import org.opentripplanner.routing.vertextype.VehicleParkingEntranceVertex;
+import org.opentripplanner.updater.DataSource;
 import org.opentripplanner.updater.GraphUpdaterManager;
 import org.opentripplanner.updater.GraphWriterRunnable;
 import org.opentripplanner.updater.PollingGraphUpdater;
@@ -24,13 +25,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * Graph updater that dynamically sets availability information on vehicle parking lots.
- * This updater fetches data from a single {@link VehicleParkingDataSource}.
+ * This updater fetches data from a single {@link DataSource}.
  */
 public class VehicleParkingUpdater extends PollingGraphUpdater {
 
@@ -42,16 +42,17 @@ public class VehicleParkingUpdater extends PollingGraphUpdater {
 
     private final Map<VehicleParking, List<DisposableEdgeCollection>> tempEdgesByPark = new HashMap<>();
 
-    private final VehicleParkingDataSource source;
+    private final DataSource<VehicleParking> source;
 
     private VertexLinker linker;
 
     private VehicleParkingService vehicleParkingService;
 
-    public VehicleParkingUpdater(VehicleParkingUpdaterParameters parameters) {
+    private List<VehicleParking> oldVehicleParkings = new ArrayList<>();
+
+    public VehicleParkingUpdater(VehicleParkingUpdaterParameters parameters, DataSource<VehicleParking> source) {
         super(parameters);
-        // Set source from preferences
-        source = new KmlBikeParkDataSource(parameters.sourceParameters());
+        this.source = source;
 
         LOG.info("Creating bike-park updater running every {} seconds : {}", pollingPeriodSeconds, source);
     }
@@ -76,11 +77,12 @@ public class VehicleParkingUpdater extends PollingGraphUpdater {
             LOG.debug("No updates");
             return;
         }
-        List<VehicleParking> vehicleParkings = source.getVehicleParkings();
+        List<VehicleParking> vehicleParkings = source.getUpdates();
 
         // Create graph writer runnable to apply these stations to the graph
-        VehicleParkingGraphWriterRunnable graphWriterRunnable = new VehicleParkingGraphWriterRunnable(vehicleParkings, verticesByPark.keySet());
+        VehicleParkingGraphWriterRunnable graphWriterRunnable = new VehicleParkingGraphWriterRunnable(vehicleParkings, oldVehicleParkings);
         updaterManager.execute(graphWriterRunnable);
+        oldVehicleParkings = vehicleParkings;
     }
 
     @Override
@@ -89,11 +91,11 @@ public class VehicleParkingUpdater extends PollingGraphUpdater {
 
     private class VehicleParkingGraphWriterRunnable implements GraphWriterRunnable {
 
-        private final List<VehicleParking> updatedVehicleParkings;
+        private final Set<VehicleParking> updatedVehicleParkings;
         private final Map<FeedScopedId, VehicleParking> oldVehicleParkings;
 
-        private VehicleParkingGraphWriterRunnable(List<VehicleParking> updatedVehicleParkings, Set<VehicleParking> oldVehicleParkings) {
-            this.updatedVehicleParkings = updatedVehicleParkings;
+        private VehicleParkingGraphWriterRunnable(List<VehicleParking> updatedVehicleParkings, List<VehicleParking> oldVehicleParkings) {
+            this.updatedVehicleParkings = new HashSet<>(updatedVehicleParkings);
             this.oldVehicleParkings = oldVehicleParkings.stream()
                 .collect(Collectors.toMap(VehicleParking::getId, v -> v));
         }
@@ -101,39 +103,38 @@ public class VehicleParkingUpdater extends PollingGraphUpdater {
         @Override
         public void run(Graph graph) {
             // Apply stations to graph
-            Set<VehicleParking> vehicleParkingSet = new HashSet<>();
             /* Add any new park and update space available for existing parks */
             for (VehicleParking updatedVehicleParking : updatedVehicleParkings) {
                 vehicleParkingService.addVehicleParking(updatedVehicleParking);
-                vehicleParkingSet.add(updatedVehicleParking);
                 List<VehicleParkingEntranceVertex> vehicleParkingVertices = verticesByPark.get(updatedVehicleParking);
                 if (vehicleParkingVertices == null || vehicleParkingVertices.isEmpty()) {
-                    vehicleParkingVertices = VehicleParkingHelper.createVehicleParkingVertices(graph, updatedVehicleParking);
+                    if (updatedVehicleParking.getState().equals(VehicleParking.VehicleParkingState.OPERATIONAL)) {
+                        vehicleParkingVertices = VehicleParkingHelper.createVehicleParkingVertices(graph, updatedVehicleParking);
 
-                    var disposableEdgeCollectionsForVertex = linkVehicleParkingVertexToStreets(vehicleParkingVertices);
+                        var disposableEdgeCollectionsForVertex = linkVehicleParkingVertexToStreets(vehicleParkingVertices);
 
-                    VehicleParkingHelper.linkVehicleParkingEntrances(vehicleParkingVertices);
-                    verticesByPark.put(updatedVehicleParking, vehicleParkingVertices);
-                    tempEdgesByPark.put(updatedVehicleParking, disposableEdgeCollectionsForVertex);
+                        VehicleParkingHelper.linkVehicleParkingEntrances(vehicleParkingVertices);
+                        verticesByPark.put(updatedVehicleParking, vehicleParkingVertices);
+                        tempEdgesByPark.put(updatedVehicleParking, disposableEdgeCollectionsForVertex);
+                    }
                 } else {
                     oldVehicleParkings.get(updatedVehicleParking.getId()).updateVehiclePlaces(updatedVehicleParking.getAvailability());
                 }
             }
+
             /* Remove existing parks that were not present in the update */
-            List<VehicleParking> toRemove = new ArrayList<>();
-            for (Entry<VehicleParking, List<VehicleParkingEntranceVertex>> entry : verticesByPark.entrySet()) {
-                VehicleParking vehicleParking = entry.getKey();
-                if (vehicleParkingSet.contains(vehicleParking))
+            for (var oldVehicleParking : oldVehicleParkings.values()) {
+                if (updatedVehicleParkings.contains(oldVehicleParking)) {
                     continue;
-                toRemove.add(vehicleParking);
-                vehicleParkingService.removeVehicleParking(vehicleParking);
-                entry.getValue().forEach(v -> removeVehicleParkingEdgesFromGraph(v, graph));
-            }
-            for (VehicleParking vehicleParking : toRemove) {
-                // post-iteration removal to avoid concurrent modification
-                verticesByPark.remove(vehicleParking);
-                tempEdgesByPark.get(vehicleParking).forEach(DisposableEdgeCollection::disposeEdges);
-                tempEdgesByPark.remove(vehicleParking);
+                }
+                vehicleParkingService.removeVehicleParking(oldVehicleParking);
+                if (verticesByPark.containsKey(oldVehicleParking)) {
+                    verticesByPark.get(oldVehicleParking).forEach(v -> removeVehicleParkingEdgesFromGraph(v, graph));
+                    vehicleParkingService.removeVehicleParking(oldVehicleParking);
+                    verticesByPark.remove(oldVehicleParking);
+                    tempEdgesByPark.get(oldVehicleParking).forEach(DisposableEdgeCollection::disposeEdges);
+                    tempEdgesByPark.remove(oldVehicleParking);
+                }
             }
         }
 

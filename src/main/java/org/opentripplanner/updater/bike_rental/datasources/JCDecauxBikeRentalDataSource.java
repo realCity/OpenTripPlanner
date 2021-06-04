@@ -2,7 +2,7 @@ package org.opentripplanner.updater.bike_rental.datasources;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
-import org.opentripplanner.updater.bike_rental.BikeRentalDataSource;
+import org.opentripplanner.updater.GenericJsonDataSource;
 import org.opentripplanner.updater.bike_rental.datasources.params.BikeRentalDataSourceParameters;
 import org.opentripplanner.util.NonLocalizedString;
 
@@ -10,12 +10,12 @@ import org.opentripplanner.util.NonLocalizedString;
  * Implementation of a BikeRentalDataSource for the generic JCDecaux Open-Data API.
  * 
  * See https://developer.jcdecaux.com
- * @see BikeRentalDataSource
+ * @see GenericJsonDataSource
  */
-class JCDecauxBikeRentalDataSource extends GenericJsonBikeRentalDataSource {
+class JCDecauxBikeRentalDataSource extends GenericJsonDataSource<BikeRentalStation> {
 
     public JCDecauxBikeRentalDataSource(BikeRentalDataSourceParameters config) {
-        super(config, "");
+        super(config.getUrl(), "");
     }
 
     /**
@@ -41,7 +41,8 @@ class JCDecauxBikeRentalDataSource extends GenericJsonBikeRentalDataSource {
      * ]
      * </pre>
      */
-    public BikeRentalStation makeStation(JsonNode node) {
+    @Override
+    protected BikeRentalStation parseElement(JsonNode node) {
         if (!node.path("status").asText().equals("OPEN")) {
             return null;
         }

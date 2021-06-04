@@ -80,6 +80,14 @@ public class ApiVehicleParkingWithEntrance {
      */
     public final ApiVehicleParkingPlaces availability;
 
+    /**
+     * True if the difference of visiting time for a  {@link org.opentripplanner.routing.vehicle_parking.VehicleParking VehicleParking}
+     * and the closing time is inside the request's
+     * {@link org.opentripplanner.routing.api.request.RoutingRequest#vehicleParkingClosesSoonSeconds RoutingRequest#vehicleParkingClosesSoonSeconds}
+     * interval.
+     */
+    public final boolean closesSoon;
+
     @Builder
     public static class ApiVehicleParkingPlaces {
 

@@ -1,6 +1,7 @@
 package org.opentripplanner.updater.bike_rental.datasources;
 
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
+import org.opentripplanner.updater.GenericXmlDataSource;
 import org.opentripplanner.updater.bike_rental.datasources.params.GenericKmlBikeRentalDataSourceParameters;
 import org.opentripplanner.util.NonLocalizedString;
 import org.slf4j.Logger;
@@ -16,7 +17,7 @@ import java.util.Set;
  * Load bike rental stations from a KML placemarks. Use name as bike park name and point
  * coordinates. Rely on: 1) bike park to be KML Placemarks, 2) geometry to be Point.
  */
-class GenericKmlBikeRentalDataSource extends GenericXmlBikeRentalDataSource {
+class GenericKmlBikeRentalDataSource extends GenericXmlDataSource<BikeRentalStation> {
 
     private static final Logger LOG = LoggerFactory.getLogger(GenericKmlBikeRentalDataSource.class);
 
@@ -28,7 +29,7 @@ class GenericKmlBikeRentalDataSource extends GenericXmlBikeRentalDataSource {
 
     public GenericKmlBikeRentalDataSource(GenericKmlBikeRentalDataSourceParameters parameters) {
         super(
-            parameters,
+            parameters.getUrl(),
             "//*[local-name()='kml']/*[local-name()='Document']/*[local-name()='Placemark']"
         );
         namePrefix = parameters.getNamePrefix();
@@ -51,7 +52,8 @@ class GenericKmlBikeRentalDataSource extends GenericXmlBikeRentalDataSource {
         this.allowDropoff = allowDropoff;
     }
 
-    public BikeRentalStation makeStation(Map<String, String> attributes) {
+    @Override
+    protected BikeRentalStation parseElement(Map<String, String> attributes) {
         if (!attributes.containsKey("name")) {
             LOG.warn("Missing name in KML Placemark, cannot create bike rental.");
             return null;

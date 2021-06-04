@@ -11,7 +11,10 @@ public class VehicleParkingService implements Serializable {
   private final Set<VehicleParking> vehicleParkings = new HashSet<>();
 
   public void addVehicleParking(VehicleParking vehicleParking) {
-    vehicleParkings.add(vehicleParking);
+    if (!vehicleParkings.add(vehicleParking)) {
+      vehicleParkings.remove(vehicleParking);
+      vehicleParkings.add(vehicleParking);
+    }
   }
 
   public void removeVehicleParking(VehicleParking vehicleParking) {

@@ -1,5 +1,6 @@
 package org.opentripplanner.graph_builder.module.osm;
 
+import ch.poole.openinghoursparser.OpeningHoursParseException;
 import com.google.common.collect.Iterables;
 import gnu.trove.iterator.TLongIterator;
 import gnu.trove.list.TLongList;
@@ -27,6 +28,7 @@ import org.opentripplanner.common.model.T2;
 import org.opentripplanner.graph_builder.DataImportIssueStore;
 import org.opentripplanner.graph_builder.issues.Graphwide;
 import org.opentripplanner.graph_builder.issues.InvalidVehicleParkingCapacity;
+import org.opentripplanner.graph_builder.issues.ParkAndRideOpeningHoursUnparsed;
 import org.opentripplanner.graph_builder.issues.ParkAndRideUnlinked;
 import org.opentripplanner.graph_builder.issues.StreetCarSpeedZero;
 import org.opentripplanner.graph_builder.issues.TurnRestrictionBad;
@@ -45,6 +47,8 @@ import org.opentripplanner.openstreetmap.model.OSMWithTags;
 import org.opentripplanner.routing.api.request.RoutingRequest;
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
 import org.opentripplanner.routing.bike_rental.BikeRentalStationService;
+import org.opentripplanner.routing.core.OsmOpeningHours;
+import org.opentripplanner.routing.core.TimeRestriction;
 import org.opentripplanner.routing.core.TraversalRequirements;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.edgetype.AreaEdge;
@@ -570,22 +574,58 @@ public class OpenStreetMapModule implements GraphBuilderModule {
             ) || carCapacity.orElse(0) > 0;
             var wheelchairAccessibleCarPlaces = wheelchairAccessibleCapacity.orElse(0) > 0;
 
+            var openingHours = parseVehicleParkingOpeningHours(entity, creativeName);
+
             var id = new FeedScopedId(
                     VEHICLE_PARKING_OSM_FEED_ID,
                     String.format("%s/%d", entity.getClass().getSimpleName(), entity.getId())
             );
+
+            var tags = new ArrayList<String>();
+
+            tags.add(isCarParkAndRide ? "osm:amenity=parking" : "osm:amenity=bicycle_parking");
+
+            if (entity.isTagTrue("fee")) {
+                tags.add("osm:fee");
+            }
+            if (entity.hasTag("supervised") && !entity.isTagTrue("supervised")) {
+                tags.add("osm:supervised");
+            }
+            if (entity.hasTag("covered") && !entity.isTagFalse("covered")) {
+                tags.add("osm:covered");
+            }
+            if (entity.hasTag("surveillance") && !entity.isTagFalse("surveillance")) {
+                tags.add("osm:surveillance");
+            }
 
             return VehicleParking.builder()
                     .id(id)
                     .name(creativeName)
                     .x(lon)
                     .y(lat)
+                    .openingHours(openingHours)
+                    .tags(tags)
+                    .detailsUrl(entity.getTag("website"))
                     .bicyclePlaces(bicyclePlaces)
                     .carPlaces(carPlaces)
                     .wheelchairAccessibleCarPlaces(wheelchairAccessibleCarPlaces)
                     .capacity(vehiclePlaces)
                     .entrances(entrances)
                     .build();
+        }
+
+        private TimeRestriction parseVehicleParkingOpeningHours(OSMWithTags entity, I18NString creativeName) {
+            final var openingHoursTag = entity.getTag("opening_hours");
+            if (openingHoursTag != null) {
+                try {
+                    return OsmOpeningHours.parseFromOsm(openingHoursTag);
+                } catch (OpeningHoursParseException e) {
+                    issueStore.add(new ParkAndRideOpeningHoursUnparsed(
+                            creativeName.toString(), entity, openingHoursTag
+                    ));
+                }
+            }
+            return null;
         }
 
         private I18NString nameParkAndRideEntity(OSMWithTags osmWithTags) {

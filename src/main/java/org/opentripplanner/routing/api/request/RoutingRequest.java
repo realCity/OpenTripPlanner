@@ -35,6 +35,7 @@ import org.opentripplanner.routing.core.BicycleOptimizeType;
 import org.opentripplanner.routing.core.RouteMatcher;
 import org.opentripplanner.routing.core.RoutingContext;
 import org.opentripplanner.routing.core.State;
+import org.opentripplanner.routing.core.TimeRestrictionWithOffset;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.core.TraverseModeSet;
 import org.opentripplanner.routing.core.intersection_model.IntersectionTraversalCostModel;
@@ -395,6 +396,12 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
     /** Cost of dropping-off a rented bike */
     public int bikeRentalDropoffCost = 30;
 
+    /** The bike rental networks which may be used. If empty all networks may be used. */
+    public Set<String> allowedBikeRentalNetworks = Set.of();
+
+    /** The bike rental networks which may not be used. If empty, no networks are banned. */
+    public Set<String> bannedBikeRentalNetworks = Set.of();
+
     /** Time to park a bike */
     public int bikeParkTime = 60;
 
@@ -406,6 +413,23 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
 
     /** Cost of parking a car. */
     public int carParkCost = 120;
+
+    public Set<String> requiredVehicleParkingTags = Set.of();
+
+    public Set<String> bannedVehicleParkingTags = Set.of();
+
+    /**
+     * If the opening hours should be taken into account for vehicle parkings. If true, it is not
+     * possible to park outside of opening hours.
+     */
+    public boolean useVehicleParkingOpeningHours = true;
+
+    /**
+     * If the visiting time for a {@link org.opentripplanner.routing.vehicle_parking.VehicleParking VehicleParking}
+     * is inside this interval, then the {@link org.opentripplanner.api.model.ApiVehicleParkingWithEntrance#closesSoon ApiVehicleParkingWithEntrance#closesSoon}
+     * flag will be marked true. Defaults to 30 minutes.
+     */
+    public int vehicleParkingClosesSoonSeconds = 30 * 60;
 
     /**
      * Time to park a car in a park and ride, w/o taking into account driving and walking cost
@@ -701,6 +725,13 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
     public boolean bikeRental = false;
     public boolean parkAndRide  = false;
     public boolean carPickup = false;
+
+    /**
+     * If {@code true}, then {@link org.opentripplanner.routing.core.TimeRestriction} on edges will
+     * be ignored and collected using {@link org.opentripplanner.routing.core.StateEditor#addTimeRestriction(TimeRestrictionWithOffset, Object)}.
+     * This is used to construct {@link org.opentripplanner.routing.algorithm.raptor.transit.AccessEgress} objects for RAPTOR.
+     */
+    public boolean ignoreAndCollectTimeRestrictions = false;
 
     /** The function that compares paths converging on the same vertex to decide which ones continue to be explored. */
     public DominanceFunction dominanceFunction = new DominanceFunction.Pareto();
@@ -1159,6 +1190,12 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
         try {
             RoutingRequest clone = (RoutingRequest) super.clone();
             clone.streetSubRequestModes = streetSubRequestModes.clone();
+
+            clone.allowedBikeRentalNetworks = Set.copyOf(allowedBikeRentalNetworks);
+            clone.bannedBikeRentalNetworks = Set.copyOf(bannedBikeRentalNetworks);
+
+            clone.requiredVehicleParkingTags = Set.copyOf(requiredVehicleParkingTags);
+            clone.bannedVehicleParkingTags = Set.copyOf(bannedVehicleParkingTags);
 
             clone.preferredAgencies = Set.copyOf(preferredAgencies);
             clone.unpreferredAgencies = Set.copyOf(unpreferredAgencies);

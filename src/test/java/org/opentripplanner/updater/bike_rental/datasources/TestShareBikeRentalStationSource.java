@@ -19,7 +19,7 @@ public class TestShareBikeRentalStationSource extends TestCase {
                 null
             ));
         assertTrue(shareBikeSource.update());
-        List<BikeRentalStation> rentalStations = shareBikeSource.getStations();
+        List<BikeRentalStation> rentalStations = shareBikeSource.getUpdates();
         assertEquals(17, rentalStations.size());
         for (BikeRentalStation rentalStation : rentalStations) {
             System.out.println(rentalStation);
@@ -49,7 +49,7 @@ public class TestShareBikeRentalStationSource extends TestCase {
                 )
             );
         assertTrue(shareBikeSource.update());
-        List<BikeRentalStation> rentalStations = shareBikeSource.getStations();
+        List<BikeRentalStation> rentalStations = shareBikeSource.getUpdates();
         BikeRentalStation prinsen = rentalStations.get(0);
         
         //  Should be random value
