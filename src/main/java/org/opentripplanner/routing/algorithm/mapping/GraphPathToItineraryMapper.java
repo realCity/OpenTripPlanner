@@ -202,13 +202,18 @@ public abstract class GraphPathToItineraryMapper {
         int[] legIndexPairs = {0, states.length - 1};
         List<int[]> legsIndexes = new ArrayList<int[]>();
 
+        TraverseMode lastMode = null;
         for (int i = 1; i < states.length - 1; i++) {
             var backState = states[i];
             var forwardState = states[i + 1];
             var backMode = backState.getBackMode();
             var forwardMode = forwardState.getBackMode();
 
-            var modeChange = backMode != forwardMode && backMode != null && forwardMode != null;
+            if (backMode != null) {
+                lastMode = backMode;
+            }
+
+            var modeChange = lastMode != forwardMode && lastMode != null && forwardMode != null;
             var parkingChange = backState.isVehicleParked() != forwardState.isVehicleParked();
             var rentalChange = isRentalPickUp(backState) || isRentalDropOff(backState);
 
