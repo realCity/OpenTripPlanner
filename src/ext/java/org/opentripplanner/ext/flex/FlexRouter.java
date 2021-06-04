@@ -2,6 +2,7 @@ package org.opentripplanner.ext.flex;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import java.util.Locale;
 import org.opentripplanner.common.model.T2;
 import org.opentripplanner.ext.flex.flexpathcalculator.FlexPathCalculator;
 import org.opentripplanner.ext.flex.flexpathcalculator.StreetFlexPathCalculator;
@@ -88,7 +89,7 @@ public class FlexRouter {
     }
   }
 
-  public Collection<Itinerary> createFlexOnlyItineraries() {
+  public Collection<Itinerary> createFlexOnlyItineraries(Locale locale) {
     calculateFlexAccessTemplates();
     calculateFlexEgressTemplates();
 
@@ -103,7 +104,7 @@ public class FlexRouter {
       StopLocation transferStop = template.getTransferStop();
       if (this.flexEgressTemplates.stream().anyMatch(t -> t.getAccessEgressStop().equals(transferStop))) {
         for(NearbyStop egress : streetEgressByStop.get(transferStop)) {
-          Itinerary itinerary = template.createDirectItinerary(egress, arriveBy, departureTime, startOfTime);
+          Itinerary itinerary = template.createDirectItinerary(egress, arriveBy, departureTime, startOfTime, locale);
           if (itinerary != null) {
             itineraries.add(itinerary);
           }

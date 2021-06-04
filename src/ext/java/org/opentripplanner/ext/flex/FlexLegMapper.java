@@ -27,7 +27,7 @@ public class FlexLegMapper {
     }
 
     public static void addFlexPlaces(Leg leg, FlexTripEdge flexEdge, Locale requestedLocale) {
-        leg.from = Place.forStop(flexEdge.s1, flexEdge.flexTemplate.fromStopIndex, null);
-        leg.to = Place.forStop(flexEdge.s2, flexEdge.flexTemplate.toStopIndex, null);
+        leg.from = Place.forFlexStop(flexEdge.s1, flexEdge.getFromVertex(), flexEdge.flexTemplate.fromStopIndex, null);
+        leg.to = Place.forFlexStop(flexEdge.s2, flexEdge.getToVertex(), flexEdge.flexTemplate.toStopIndex, null);
     }
 }

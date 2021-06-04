@@ -136,6 +136,22 @@ public class Place {
                 .build();
     }
 
+    public static Place forFlexStop(
+            StopLocation stop,
+            Vertex vertex,
+            Integer stopIndex,
+            Integer stopSequence
+    ) {
+        // The actual vertex is used because the StopLocation coordinates may not be equal to the vertex's
+        // coordinates.
+        return defaults(vertex, stop.getName())
+                .vertexType(VertexType.TRANSIT)
+                .stop(stop)
+                .stopIndex(stopIndex)
+                .stopSequence(stopSequence)
+                .build();
+    }
+
     public static Place forStop(TransitStopVertex vertex, String name) {
         return defaults(vertex, name)
                 .vertexType(VertexType.TRANSIT)
