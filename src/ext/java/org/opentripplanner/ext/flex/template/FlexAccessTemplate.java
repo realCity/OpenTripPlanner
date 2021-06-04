@@ -32,7 +32,8 @@ public class FlexAccessTemplate extends FlexAccessEgressTemplate {
   }
 
   public Itinerary createDirectItinerary(
-      NearbyStop egress, boolean arriveBy, int departureTime, ZonedDateTime startOfTime
+          NearbyStop egress, boolean arriveBy, int departureTime, ZonedDateTime startOfTime,
+          Locale locale
   ) {
     List<Edge> egressEdges = egress.edges;
 
@@ -89,7 +90,7 @@ public class FlexAccessTemplate extends FlexAccessEgressTemplate {
 
     Itinerary itinerary = GraphPathToItineraryMapper.generateItinerary(
         new GraphPath(state),
-        Locale.ENGLISH
+        locale
     );
 
     ZonedDateTime zdt = startOfTime.plusSeconds(timeShift);
