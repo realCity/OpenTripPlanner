@@ -49,7 +49,7 @@ public class DirectFlexRouter {
               egressStops
       );
 
-      return new ArrayList<>(flexRouter.createFlexOnlyItineraries());
+      return new ArrayList<>(flexRouter.createFlexOnlyItineraries(request.locale));
     }
   }
 }
