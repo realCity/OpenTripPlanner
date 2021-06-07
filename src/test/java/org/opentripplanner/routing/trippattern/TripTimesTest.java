@@ -70,7 +70,7 @@ public class TripTimesTest {
 
         updatedTripTimesA.updateDepartureTime(0, TripTimes.UNAVAILABLE);
 
-        assertEquals(TripTimes.UNAVAILABLE, updatedTripTimesA.getDepartureTime(0));
+        assertEquals(0, updatedTripTimesA.getDepartureTime(0));
         assertEquals(60, updatedTripTimesA.getArrivalTime(1));
     }
 
@@ -111,8 +111,8 @@ public class TripTimesTest {
                     updatedTripTimesA.getScheduledDepartureTime(i));
             assertEquals(originalTripTimes.getArrivalTime(i),
                     updatedTripTimesA.getScheduledArrivalTime(i));
-            assertEquals(TripTimes.UNAVAILABLE, updatedTripTimesA.getDepartureTime(i));
-            assertEquals(TripTimes.UNAVAILABLE, updatedTripTimesA.getArrivalTime(i));
+            assertEquals(i * 60, updatedTripTimesA.getDepartureTime(i));
+            assertEquals(i * 60, updatedTripTimesA.getArrivalTime(i));
         }
     }
 

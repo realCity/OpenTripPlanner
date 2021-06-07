@@ -33,7 +33,7 @@ public class TripTimes implements Serializable, Comparable<TripTimes>, Cloneable
      * beginning of the trip and may or may not cover the entire trip. Partially canceling a trip in
      * this way is specifically not allowed.
      */
-    public static final int UNAVAILABLE = -1;
+    public static final int UNAVAILABLE = Integer.MIN_VALUE;
 
     /**
      * This allows re-using the same scheduled arrival and departure time arrays for many
@@ -273,30 +273,18 @@ public class TripTimes implements Serializable, Comparable<TripTimes>, Cloneable
      * trip down the line.
      */
     public int sortIndex() {
-        if (realTimeState == RealTimeState.CANCELED) {
-            return -1;
-        }
-
-        int arrivalTime = getArrivalTime(0);
-        if (arrivalTime >= 0) {
-            return arrivalTime;
-        }
-        int departureTime = getDepartureTime(0);
-        if (departureTime >= 0) {
-            return departureTime;
-        }
-        throw new IllegalStateException("Failed to sort trip, initial (stop = 0) arrival and departure is -1");
+        return getArrivalTime(0);
     }
 
     /** @return the time in seconds after midnight that the vehicle arrives at the stop. */
     public int getArrivalTime(final int stop) {
-        if (arrivalTimes == null) { return getScheduledArrivalTime(stop); }
+        if (arrivalTimes == null || arrivalTimes[stop] == UNAVAILABLE) { return getScheduledArrivalTime(stop); }
         else return arrivalTimes[stop]; // updated times are not time shifted.
     }
 
     /** @return the amount of time in seconds that the vehicle waits at the stop. */
     public int getDepartureTime(final int stop) {
-        if (departureTimes == null) { return getScheduledDepartureTime(stop); }
+        if (departureTimes == null || departureTimes[stop] == UNAVAILABLE) { return getScheduledDepartureTime(stop); }
         else return departureTimes[stop]; // updated times are not time shifted.
     }
 
