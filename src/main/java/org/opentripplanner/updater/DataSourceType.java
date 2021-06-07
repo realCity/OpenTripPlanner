@@ -5,6 +5,7 @@ public enum DataSourceType {
   B_CYCLE,
   BICIMAD,
   BIXI,
+  BICYCLE_PARK_API,
   CITY_BIKES,
   CITI_BIKE_NYC,
   GBFS,
