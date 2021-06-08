@@ -516,7 +516,6 @@ public class BikeRentalTest extends GraphRoutingTest {
         options.bikeRentalPickupCost = 62;
         options.bikeRentalDropoffCost = 33;
         options.bikeRentalDropoffTime = 15;
-        options.worstTime = arriveBy ? Long.MIN_VALUE : Long.MAX_VALUE;
 
         optionsSetter.accept(options);
 

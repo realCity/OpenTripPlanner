@@ -537,7 +537,6 @@ org.opentripplanner.routing.algorithm.mapping.BikeRentalSnapshotTest.accessBikeR
       ],
       "nTransfers": 0,
       "nonTransitDistanceMeters": 817.8299999999999,
-      "nonTransitLimitExceeded": false,
       "nonTransitTimeSeconds": 474,
       "onStreetAllTheWay": false,
       "streetOnly": false,
@@ -959,7 +958,6 @@ org.opentripplanner.routing.algorithm.mapping.BikeRentalSnapshotTest.accessBikeR
       ],
       "nTransfers": 0,
       "nonTransitDistanceMeters": 945.235,
-      "nonTransitLimitExceeded": false,
       "nonTransitTimeSeconds": 748,
       "onStreetAllTheWay": false,
       "streetOnly": false,
@@ -1701,7 +1699,6 @@ org.opentripplanner.routing.algorithm.mapping.BikeRentalSnapshotTest.accessBikeR
       ],
       "nTransfers": 0,
       "nonTransitDistanceMeters": 270.084,
-      "nonTransitLimitExceeded": false,
       "nonTransitTimeSeconds": 210,
       "onStreetAllTheWay": false,
       "streetOnly": false,
@@ -2250,13 +2247,331 @@ org.opentripplanner.routing.algorithm.mapping.BikeRentalSnapshotTest.accessBikeR
       ],
       "nTransfers": 0,
       "nonTransitDistanceMeters": 817.8299999999999,
-      "nonTransitLimitExceeded": false,
       "nonTransitTimeSeconds": 474,
       "onStreetAllTheWay": false,
       "streetOnly": false,
       "systemNotices": [ ],
       "tooSloped": false,
       "transitTimeSeconds": 575,
+      "waitTimeAdjustedGeneralizedCost": -999999,
+      "waitingTimeSeconds": 0,
+      "walkOnly": false,
+      "walkingAllTheWay": false
+    },
+    {
+      "arrivedAtDestinationWithRentedBicycle": false,
+      "durationSeconds": 1001,
+      "elevationGained": 0.0,
+      "elevationLost": 0.0,
+      "fare": {
+        "details": {
+          "regular": [
+            {
+              "fareId": {
+                "feedId": "prt",
+                "id": "8"
+              },
+              "price": {
+                "cents": 200,
+                "currency": {
+                  "value": "USD"
+                }
+              },
+              "routes": [
+                {
+                  "feedId": "prt",
+                  "id": "77"
+                }
+              ]
+            }
+          ]
+        },
+        "fare": {
+          "regular": {
+            "cents": 200,
+            "currency": {
+              "value": "USD"
+            }
+          }
+        }
+      },
+      "generalizedCost": 2231,
+      "legs": [
+        {
+          "agencyTimeZoneOffset": -25200000,
+          "arrivalDelay": 0,
+          "bikeRentalNetworks": [ ],
+          "departureDelay": 0,
+          "distanceMeters": 220.14600000000002,
+          "endTime": "2009-10-21T23:42:21.000+0000",
+          "flexibleTrip": false,
+          "from": {
+            "coordinate": {
+              "latitude": 45.52832,
+              "longitude": -122.70059
+            },
+            "name": "SW Johnson St. & NW 24th Ave. (P1)",
+            "vertexType": "NORMAL"
+          },
+          "generalizedCost": 688,
+          "interlineWithPreviousLeg": false,
+          "legGeometry": {
+            "length": 6,
+            "points": "}f{tGv}{kVC?mCBmCD@zCN?"
+          },
+          "mode": "WALK",
+          "onStreetNonTransit": true,
+          "pathway": false,
+          "realTime": false,
+          "rentedBike": false,
+          "scheduled": false,
+          "startTime": "2009-10-21T23:39:29.000+0000",
+          "streetNotes": [ ],
+          "to": {
+            "coordinate": {
+              "latitude": 45.529662,
+              "longitude": -122.701423
+            },
+            "name": "2400 Block NW Lovejoy",
+            "stopCode": "3589",
+            "stopId": {
+              "feedId": "prt",
+              "id": "3589"
+            },
+            "stopIndex": 6,
+            "stopSequence": 7,
+            "vertexType": "TRANSIT",
+            "zoneId": "1"
+          },
+          "transitAlerts": [ ],
+          "transitLeg": false,
+          "walkSteps": [
+            {
+              "absoluteDirection": "NORTH",
+              "angle": -0.015200780078397704,
+              "area": false,
+              "bogusName": false,
+              "distance": 159.625,
+              "edges": [ ],
+              "elevation": [ ],
+              "relativeDirection": "DEPART",
+              "startLocation": {
+                "latitude": 45.52831993266165,
+                "longitude": -122.70059632295107
+              },
+              "stayOn": false,
+              "streetName": "Northwest 24th Avenue",
+              "streetNotes": [ ]
+            },
+            {
+              "absoluteDirection": "WEST",
+              "angle": -1.5928981885811253,
+              "area": false,
+              "bogusName": false,
+              "distance": 60.521,
+              "edges": [ ],
+              "elevation": [ ],
+              "relativeDirection": "LEFT",
+              "startLocation": {
+                "latitude": 45.529755,
+                "longitude": -122.70064880000001
+              },
+              "stayOn": false,
+              "streetName": "Northwest Lovejoy Street",
+              "streetNotes": [ ]
+            }
+          ],
+          "walkingLeg": true
+        },
+        {
+          "agencyTimeZoneOffset": 0,
+          "arrivalDelay": 0,
+          "bikeRentalNetworks": [ ],
+          "departureDelay": 0,
+          "distanceMeters": 2804.1297859664874,
+          "endTime": "2009-10-21T23:55:32.000+0000",
+          "flexibleTrip": false,
+          "from": {
+            "coordinate": {
+              "latitude": 45.529662,
+              "longitude": -122.701423
+            },
+            "name": "2400 Block NW Lovejoy",
+            "stopCode": "3589",
+            "stopId": {
+              "feedId": "prt",
+              "id": "3589"
+            },
+            "stopIndex": 6,
+            "stopSequence": 7,
+            "vertexType": "TRANSIT",
+            "zoneId": "1"
+          },
+          "generalizedCost": 1391,
+          "headsign": "Troutdale",
+          "intermediateStops": [ ],
+          "legGeometry": {
+            "length": 60,
+            "points": "yo{tG|b|kVC}CEuKGwI???}@G{J???YGsKEuKCuD???UCiECeEAgA?{@AkA?WAwDE{C???i@CiECkECcD??Ae@?mE{BDQ@q@@??{ADCsDbBiB`DaEt@_AVANIX?tBCLK`@c@\\c@l@w@??\\c@FKDCFEXCCgEvBEVAlCClCEnCECoD"
+          },
+          "mode": "BUS",
+          "onStreetNonTransit": false,
+          "pathway": false,
+          "realTime": false,
+          "scheduled": true,
+          "serviceDate": {
+            "day": 21,
+            "minMax": false,
+            "month": 10,
+            "sequenceNumber": 20091021,
+            "year": 2009
+          },
+          "startTime": "2009-10-21T23:42:21.000+0000",
+          "streetNotes": [ ],
+          "to": {
+            "coordinate": {
+              "latitude": 45.525183,
+              "longitude": -122.674607
+            },
+            "name": "NW Everett & 4th",
+            "stopCode": "9546",
+            "stopId": {
+              "feedId": "prt",
+              "id": "9546"
+            },
+            "stopIndex": 14,
+            "stopSequence": 15,
+            "vertexType": "TRANSIT",
+            "zoneId": "0"
+          },
+          "transitAlerts": [ ],
+          "transitLeg": true,
+          "trip": {
+            "alteration": "PLANNED",
+            "bikesAllowed": "UNKNOWN",
+            "blockId": "7703",
+            "direction": "OUTBOUND",
+            "id": {
+              "feedId": "prt",
+              "id": "770W1400"
+            },
+            "route": {
+              "agency": {
+                "fareUrl": "http://trimet.org/fares/index.htm",
+                "id": {
+                  "feedId": "prt",
+                  "id": "prt"
+                },
+                "lang": "en",
+                "name": "TriMet",
+                "phone": "503-238-7433",
+                "timezone": "America/Los_Angeles",
+                "url": "http://trimet.org"
+              },
+              "bikesAllowed": "UNKNOWN",
+              "id": {
+                "feedId": "prt",
+                "id": "77"
+              },
+              "longName": "Broadway/Halsey",
+              "mode": "BUS",
+              "shortName": "77",
+              "sortOrder": -999,
+              "sortOrderSet": false,
+              "type": 3,
+              "url": "http://trimet.org/schedules/r077.htm"
+            },
+            "serviceId": {
+              "feedId": "prt",
+              "id": "W"
+            },
+            "shapeId": {
+              "feedId": "prt",
+              "id": "77.0.2"
+            },
+            "wheelchairAccessible": 0
+          },
+          "walkSteps": [ ],
+          "walkingLeg": false
+        },
+        {
+          "agencyTimeZoneOffset": -25200000,
+          "arrivalDelay": 0,
+          "bikeRentalNetworks": [ ],
+          "departureDelay": 0,
+          "distanceMeters": 49.938,
+          "endTime": "2009-10-21T23:56:10.000+0000",
+          "flexibleTrip": false,
+          "from": {
+            "coordinate": {
+              "latitude": 45.525183,
+              "longitude": -122.674607
+            },
+            "name": "NW Everett & 4th",
+            "stopCode": "9546",
+            "stopId": {
+              "feedId": "prt",
+              "id": "9546"
+            },
+            "stopIndex": 14,
+            "stopSequence": 15,
+            "vertexType": "TRANSIT",
+            "zoneId": "0"
+          },
+          "generalizedCost": 152,
+          "interlineWithPreviousLeg": false,
+          "legGeometry": {
+            "length": 3,
+            "points": "ksztGh{vkVI?@~B"
+          },
+          "mode": "WALK",
+          "onStreetNonTransit": true,
+          "pathway": false,
+          "realTime": false,
+          "rentedBike": false,
+          "scheduled": false,
+          "startTime": "2009-10-21T23:55:32.000+0000",
+          "streetNotes": [ ],
+          "to": {
+            "coordinate": {
+              "latitude": 45.52523,
+              "longitude": -122.67525
+            },
+            "name": "NW Everett St. & NW 5th Ave. (P3)",
+            "vertexType": "NORMAL"
+          },
+          "transitAlerts": [ ],
+          "transitLeg": false,
+          "walkSteps": [
+            {
+              "absoluteDirection": "WEST",
+              "angle": -1.5968688222706109,
+              "area": false,
+              "bogusName": false,
+              "distance": 49.938,
+              "edges": [ ],
+              "elevation": [ ],
+              "relativeDirection": "DEPART",
+              "startLocation": {
+                "latitude": 45.525239650875925,
+                "longitude": -122.67460910872424
+              },
+              "stayOn": false,
+              "streetName": "Northwest Everett Street",
+              "streetNotes": [ ]
+            }
+          ],
+          "walkingLeg": true
+        }
+      ],
+      "nTransfers": 0,
+      "nonTransitDistanceMeters": 270.084,
+      "nonTransitTimeSeconds": 210,
+      "onStreetAllTheWay": false,
+      "streetOnly": false,
+      "systemNotices": [ ],
+      "tooSloped": false,
+      "transitTimeSeconds": 791,
       "waitTimeAdjustedGeneralizedCost": -999999,
       "waitingTimeSeconds": 0,
       "walkOnly": false,
@@ -2799,7 +3114,6 @@ org.opentripplanner.routing.algorithm.mapping.BikeRentalSnapshotTest.accessBikeR
       ],
       "nTransfers": 0,
       "nonTransitDistanceMeters": 817.8299999999999,
-      "nonTransitLimitExceeded": false,
       "nonTransitTimeSeconds": 474,
       "onStreetAllTheWay": false,
       "streetOnly": false,
@@ -3157,7 +3471,6 @@ org.opentripplanner.routing.algorithm.mapping.BikeRentalSnapshotTest.directBikeR
       ],
       "nTransfers": 0,
       "nonTransitDistanceMeters": 819.078,
-      "nonTransitLimitExceeded": false,
       "nonTransitTimeSeconds": 477,
       "onStreetAllTheWay": true,
       "streetOnly": true,
@@ -3453,7 +3766,6 @@ org.opentripplanner.routing.algorithm.mapping.BikeRentalSnapshotTest.directBikeR
       ],
       "nTransfers": 0,
       "nonTransitDistanceMeters": 818.5600000000001,
-      "nonTransitLimitExceeded": false,
       "nonTransitTimeSeconds": 338,
       "onStreetAllTheWay": true,
       "streetOnly": true,
@@ -4042,7 +4354,6 @@ org.opentripplanner.routing.algorithm.mapping.BikeRentalSnapshotTest.egressBikeR
       ],
       "nTransfers": 0,
       "nonTransitDistanceMeters": 796.1389999999999,
-      "nonTransitLimitExceeded": false,
       "nonTransitTimeSeconds": 455,
       "onStreetAllTheWay": false,
       "streetOnly": false,
@@ -4430,7 +4741,6 @@ org.opentripplanner.routing.algorithm.mapping.BikeRentalSnapshotTest.egressBikeR
       ],
       "nTransfers": 0,
       "nonTransitDistanceMeters": 851.5160000000001,
-      "nonTransitLimitExceeded": false,
       "nonTransitTimeSeconds": 673,
       "onStreetAllTheWay": false,
       "streetOnly": false,
@@ -4818,7 +5128,6 @@ org.opentripplanner.routing.algorithm.mapping.BikeRentalSnapshotTest.egressBikeR
       ],
       "nTransfers": 0,
       "nonTransitDistanceMeters": 833.505,
-      "nonTransitLimitExceeded": false,
       "nonTransitTimeSeconds": 657,
       "onStreetAllTheWay": false,
       "streetOnly": false,
@@ -5401,7 +5710,6 @@ org.opentripplanner.routing.algorithm.mapping.BikeRentalSnapshotTest.egressBikeR
       ],
       "nTransfers": 0,
       "nonTransitDistanceMeters": 796.1389999999999,
-      "nonTransitLimitExceeded": false,
       "nonTransitTimeSeconds": 455,
       "onStreetAllTheWay": false,
       "streetOnly": false,
@@ -5789,7 +6097,6 @@ org.opentripplanner.routing.algorithm.mapping.BikeRentalSnapshotTest.egressBikeR
       ],
       "nTransfers": 0,
       "nonTransitDistanceMeters": 851.5160000000001,
-      "nonTransitLimitExceeded": false,
       "nonTransitTimeSeconds": 673,
       "onStreetAllTheWay": false,
       "streetOnly": false,
@@ -6177,7 +6484,6 @@ org.opentripplanner.routing.algorithm.mapping.BikeRentalSnapshotTest.egressBikeR
       ],
       "nTransfers": 0,
       "nonTransitDistanceMeters": 833.505,
-      "nonTransitLimitExceeded": false,
       "nonTransitTimeSeconds": 657,
       "onStreetAllTheWay": false,
       "streetOnly": false,

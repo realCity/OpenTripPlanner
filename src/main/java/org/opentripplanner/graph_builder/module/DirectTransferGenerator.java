@@ -34,7 +34,7 @@ public class DirectTransferGenerator implements GraphBuilderModule {
 
     private static final Logger LOG = LoggerFactory.getLogger(DirectTransferGenerator.class);
 
-    final double radiusMeters;
+    final double radiusByDurationInSeconds;
 
     public List<String> provides() {
         return Arrays.asList("linking");
@@ -44,8 +44,8 @@ public class DirectTransferGenerator implements GraphBuilderModule {
         return Arrays.asList("street to transit");
     }
 
-    public DirectTransferGenerator (double radiusMeters) {
-        this.radiusMeters = radiusMeters;
+    public DirectTransferGenerator (double radiusByDurationInSeconds) {
+        this.radiusByDurationInSeconds = radiusByDurationInSeconds;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class DirectTransferGenerator implements GraphBuilderModule {
         }
 
         /* The linker will use streets if they are available, or straight-line distance otherwise. */
-        NearbyStopFinder nearbyStopFinder = new NearbyStopFinder(graph, radiusMeters);
+        NearbyStopFinder nearbyStopFinder = new NearbyStopFinder(graph, radiusByDurationInSeconds);
         if (nearbyStopFinder.useStreets) {
             LOG.info("Creating direct transfer edges between stops using the street network from OSM...");
         } else {

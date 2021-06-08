@@ -21,5 +21,5 @@ public interface SearchTerminationStrategy {
      * @return true if the specified search should be terminated
      */
     public boolean shouldSearchTerminate(Set<Vertex> origin, Set<Vertex> target, State current,
-                                         ShortestPathTree spt, RoutingRequest traverseOptions);
+        ShortestPathTree spt, RoutingRequest traverseOptions);
 }
