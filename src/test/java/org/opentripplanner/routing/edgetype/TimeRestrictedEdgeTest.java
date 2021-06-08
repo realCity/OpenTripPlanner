@@ -170,7 +170,6 @@ public class TimeRestrictedEdgeTest extends GraphRoutingTest {
         var options = new RoutingRequest().getStreetSearchRequest(StreetMode.WALK);
         options.dateTime = START_OF_TIME.toEpochSecond();
         options.arriveBy = arriveBy;
-        options.worstTime = arriveBy ? Long.MIN_VALUE : Long.MAX_VALUE;
         options.setRoutingContext(graph, A, C);
 
         var tree = new AStar().getShortestPathTree(options);
@@ -194,7 +193,7 @@ public class TimeRestrictedEdgeTest extends GraphRoutingTest {
         var rr = new RoutingRequest().getStreetSearchRequest(StreetMode.WALK);
         rr.setRoutingContext(graph, A, null);
 
-        var stops = AccessEgressRouter.streetSearch(rr, StreetMode.WALK, false, 2000);
+        var stops = AccessEgressRouter.streetSearch(rr, StreetMode.WALK, false);
         assertEquals(1, stops.size(), "nearby access stops");
 
         var accessEgress =
@@ -217,7 +216,7 @@ public class TimeRestrictedEdgeTest extends GraphRoutingTest {
         var rr = new RoutingRequest().getStreetSearchRequest(StreetMode.WALK);
         rr.setRoutingContext(graph, null, A);
 
-        var stops = AccessEgressRouter.streetSearch(rr, StreetMode.WALK, true, 2000);
+        var stops = AccessEgressRouter.streetSearch(rr, StreetMode.WALK, true);
         assertEquals(1, stops.size(), "nearby egress stops");
 
         var accessEgress =

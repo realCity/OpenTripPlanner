@@ -110,7 +110,6 @@ public abstract class ParkAndRideTest extends GraphRoutingTest {
         options.bannedVehicleParkingTags = bannedTags;
         options.requiredVehicleParkingTags = requiredTags;
         options.arriveBy = arriveBy;
-        options.worstTime = arriveBy ? Long.MIN_VALUE : Long.MAX_VALUE;
         options.setRoutingContext(graph, fromVertex, toVertex);
 
         var tree = new AStar().getShortestPathTree(options);

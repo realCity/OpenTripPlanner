@@ -339,32 +339,6 @@ public class LegacyGraphQLDataFetchers {
     public DataFetcher<Iterable<TransitAlert>> alerts();
   }
 
-  public interface LegacyGraphQLContactInfo {
-    public DataFetcher<String> contactPerson();
-    public DataFetcher<String> phoneNumber();
-    public DataFetcher<String> eMail();
-    public DataFetcher<String> faxNumber();
-    public DataFetcher<String> infoUrl();
-    public DataFetcher<String> bookingUrl();
-    public DataFetcher<String> additionalDetails();
-  }
-
-  public interface LegacyGraphQLBookingTime {
-    public DataFetcher<String> time();
-    public DataFetcher<Integer> daysPrior();
-  }
-
-  public interface LegacyGraphQLBookingInfo {
-    public DataFetcher<org.opentripplanner.model.ContactInfo> contactInfo();
-    public DataFetcher<org.opentripplanner.model.BookingTime> earliestBookingTime();
-    public DataFetcher<org.opentripplanner.model.BookingTime> latestBookingTime();
-    public DataFetcher<Long> minimumBookingNoticeSeconds();
-    public DataFetcher<Long> maximumBookingNoticeSeconds();
-    public DataFetcher<String> message();
-    public DataFetcher<String> pickupMessage();
-    public DataFetcher<String> dropOffMessage();
-  }
-
   public interface LegacyGraphQLPlace {
     public DataFetcher<String> name();
     public DataFetcher<String> vertexType();

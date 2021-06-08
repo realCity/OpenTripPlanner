@@ -84,7 +84,7 @@ public class ParkAndRideOpeningHoursTest extends GraphRoutingTest {
         rr.carParkTime = 60;
         rr.setRoutingContext(graph, A, null);
 
-        var stops = AccessEgressRouter.streetSearch(rr, StreetMode.CAR_TO_PARK, false, 2000);
+        var stops = AccessEgressRouter.streetSearch(rr, StreetMode.CAR_TO_PARK, false);
         assertEquals(1, stops.size(), "nearby access stops");
 
         var accessEgress =
@@ -105,7 +105,6 @@ public class ParkAndRideOpeningHoursTest extends GraphRoutingTest {
         options.dateTime = START_OF_TIME.toEpochSecond();
         options.carParkTime = CAR_PARK_TIME;
         options.arriveBy = arriveBy;
-        options.worstTime = arriveBy ? Long.MIN_VALUE : Long.MAX_VALUE;
         options.setRoutingContext(graph, A, S);
 
         var tree = new AStar().getShortestPathTree(options);

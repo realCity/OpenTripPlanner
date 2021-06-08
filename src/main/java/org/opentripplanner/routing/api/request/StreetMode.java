@@ -22,7 +22,7 @@ public enum StreetMode {
    * Walk to a bike rental point, bike to a bike rental drop-off point, and walk the rest of the
    * way. This can include bike rental at fixed locations or free-floating services.
    */
-  BIKE_RENTAL(true, true, false, true, true,false),
+  BIKE_RENTAL(true, true, true, true, true,false),
   /**
    * Car only
    *
