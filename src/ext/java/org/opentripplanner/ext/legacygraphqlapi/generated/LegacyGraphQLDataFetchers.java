@@ -36,6 +36,7 @@ import org.opentripplanner.model.Trip;
 import org.opentripplanner.routing.vehicle_parking.VehicleParking;
 import org.opentripplanner.routing.vehicle_parking.VehicleParking;
 import org.opentripplanner.routing.vehicle_parking.VehicleParking;
+import org.opentripplanner.model.SystemNotice;
 import graphql.schema.TypeResolver;
 import graphql.schema.DataFetcher;
 
@@ -247,6 +248,8 @@ public class LegacyGraphQLDataFetchers {
     public DataFetcher<Double> elevationGained();
     public DataFetcher<Double> elevationLost();
     public DataFetcher<Boolean> arrivedAtDestinationWithRentedBicycle();
+
+        public DataFetcher<Iterable<SystemNotice>> systemNotices();
   }
 
   public interface LegacyGraphQLLeg {
@@ -587,5 +590,27 @@ public class LegacyGraphQLDataFetchers {
     public DataFetcher<EncodedPolylineBean> tripGeometry();
     public DataFetcher<Iterable<TransitAlert>> alerts();
   }
+
+    /**
+     * A system notice is used to tag elements with system information for debugging or other system
+     * related purpose. One use-case is to run a routing search with 'debugItineraryFilter: true'.
+     * This will then tag itineraries instead of removing them from the result. This make it
+     * possible to inspect the itinerary-filter-chain. A SystemNotice only has english text, because
+     * the primary user are technical staff, like testers and developers.
+     */
+    public interface LegacyGraphQLSystemNotice {
+
+        public DataFetcher<String> tag();
+
+        public DataFetcher<String> text();
+    }
+
+    /**
+     * An object with an ID
+     */
+    public interface LegacyGraphQLNode extends TypeResolver {
+
+        default public DataFetcher<graphql.relay.Relay.ResolvedGlobalId> id() { return null; }
+    }
 
 }
