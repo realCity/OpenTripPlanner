@@ -605,12 +605,4 @@ public class LegacyGraphQLDataFetchers {
         public DataFetcher<String> text();
     }
 
-    /**
-     * An object with an ID
-     */
-    public interface LegacyGraphQLNode extends TypeResolver {
-
-        default public DataFetcher<graphql.relay.Relay.ResolvedGlobalId> id() { return null; }
-    }
-
 }
