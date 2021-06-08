@@ -59,6 +59,10 @@ public abstract class DominanceFunction implements Serializable {
             return false;
         }
 
+        if (a.hasEnteredNoThruTrafficArea() != b.hasEnteredNoThruTrafficArea()) {
+            return false;
+        }
+
         /*
          * When creating AccessEgress paths for RAPTOR states with have different time restrictions
          * have to be considered, since a non-optimal VehicleParking could be used after the optimal

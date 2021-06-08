@@ -182,16 +182,20 @@ public class StateEditor {
 
     /* Basic Setters */
 
-    public void setEnteredMotorVerhicleNoThroughTrafficArea() {
-        child.stateData.enteredMotorVehicleNoThroughTrafficArea = true;
+    public void resetEnteredNoThroughTrafficArea() {
+        if (child.stateData.enteredNoThroughTrafficArea)
+            return;
+
+        cloneStateDataAsNeeded();
+        child.stateData.enteredNoThroughTrafficArea = false;
     }
 
-    public void resetEnteredMotorVerhicleNoThroughTrafficArea() {
-        child.stateData.enteredMotorVehicleNoThroughTrafficArea = true;
-    }
+    public void setEnteredNoThroughTrafficArea() {
+        if (child.stateData.enteredNoThroughTrafficArea)
+            return;
 
-    public void setEnteredBicycleNoThroughTrafficArea() {
-        child.stateData.enteredBicycleNoThroughTrafficArea = true;
+        cloneStateDataAsNeeded();
+        child.stateData.enteredNoThroughTrafficArea = true;
     }
 
     public void setBackMode(TraverseMode mode) {
@@ -357,24 +361,6 @@ public class StateEditor {
     private void cloneStateDataAsNeeded() {
         if (child.backState != null && child.stateData == child.backState.stateData)
             child.stateData = child.stateData.clone();
-    }
-
-    public void setOptions(RoutingRequest options) {
-        cloneStateDataAsNeeded();
-        child.stateData.opt = options;
-    }
-
-    public void setBikeRentalNetwork(Set<String> networks) {
-        cloneStateDataAsNeeded();
-        child.stateData.bikeRentalNetworks = networks;
-    }
-
-    public boolean hasEnteredMotorVehicleNoThroughTrafficArea() {
-        return child.hasEnteredMotorVehicleNoThruTrafficArea();
-    }
-
-    public boolean hasEnteredBicycleNoThroughTrafficArea() {
-        return child.hasEnteredBicycleNoThruTrafficArea();
     }
 
     public void addTimeRestriction(TimeRestrictionWithOffset timeRestriction, Object source) {
