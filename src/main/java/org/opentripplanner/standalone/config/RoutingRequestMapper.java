@@ -49,8 +49,10 @@ public class RoutingRequestMapper {
         request.carAccelerationSpeed = c.asDouble("carAccelerationSpeed", dft.carAccelerationSpeed);
         request.carDecelerationSpeed = c.asDouble("carDecelerationSpeed", dft.carDecelerationSpeed);
         request.carDropoffTime = c.asInt("carDropoffTime", dft.carDropoffTime);
-        request.carParkTime = c.asInt("carParkTime", dft.carParkTime);
         request.carParkCost = c.asInt("carParkCost", dft.carParkCost);
+        request.carParkTime = c.asInt("carParkTime", dft.carParkTime);
+        request.carPickupCost = c.asInt("carPickupCost", dft.carPickupCost);
+        request.carPickupTime = c.asInt("carPickupTime", dft.carPickupTime);
         request.carSpeed = c.asDouble("carSpeed", dft.carSpeed);
         request.itineraryFilters = ItineraryFiltersMapper.map(c.path("itineraryFilters"));
         request.disableAlertFiltering = c.asBoolean("disableAlertFiltering", dft.disableAlertFiltering);
