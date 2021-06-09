@@ -215,6 +215,12 @@ public abstract class GraphPathToItineraryMapper {
                 legsIndexes.add(legIndexPairs);
                 legIndexPairs = new int[] {i, states.length - 1};
             }
+
+            if (rentalChange || parkingChange) {
+                /* Clear the lastMode, so that switching modes doesn't re-trigger a mode change
+                 * a few state's latter. */
+                lastMode = null;
+            }
         }
 
         // Final leg

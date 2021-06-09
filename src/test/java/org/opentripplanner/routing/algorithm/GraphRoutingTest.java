@@ -1,5 +1,6 @@
 package org.opentripplanner.routing.algorithm;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -22,6 +23,11 @@ import org.opentripplanner.routing.core.TimeRestriction;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.core.TraverseModeSet;
 import org.opentripplanner.routing.edgetype.BikeRentalEdge;
+import org.opentripplanner.routing.edgetype.ElevatorAlightEdge;
+import org.opentripplanner.routing.edgetype.ElevatorBoardEdge;
+import org.opentripplanner.routing.edgetype.ElevatorEdge;
+import org.opentripplanner.routing.edgetype.ElevatorHopEdge;
+import org.opentripplanner.routing.edgetype.FreeEdge;
 import org.opentripplanner.routing.edgetype.PathwayEdge;
 import org.opentripplanner.routing.edgetype.StreetBikeRentalLink;
 import org.opentripplanner.routing.edgetype.StreetEdge;
@@ -41,6 +47,8 @@ import org.opentripplanner.routing.vehicle_parking.VehicleParking;
 import org.opentripplanner.routing.vehicle_parking.VehicleParking.VehicleParkingEntranceCreator;
 import org.opentripplanner.routing.vehicle_parking.VehicleParkingHelper;
 import org.opentripplanner.routing.vertextype.BikeRentalStationVertex;
+import org.opentripplanner.routing.vertextype.ElevatorOffboardVertex;
+import org.opentripplanner.routing.vertextype.ElevatorOnboardVertex;
 import org.opentripplanner.routing.vertextype.IntersectionVertex;
 import org.opentripplanner.routing.vertextype.StreetVertex;
 import org.opentripplanner.routing.vertextype.TemporaryVertex;
@@ -154,6 +162,42 @@ public abstract class GraphRoutingTest {
             return turnRestriction(from, to, type, new TraverseModeSet(TraverseMode.CAR));
         }
 
+        public List<ElevatorEdge> elevator(StreetTraversalPermission permission, Vertex ... vertices) {
+            List<ElevatorEdge> edges = new ArrayList<>();
+            List<ElevatorOnboardVertex> onboardVertices = new ArrayList<>();
+
+            for (Vertex v : vertices) {
+                var level = String.format("L-%s", v.getName());
+                var boardLabel = String.format("%s-onboard", level);
+                var alightLabel = String.format("%s-offboard", level);
+
+                var onboard = new ElevatorOnboardVertex(
+                        graph, boardLabel, v.getX(), v.getY(), boardLabel
+                );
+                var offboard = new ElevatorOffboardVertex(
+                        graph, alightLabel, v.getX(), v.getY(), alightLabel
+                );
+
+                new FreeEdge(v, offboard);
+                new FreeEdge(offboard, v);
+
+                edges.add(new ElevatorBoardEdge(offboard, onboard));
+                edges.add(new ElevatorAlightEdge(onboard, offboard, level));
+
+                onboardVertices.add(onboard);
+            }
+
+            for (int i = 1; i < onboardVertices.size(); i++) {
+                var from = onboardVertices.get(i - 1);
+                var to = onboardVertices.get(i);
+
+                edges.add(new ElevatorHopEdge(from, to, permission));
+                edges.add(new ElevatorHopEdge(to, from, permission));
+            }
+
+            return edges;
+        };
+
         // -- Transit network (pathways, linking)
         public Entrance entranceEntity(String id, double latitude, double longitude) {
             return new Entrance(
@@ -221,9 +265,12 @@ public abstract class GraphRoutingTest {
             return List.of(link(from, to), link(to, from));
         }
 
-        public PathwayEdge pathway(Vertex from, Vertex to) {
+        public PathwayEdge pathway(Vertex from, Vertex to, int time, int length) {
             return new PathwayEdge(
-                    from, to, String.format("%s%s pathway", from.getName(), to.getName()));
+                    from, to, null,
+                    String.format("%s%s pathway", from.getName(), to.getName()),
+                    time, length, 0, 0, false
+            );
         }
 
         // -- Street linking

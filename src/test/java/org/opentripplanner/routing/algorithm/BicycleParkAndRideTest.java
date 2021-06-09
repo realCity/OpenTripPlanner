@@ -70,11 +70,11 @@ public class BicycleParkAndRideTest extends ParkAndRideTest {
         assertPath(
                 B, D, StreetMode.BIKE_TO_PARK,
                 "null - null (0.00, 0)",
-                "WALK - BC street (130.83, 66)",
-                "null - BikePark Entrance (131.83, 66)",
-                "null (parked) - BikePark Entrance (251.83, 126)",
-                "null (parked) - BikePark Entrance (252.83, 126)",
-                "WALK (parked) - CD street (383.65, 192)"
+                "WALK - BC street (327.07, 66)",
+                "null - BikePark Entrance (328.07, 66)",
+                "null (parked) - BikePark Entrance (448.07, 126)",
+                "null (parked) - BikePark Entrance (449.07, 126)",
+                "WALK (parked) - CD street (579.89, 192)"
         );
     }
 
