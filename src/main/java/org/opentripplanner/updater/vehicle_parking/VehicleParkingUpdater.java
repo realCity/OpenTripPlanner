@@ -54,7 +54,7 @@ public class VehicleParkingUpdater extends PollingGraphUpdater {
         super(parameters);
         this.source = source;
 
-        LOG.info("Creating bike-park updater running every {} seconds : {}", pollingPeriodSeconds, source);
+        LOG.info("Creating vehicle-parking updater running every {} seconds : {}", pollingPeriodSeconds, source);
     }
 
     @Override
