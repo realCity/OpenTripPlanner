@@ -130,7 +130,7 @@ abstract class ParkAPIUpdater extends GenericJsonDataSource<VehicleParking> {
 
     @SneakyThrows
     private TimeRestriction parseOpeningHours(JsonNode jsonNode) {
-        if (jsonNode == null) {
+        if (jsonNode == null || jsonNode.asText().isBlank()) {
             return null;
         }
 
