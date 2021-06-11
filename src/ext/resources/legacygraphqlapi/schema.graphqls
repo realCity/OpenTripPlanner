@@ -296,6 +296,21 @@ type VehiclePlaces {
     wheelchairAccessibleCarSpaces: Int
 }
 
+type VehicleParkingWithEntrance {
+    vehicleParking: VehicleParking
+
+    """
+    True if the difference of visiting time for a VehicleParking and the closing time is inside the
+    request's vehicleParkingClosesSoonSeconds interval.
+    """
+    closesSoon: Boolean
+
+    """
+    Was realtime data used when parking.
+    """
+    realtime: Boolean
+}
+
 """
 Bike rental station represents a location where users can rent bicycles for a fee.
 """
@@ -1193,7 +1208,7 @@ type Place {
     carPark: CarPark
 
     """The vehicle parking related to the place"""
-    vehicleParking: VehicleParking
+    vehicleParkingWithEntrance: VehicleParkingWithEntrance
 }
 
 type placeAtDistance implements Node {
