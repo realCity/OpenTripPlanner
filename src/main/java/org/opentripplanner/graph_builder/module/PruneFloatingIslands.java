@@ -59,8 +59,8 @@ public class PruneFloatingIslands implements GraphBuilderModule {
     private int pruningThresholdIslandWithStops;
 
     /**
-     * The name for output file for this process. The file will store information about the islands 
-     * that were found and whether they were pruned. If the value is an empty string or null there 
+     * The name for output file for this process. The file will store information about the islands
+     * that were found and whether they were pruned. If the value is an empty string or null there
      * will be no output file.
      */
     private String islandLogFile;
@@ -91,7 +91,12 @@ public class PruneFloatingIslands implements GraphBuilderModule {
         LOG.info("Pruning isolated islands in street network");
 
         pruneFloatingIslands(graph, pruningThresholdIslandWithoutStops,
-                pruningThresholdIslandWithStops, islandLogFile, issueStore
+                pruningThresholdIslandWithStops, islandLogFile,
+                issueStore, TraverseMode.BICYCLE
+        );
+        pruneFloatingIslands(graph, pruningThresholdIslandWithoutStops,
+                pruningThresholdIslandWithStops, islandLogFile,
+                issueStore, TraverseMode.CAR
         );
         if (transitToStreetNetwork == null) {
             LOG.debug(
@@ -128,7 +133,8 @@ public class PruneFloatingIslands implements GraphBuilderModule {
 
     public static void pruneFloatingIslands(
             Graph graph, int maxIslandSize,
-            int islandWithStopMaxSize, String islandLogName, DataImportIssueStore issueStore
+            int islandWithStopMaxSize, String islandLogName, DataImportIssueStore issueStore,
+            TraverseMode noThruType
     ) {
         LOG.debug("pruning");
         PrintWriter islandLog = null;
@@ -153,25 +159,25 @@ public class PruneFloatingIslands implements GraphBuilderModule {
         ArrayList<Subgraph> islands = new ArrayList<Subgraph>();
         int count;
 
-        /* establish vertex neighbourhood without noThruTrafficEdges */
-        collectNeighbourVertices(graph, neighborsForVertex, false);
+        /* establish vertex neighbourhood without currently relevant noThruTrafficEdges */
+        collectNeighbourVertices(graph, neighborsForVertex, noThruType, false);
 
         /* associate each connected vertex with a subgraph */
         count = collectSubGraphs(graph, neighborsForVertex, subgraphs, null, null);
-        LOG.info("Islands without noThruTraffic edges: " + count);
+        LOG.info("Islands without {} noThruTraffic edges: {}", noThruType, count);
 
-        /* Expand vertex neighbourhood with noThruTrafficEdges
+        /* Expand vertex neighbourhood with relevant noThruTrafficEdges
            Note that we can reuse the original neighbour map here
            and simply process a smaller set of noThruTrafficEdges */
-        collectNeighbourVertices(graph, neighborsForVertex, true);
+        collectNeighbourVertices(graph, neighborsForVertex, noThruType, true);
 
         /* Next: generate subgraphs without considering access limitations */
         count = collectSubGraphs(graph, neighborsForVertex, extgraphs, null, islands);
-        LOG.info("Islands with noThruTraffic edges: " + count);
+        LOG.info("Islands with {} noThruTraffic edges: {}", noThruType, count);
 
         /* collect unreachable edges to a map */
         processIslands(graph, islands, isolated, null, true,
-                maxIslandSize, islandWithStopMaxSize, issueStore
+                maxIslandSize, islandWithStopMaxSize, issueStore, noThruType
         );
 
         extgraphs = new HashMap<Vertex, Subgraph>(); // let old map go
@@ -184,15 +190,15 @@ public class PruneFloatingIslands implements GraphBuilderModule {
 
         /* Next round: generate purely noThruTraffic islands if such ones exist */
         count = collectSubGraphs(graph, neighborsForVertex, extgraphs, null, islands);
-        LOG.info("noThruTraffic island count: " + count);
+        LOG.info("{} noThruTraffic island count: {}", noThruType, count);
 
-        LOG.info("Total " + islands.size() + " sub graphs found");
+        LOG.info("Total {} sub graphs found", islands.size());
 
         /* remove all tiny subgraphs and large subgraphs without stops */
         count = processIslands(graph, islands, isolated, islandLog, false,
-                maxIslandSize, islandWithStopMaxSize, issueStore
+                maxIslandSize, islandWithStopMaxSize, issueStore, noThruType
         );
-        LOG.info("Modified " + count + " islands");
+        LOG.info("Modified {} islands", count);
 
         if (graph.removeEdgelessVertices() > 0) {
             LOG.warn("Removed edgeless vertices after pruning islands");
@@ -207,7 +213,8 @@ public class PruneFloatingIslands implements GraphBuilderModule {
             boolean markIsolated,
             int maxIslandSize,
             int islandWithStopMaxSize,
-            DataImportIssueStore issueStore
+            DataImportIssueStore issueStore,
+            TraverseMode noThruType
     ) {
 
         Map<String, Integer> stats = new HashMap<String, Integer>();
@@ -224,7 +231,7 @@ public class PruneFloatingIslands implements GraphBuilderModule {
                 //for islands with stops
                 if (island.streetSize() < islandWithStopMaxSize) {
                     depedestrianizeOrRemove(
-                            graph, island, issueStore, isolated, stats, markIsolated);
+                            graph, island, issueStore, isolated, stats, markIsolated, noThruType);
                     hadRemoved = true;
                     count++;
                 }
@@ -233,7 +240,7 @@ public class PruneFloatingIslands implements GraphBuilderModule {
                 //for islands without stops
                 if (island.streetSize() < maxIslandSize) {
                     depedestrianizeOrRemove(
-                            graph, island, issueStore, isolated, stats, markIsolated);
+                            graph, island, issueStore, isolated, stats, markIsolated, noThruType);
                     hadRemoved = true;
                     count++;
                 }
@@ -243,18 +250,18 @@ public class PruneFloatingIslands implements GraphBuilderModule {
             }
         }
         if (markIsolated) {
-            LOG.info("Detected " + stats.get("isolated") + " isolated edges");
+            LOG.info("Detected {} isolated edges", stats.get("isolated"));
         }
         else {
-            LOG.info("Removed " + stats.get("removed") + " edges");
-            LOG.info("Depedestrianized " + stats.get("depedestrianized") + " edges");
-            LOG.info("Converted " + stats.get("noThru") + " edges to noTruTraffic");
+            LOG.info("Removed {} edges", stats.get("removed"));
+            LOG.info("Depedestrianized {} edges", stats.get("depedestrianized"));
+            LOG.info("Converted {} edges to noTruTraffic", stats.get("noThru"));
         }
         return count;
     }
 
     private static void collectNeighbourVertices(
-            Graph graph, Map<Vertex, ArrayList<Vertex>> neighborsForVertex, boolean noThruTraffic
+            Graph graph, Map<Vertex, ArrayList<Vertex>> neighborsForVertex, TraverseMode noThruType, boolean shouldMatchNoThruType
     ) {
 
         RoutingRequest options = new RoutingRequest(new TraverseModeSet(TraverseMode.WALK));
@@ -275,8 +282,8 @@ public class PruneFloatingIslands implements GraphBuilderModule {
                 ) {
                     continue;
                 }
-                if ((e instanceof StreetEdge && ((StreetEdge) e).isNoThruTraffic())
-                        != noThruTraffic) {
+                if (e instanceof StreetEdge
+                        && shouldMatchNoThruType != ((StreetEdge) e).isNoThruTraffic(noThruType)) {
                     continue;
                 }
                 State s1 = e.traverse(s0);
@@ -348,7 +355,8 @@ public class PruneFloatingIslands implements GraphBuilderModule {
             DataImportIssueStore issueStore,
             Map<Edge, Boolean> isolated,
             Map<String, Integer> stats,
-            boolean markIsolated
+            boolean markIsolated,
+            TraverseMode noThruType
     ) {
         //iterate over the street vertex of the subgraph
         for (Iterator<Vertex> vIter = island.streetIterator(); vIter.hasNext(); ) {
@@ -365,7 +373,11 @@ public class PruneFloatingIslands implements GraphBuilderModule {
                         if (!isolated.containsKey(e)) {
                             // not a true island edge but has limited access
                             // so convert to noThruTraffic
-                            pse.setNoThruTraffic(true);
+                            if (noThruType == TraverseMode.CAR) {
+                                pse.setMotorVehicleNoThruTraffic(true);
+                            } else if (noThruType == TraverseMode.BICYCLE) {
+                                pse.setBicycleNoThruTraffic(true);
+                            }
                             stats.put("noThru", stats.get("noThru") + 1);
                         }
                         else {
