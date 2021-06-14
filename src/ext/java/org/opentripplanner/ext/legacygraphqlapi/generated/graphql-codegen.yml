@@ -75,3 +75,4 @@ config:
     VehicleParking: org.opentripplanner.routing.vehicle_parking.VehicleParking#VehicleParking
     VehiclePlaces: org.opentripplanner.routing.vehicle_parking.VehicleParking#VehicleParking.VehiclePlaces
     VehicleParkingState: org.opentripplanner.routing.vehicle_parking.VehicleParking#VehicleParking.VehicleParkingState
+    VehicleParkingWithEntrance: org.opentripplanner.model.plan.VehicleParkingWithEntrance

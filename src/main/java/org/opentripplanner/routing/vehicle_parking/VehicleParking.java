@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.routing.core.TimeRestriction;
+import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.vertextype.StreetVertex;
 import org.opentripplanner.util.I18NString;
 
@@ -67,8 +68,7 @@ public class VehicleParking implements Serializable {
   @Getter(AccessLevel.NONE)
   private final boolean wheelchairAccessibleCarPlaces;
 
-  @EqualsAndHashCode.Exclude
-  private VehiclePlaces capacity;
+  private final VehiclePlaces capacity;
 
   @EqualsAndHashCode.Exclude
   private VehiclePlaces availability;
@@ -104,6 +104,33 @@ public class VehicleParking implements Serializable {
     CLOSED
   }
 
+  public boolean hasSpacesAvailable(TraverseMode traverseMode, boolean wheelchairAccessible, boolean useAvailability) {
+    switch (traverseMode) {
+      case BICYCLE:
+        if (useAvailability && hasRealTimeDataForMode(TraverseMode.BICYCLE, false)) {
+          return availability.getBicycleSpaces() > 0;
+        } else {
+          return bicyclePlaces;
+        }
+      case CAR:
+        if (wheelchairAccessible) {
+          if (useAvailability && hasRealTimeDataForMode(TraverseMode.CAR, true)) {
+              return availability.getWheelchairAccessibleCarSpaces() > 0;
+          } else {
+            return wheelchairAccessibleCarPlaces;
+          }
+        } else {
+          if (useAvailability && hasRealTimeDataForMode(TraverseMode.CAR, false)) {
+              return availability.getCarSpaces() > 0;
+          } else {
+            return carPlaces;
+          }
+        }
+      default:
+        return false;
+    }
+  }
+
   public boolean hasBicyclePlaces() {
     return bicyclePlaces;
   }
@@ -124,9 +151,25 @@ public class VehicleParking implements Serializable {
     return availability != null;
   }
 
-  public void updateVehiclePlaces(VehiclePlaces vehiclePlaces) {
-    this.availability = vehiclePlaces;
-    this.capacity = vehiclePlaces;
+  public boolean hasRealTimeDataForMode(TraverseMode traverseMode, boolean wheelchairAccessibleCarPlaces) {
+    if (availability == null) {
+      return false;
+    }
+
+    switch (traverseMode) {
+      case BICYCLE:
+        return availability.getBicycleSpaces() != null;
+      case CAR:
+        var places = wheelchairAccessibleCarPlaces ?
+            availability.getWheelchairAccessibleCarSpaces() : availability.getCarSpaces();
+        return places != null;
+      default:
+        return false;
+    }
+  }
+
+  public void updateAvailability(VehiclePlaces availability) {
+    this.availability = availability;
   }
 
   private void addEntrance(VehicleParkingEntranceCreator creator) {

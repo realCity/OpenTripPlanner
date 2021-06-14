@@ -9,7 +9,9 @@ import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.model.StopLocation;
 import org.opentripplanner.model.WgsCoordinate;
 import org.opentripplanner.model.base.ToStringBuilder;
+import org.opentripplanner.routing.api.request.RoutingRequest;
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
+import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.vertextype.BikeRentalStationVertex;
 import org.opentripplanner.routing.vertextype.TransitStopVertex;
@@ -166,13 +168,24 @@ public class Place {
                 .build();
     }
 
-    public static Place forVehicleParkingEntrance(VehicleParkingEntranceVertex vertex, String name, boolean closesSoon) {
+    public static Place forVehicleParkingEntrance(VehicleParkingEntranceVertex vertex, String name, boolean closesSoon, RoutingRequest request) {
+        TraverseMode traverseMode = null;
+        if (request.streetSubRequestModes.getCar()) {
+            traverseMode = TraverseMode.CAR;
+        } else if (request.streetSubRequestModes.getBicycle()) {
+            traverseMode = TraverseMode.BICYCLE;
+        }
+
+        boolean realTime = request.useVehicleParkingAvailabilityInformation
+            && vertex.getVehicleParking().hasRealTimeDataForMode(traverseMode, request.wheelchairAccessible);
+
         return defaults(vertex, name)
                 .vertexType(VertexType.VEHICLEPARKING)
                 .vehicleParkingWithEntrance(VehicleParkingWithEntrance.builder()
                         .vehicleParking(vertex.getVehicleParking())
                         .entrance(vertex.getParkingEntrance())
                         .closesSoon(closesSoon)
+                        .realtime(realTime)
                         .build())
                 .build();
     }

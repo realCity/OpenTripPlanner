@@ -5,8 +5,10 @@ import org.opentripplanner.updater.DataSourceType;
 import org.opentripplanner.updater.vehicle_parking.VehicleParkingUpdaterParameters;
 import org.opentripplanner.util.OtpAppException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class VehicleParkingUpdaterConfig {
 
@@ -15,7 +17,7 @@ public class VehicleParkingUpdaterConfig {
   static {
     CONFIG_MAPPING.put("kml", DataSourceType.KML);
     CONFIG_MAPPING.put("park-api", DataSourceType.PARK_API);
-    CONFIG_MAPPING.put("open-bike-box", DataSourceType.OPEN_BIKE_BOX);
+    CONFIG_MAPPING.put("bicycle-park-api", DataSourceType.BICYCLE_PARK_API);
   }
 
   private static DataSourceType mapStringToSourceType(String typeKey) {
@@ -35,7 +37,8 @@ public class VehicleParkingUpdaterConfig {
         c.asText("namePrefix", null),
         c.asInt("frequencySec", 60),
         c.asBoolean("zip", false),
-        mapStringToSourceType(c.asText("sourceType"))
+        mapStringToSourceType(c.asText("sourceType")),
+        new ArrayList<>(c.asStringSet("tags", null))
     );
   }
 }

@@ -6,6 +6,7 @@ import org.opentripplanner.ext.legacygraphqlapi.LegacyGraphQLRequestContext;
 import org.opentripplanner.ext.legacygraphqlapi.generated.LegacyGraphQLDataFetchers;
 import org.opentripplanner.model.plan.Place;
 import org.opentripplanner.model.plan.StopArrival;
+import org.opentripplanner.model.plan.VehicleParkingWithEntrance;
 import org.opentripplanner.model.plan.VertexType;
 import org.opentripplanner.routing.RoutingService;
 import org.opentripplanner.routing.bike_rental.BikeRentalStation;
@@ -68,8 +69,8 @@ public class LegacyGraphQLPlaceImpl implements LegacyGraphQLDataFetchers.LegacyG
   }
 
   @Override
-  public DataFetcher<VehicleParking> vehicleParking() {
-    return this::getVehicleParking;
+  public DataFetcher<VehicleParkingWithEntrance> vehicleParkingWithEntrance() {
+    return (environment) -> getSource(environment).place.getVehicleParkingWithEntrance();
   }
 
   private VehicleParking getVehicleParking(DataFetchingEnvironment environment) {
