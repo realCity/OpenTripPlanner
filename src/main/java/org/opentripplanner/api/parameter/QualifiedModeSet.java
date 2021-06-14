@@ -128,7 +128,11 @@ public class QualifiedModeSet implements Serializable {
                         accessMode = StreetMode.BIKE_TO_PARK;
                         transferMode = StreetMode.WALK;
                         egressMode = StreetMode.WALK;
-                        directMode = StreetMode.BIKE_TO_PARK;
+                        if(transitModes.isEmpty()) {
+                            directMode = StreetMode.BIKE_TO_PARK;
+                        } else {
+                            directMode = null;
+                        }
                     } else {
                         accessMode = StreetMode.BIKE;
                         transferMode = StreetMode.BIKE;
