@@ -63,7 +63,8 @@ public class FilterTransitWhenDirectModeIsEmpty {
   }
 
   public boolean removeWalkAllTheWayResults() {
-    return directSearchEmpty();
+    return directSearchEmpty() ||
+            (resolveDirectMode() != StreetMode.WALK && resolveDirectMode() != StreetMode.BIKE);
   }
 
   public StreetMode originalDirectMode() {

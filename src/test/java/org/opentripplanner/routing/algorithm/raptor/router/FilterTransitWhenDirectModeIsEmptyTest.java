@@ -1,10 +1,10 @@
 package org.opentripplanner.routing.algorithm.raptor.router;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 import org.opentripplanner.routing.api.request.RequestModes;
 import org.opentripplanner.routing.api.request.StreetMode;
-
-import static org.junit.Assert.*;
 
 public class FilterTransitWhenDirectModeIsEmptyTest {
 
@@ -39,5 +39,16 @@ public class FilterTransitWhenDirectModeIsEmptyTest {
     assertEquals(StreetMode.WALK, subject.resolveDirectMode());
     assertTrue(subject.removeWalkAllTheWayResults());
     assertNull(subject.originalDirectMode());
+  }
+
+  @Test
+  public void directModeIsFlex() {
+    var modes = new RequestModes(null, null, null, StreetMode.FLEXIBLE, null);
+
+    var subject = new FilterTransitWhenDirectModeIsEmpty(modes);
+
+    assertEquals(StreetMode.FLEXIBLE, subject.resolveDirectMode());
+    assertTrue(subject.removeWalkAllTheWayResults());
+    assertEquals(StreetMode.FLEXIBLE, subject.originalDirectMode());
   }
 }
