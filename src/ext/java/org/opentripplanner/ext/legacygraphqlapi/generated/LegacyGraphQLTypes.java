@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.opentripplanner.ext.legacygraphqlapi.generated.LegacyGraphQLTypes.LegacyGraphQLVehicleParkingState.LegacyGraphQLTraverseMode;
 
 public class LegacyGraphQLTypes {
 
@@ -96,6 +97,39 @@ public class LegacyGraphQLTypes {
     }
 
     public static LegacyGraphQLAlertSeverityLevelType valueOfLabel(String label) {
+      return BY_LABEL.get(label);
+    }
+  }
+  public enum LegacyGraphQLTraverseMode {
+    Airplane("AIRPLANE"),
+    Bicycle("BICYCLE"),
+    Bus("BUS"),
+    CableCar("CABLE_CAR"),
+    Car("CAR"),
+    Ferry("FERRY"),
+    Funicular("FUNICULAR"),
+    Gondola("GONDOLA"),
+    Rail("RAIL"),
+    Subway("SUBWAY"),
+    Tram("TRAM"),
+    Transit("TRANSIT"),
+    Walk("WALK");
+
+    public final String label;
+
+    LegacyGraphQLTraverseMode(String label) {
+      this.label = label;
+    }
+
+    private static final Map<String, LegacyGraphQLTraverseMode> BY_LABEL = new HashMap<>();
+
+    static {
+      for (LegacyGraphQLTraverseMode e : values()) {
+        BY_LABEL.put(e.label, e);
+      }
+    }
+
+    public static LegacyGraphQLTraverseMode valueOfLabel(String label) {
       return BY_LABEL.get(label);
     }
   }
@@ -1317,13 +1351,6 @@ public class LegacyGraphQLTypes {
     public Boolean getLegacyGraphQLOmitNonPickups() { return this._omitNonPickups; }
     public Boolean getLegacyGraphQLOmitCanceled() { return this._omitCanceled; }
   }
-
-
-
-
-
-
-
   public static class LegacyGraphQLTransportModeInput {
     private LegacyGraphQLApiRequestMode _mode;
     private LegacyGraphQLQualifier _qualifier;
