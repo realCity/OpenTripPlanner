@@ -30,7 +30,7 @@ public class Walk extends AbstractStopArrival {
             }
 
             @Override
-            public int cost() {
+            public int generalizedCost() {
                 return walkCost(durationInSeconds());
             }
         };

@@ -231,7 +231,7 @@ public class BasicPathTestCase implements RaptorTestConstants {
         var transfer = new RaptorTransfer() {
             @Override public int stop() { return STOP_C; }
             @Override public int durationInSeconds() { return TX_END - TX_START; }
-            @Override public int cost() { return walkCost(durationInSeconds()); }
+            @Override public int generalizedCost() { return walkCost(durationInSeconds()); }
         };
         PathLeg<TestTripSchedule> leg3 = new TransferPathLeg<>(
             STOP_B, TX_START, STOP_C, TX_END, toOtpDomainCost(TX_COST), transfer, leg4.asTransitLeg()

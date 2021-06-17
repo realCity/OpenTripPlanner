@@ -406,7 +406,9 @@ public class StreetEdge extends Edge implements BikeWalkableEdge, Cloneable, Car
         s1.setBackMode(traverseMode);
         s1.setBackWalkingBike(walkingBike);
 
-        if (isTraversalBlockedByNoThruTraffic(traverseMode, backEdge, s0, s1)) return null;
+        if (isTraversalBlockedByNoThruTraffic(traverseMode, backEdge, s0, s1)) {
+            return null;
+        }
 
         int roundedTime = (int) Math.ceil(time);
 
@@ -474,6 +476,14 @@ public class StreetEdge extends Edge implements BikeWalkableEdge, Cloneable, Car
         return s1;
     }
 
+    /* The no-thru traffic support works by not allowing a transition from a no-thru area out of it.
+     * It allows starting in a no-thru area by checking for a transition from a "normal"
+     * (thru-traffic allowed) edge to a no-thru edge. Once a transition is recorded
+     * (State#hasEnteredNoThruTrafficArea), traverseing "normal" edges is blocked.
+     *
+     * Since a Vertex may be arrived at with and without a no-thru restriction, the logic in
+     * DominanceFunction#betterOrEqualAndComparable treats the two cases as separate.
+     */
     private boolean isTraversalBlockedByNoThruTraffic(
             TraverseMode traverseMode,
             Edge backEdge,

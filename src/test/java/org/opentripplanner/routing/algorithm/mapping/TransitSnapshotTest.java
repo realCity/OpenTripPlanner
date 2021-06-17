@@ -59,7 +59,7 @@ public class TransitSnapshotTest
     public void test_trip_planning_with_walk_only() {
         RoutingRequest request = createTestRequest(2009, 10, 17, 10, 0, 0);
 
-        request.modes = new RequestModes(StreetMode.WALK,StreetMode.WALK, StreetMode.WALK, StreetMode.WALK,
+        request.modes = new RequestModes(StreetMode.WALK, StreetMode.WALK, StreetMode.WALK, StreetMode.WALK,
                 emptySet()
         );
         request.from = p0;
@@ -72,7 +72,7 @@ public class TransitSnapshotTest
     public void test_trip_planning_with_walk_only_stop() {
         RoutingRequest request = createTestRequest(2009, 10, 17, 10, 0, 0);
 
-        request.modes = new RequestModes(StreetMode.WALK,StreetMode.WALK, StreetMode.WALK, StreetMode.WALK,
+        request.modes = new RequestModes(StreetMode.WALK, StreetMode.WALK, StreetMode.WALK, StreetMode.WALK,
                 emptySet()
         );
         request.from = ps;
@@ -85,7 +85,7 @@ public class TransitSnapshotTest
     public void test_trip_planning_with_walk_only_stop_collection() {
         RoutingRequest request = createTestRequest(2009, 10, 17, 10, 0, 0);
 
-        request.modes = new RequestModes(StreetMode.WALK,StreetMode.WALK, StreetMode.WALK, StreetMode.WALK,
+        request.modes = new RequestModes(StreetMode.WALK, StreetMode.WALK, StreetMode.WALK, StreetMode.WALK,
                 emptySet()
         );
         request.from = ptc;
@@ -99,7 +99,7 @@ public class TransitSnapshotTest
     public void test_trip_planning_with_transit() {
         RoutingRequest request = createTestRequest(2009, 10, 17, 10, 0, 0);
 
-        request.modes = new RequestModes(StreetMode.WALK, StreetMode.WALK,StreetMode.WALK, StreetMode.WALK,
+        request.modes = new RequestModes(StreetMode.WALK, StreetMode.WALK, StreetMode.WALK, StreetMode.WALK,
                 Set.of(TransitMode.values())
         );
         request.from = p1;

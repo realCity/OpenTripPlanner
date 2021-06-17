@@ -26,7 +26,7 @@ public class TransferWithDuration implements RaptorTransfer {
     }
 
     @Override
-    public int cost() {
+    public int generalizedCost() {
         return cost;
     }
 

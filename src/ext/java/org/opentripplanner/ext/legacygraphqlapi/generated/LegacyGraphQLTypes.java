@@ -364,7 +364,6 @@ public class LegacyGraphQLTypes {
     public Integer getLegacyGraphQLUseUnpreferredRoutesPenalty() { return this._useUnpreferredRoutesPenalty; }
   }
 
-
   /** Identifies whether this stop represents a stop or station. */
   public enum LegacyGraphQLLocationType {
     Stop("STOP"),
@@ -511,8 +510,11 @@ public class LegacyGraphQLTypes {
     Park("PARK"),
     Keep("KEEP"),
     Pickup("PICKUP"),
-    Dropoff("DROPOFF");
-    
+    Dropoff("DROPOFF"),
+    Access("ACCESS"),
+    Egress("EGRESS"),
+    Direct("DIRECT");
+
     public final String label;
 
     LegacyGraphQLQualifier(String label) {

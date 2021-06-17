@@ -20,28 +20,35 @@ import org.opentripplanner.transit.raptor.api.transit.RaptorTransfer;
 
 public class RaptorRequestTransferCache {
 
-    private static final LoadingCache<CacheKey, List<List<RaptorTransfer>>> transferCache = CacheBuilder
-        .newBuilder()
-        .maximumSize(25)
-        .build(new CacheLoader<>() {
-            @Override
-            public List<List<RaptorTransfer>> load(@javax.annotation.Nonnull CacheKey cacheKey) {
-                return createRaptorTransfersForRequest(
-                    cacheKey.transfersByStopIndex,
-                    cacheKey.routingRequest
-                );
-            }
-        });
+    private final LoadingCache<CacheKey, List<List<RaptorTransfer>>> transferCache;
+
+    public RaptorRequestTransferCache(int maximumSize) {
+        transferCache = CacheBuilder.newBuilder()
+            .maximumSize(maximumSize)
+            .build(cacheLoader());
+    }
 
     @SneakyThrows
-    public static List<List<RaptorTransfer>> get(
-        TransitLayer transitLayer,
+    public List<List<RaptorTransfer>> get(
+        List<List<Transfer>> transfersByStopIndex,
         RoutingRequest routingRequest
     ) {
         return transferCache.get(new CacheKey(
-            transitLayer.getSimpleTransferByStopIndex(),
+            transfersByStopIndex,
             routingRequest
         ));
+    }
+
+    private CacheLoader<CacheKey, List<List<RaptorTransfer>>> cacheLoader() {
+        return new CacheLoader<>() {
+            @Override
+            public List<List<RaptorTransfer>> load(@javax.annotation.Nonnull CacheKey cacheKey) {
+                return createRaptorTransfersForRequest(
+                        cacheKey.transfersByStopIndex,
+                        cacheKey.routingRequest
+                );
+            }
+        };
     }
 
     static List<List<RaptorTransfer>> createRaptorTransfersForRequest(
@@ -56,7 +63,7 @@ public class RaptorRequestTransferCache {
                 .collect(toMap(
                     RaptorTransfer::stop,
                     Function.identity(),
-                    (a, b) -> a.durationInSeconds() < b.durationInSeconds() ? a : b
+                    (a, b) -> a.generalizedCost() < b.generalizedCost() ? a : b
                 ))
                 .values()))
             .collect(toList());
@@ -97,7 +104,8 @@ public class RaptorRequestTransferCache {
     }
 
     /**
-     * This contains an extract of the parameters which may influence transfers.
+     * This contains an extract of the parameters which may influence transfers. The possible values
+     * are somewhat limited by rounding in {@link Transfer#prepareTransferRoutingRequest(RoutingRequest)}.
      *
      * TODO: the bikeWalking options are not used.
      */

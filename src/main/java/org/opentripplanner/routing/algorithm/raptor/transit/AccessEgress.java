@@ -19,6 +19,8 @@ public class AccessEgress implements RaptorTransfer {
 
   private final int durationInSeconds;
 
+  private final int generalizedCost;
+
   /**
    * This should be the last state both in the case of access and egress.
    */
@@ -28,12 +30,12 @@ public class AccessEgress implements RaptorTransfer {
 
   public AccessEgress(
           int toFromStop,
-          int durationInSeconds,
           State lastState,
           ZonedDateTime startOfTime
   ) {
     this.toFromStop = toFromStop;
-    this.durationInSeconds = durationInSeconds;
+    this.durationInSeconds = (int) lastState.getElapsedTimeSeconds();
+    this.generalizedCost = RaptorCostConverter.toRaptorCost(lastState.getWeight());
     this.lastState = lastState;
     this.startOfTime = startOfTime;
   }
@@ -44,8 +46,8 @@ public class AccessEgress implements RaptorTransfer {
   }
 
   @Override
-  public int cost() {
-    return RaptorCostConverter.toRaptorCost(lastState.getWeight());
+  public int generalizedCost() {
+    return generalizedCost;
   }
 
   @Override

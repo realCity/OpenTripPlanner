@@ -49,7 +49,7 @@ public class CalculateTransferToDestination<T extends RaptorTripSchedule>
                 destinationArrivals.add(
                     transitStopArrival,
                     egress,
-                    egress.cost()
+                    egress.generalizedCost()
                 );
             }
         } else if (newElement instanceof TransferStopArrival) {
@@ -59,7 +59,7 @@ public class CalculateTransferToDestination<T extends RaptorTripSchedule>
                     destinationArrivals.add(
                         transferStopArrival,
                         egress,
-                        egress.cost()
+                        egress.generalizedCost()
                     );
                 }
             }
