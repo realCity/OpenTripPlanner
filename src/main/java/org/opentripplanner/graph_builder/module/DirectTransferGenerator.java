@@ -84,7 +84,7 @@ public class DirectTransferGenerator implements GraphBuilderModule {
 
             /* Make transfers to each nearby stop that is the closest stop on some trip pattern. */
             int n = 0;
-            for (NearbyStop sd : nearbyStopFinder.findNearbyStopsConsideringPatterns(ts0, streetRequest, false)) {
+            for (NearbyStop sd : nearbyStopFinder.findNearbyStops(ts0, streetRequest, false)) {
                 // Skip the origin stop, loop transfers are not needed.
                 if (sd.stop == stop) { continue; }
                 graph.transfersByStop.put(
@@ -96,7 +96,7 @@ public class DirectTransferGenerator implements GraphBuilderModule {
             if (OTPFeature.FlexRouting.isOn()) {
                 // This code is for finding transfers from FlexStopLocations to Stops, transfers
                 // from Stops to FlexStopLocations and between Stops are already covered above.
-                for (NearbyStop sd : nearbyStopFinder.findNearbyStopsConsideringPatterns(ts0,  streetRequest, true)) {
+                for (NearbyStop sd : nearbyStopFinder.findNearbyStops(ts0,  streetRequest, true)) {
                     // Skip the origin stop, loop transfers are not needed.
                     if (sd.stop == ts0.getStop()) { continue; }
                     if (sd.stop instanceof Stop) { continue; }

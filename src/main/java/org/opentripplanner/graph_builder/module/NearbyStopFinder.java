@@ -1,16 +1,15 @@
 package org.opentripplanner.graph_builder.module;
 
 import com.beust.jcommander.internal.Lists;
-import com.beust.jcommander.internal.Sets;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 import org.locationtech.jts.geom.Coordinate;
-import org.opentripplanner.common.MinMap;
-import org.opentripplanner.ext.flex.trip.FlexTrip;
 import org.opentripplanner.model.FlexStopLocation;
-import org.opentripplanner.model.Stop;
-import org.opentripplanner.model.StopLocation;
-import org.opentripplanner.model.TripPattern;
 import org.opentripplanner.routing.algorithm.astar.AStar;
 import org.opentripplanner.routing.algorithm.astar.strategies.DurationSkipEdgeStrategy;
 import org.opentripplanner.routing.algorithm.astar.strategies.TrivialRemainingWeightHeuristic;
@@ -31,11 +30,6 @@ import org.opentripplanner.routing.vertextype.TransitStopVertex;
 import org.opentripplanner.util.OTPFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 /**
  * These library functions are used by the streetless and streetful stop linkers, and in profile transfer generation.
@@ -84,45 +78,6 @@ public class NearbyStopFinder {
             this.directGraphFinder = new DirectGraphFinder(graph);
         }
     }
-
-    /**
-     * Find all unique nearby stops that are the closest stop on some trip pattern or flex trip.
-     * Note that the result will include the origin vertex if it is an instance of StopVertex.
-     * This is intentional: we don't want to return the next stop down the line for trip patterns that pass through the
-     * origin vertex.
-     */
-    public Set<NearbyStop> findNearbyStopsConsideringPatterns(Vertex vertex, RoutingRequest routingRequest, boolean reverseDirection) {
-
-        /* Track the closest stop on each pattern passing nearby. */
-        MinMap<TripPattern, NearbyStop> closestStopForPattern = new MinMap<TripPattern, NearbyStop>();
-
-        /* Track the closest stop on each flex trip nearby. */
-        MinMap<FlexTrip, NearbyStop> closestStopForFlexTrip = new MinMap<>();
-
-        /* Iterate over nearby stops via the street network or using straight-line distance, depending on the graph. */
-        for (NearbyStop nearbyStop : findNearbyStops(vertex, routingRequest.clone(), reverseDirection)) {
-            StopLocation ts1 = nearbyStop.stop;
-
-            if (ts1 instanceof Stop){
-                /* Consider this destination stop as a candidate for every trip pattern passing through it. */
-                for (TripPattern pattern : graph.index.getPatternsForStop(ts1)) {
-                    closestStopForPattern.putMin(pattern, nearbyStop);
-                }
-            } if (OTPFeature.FlexRouting.isOn()) {
-                for (FlexTrip trip : graph.index.getFlexIndex().flexTripsByStop.get(ts1)) {
-                    closestStopForFlexTrip.putMin(trip, nearbyStop);
-                }
-            }
-        }
-
-        /* Make a transfer from the origin stop to each destination stop that was the closest stop on any pattern. */
-        Set<NearbyStop> uniqueStops = Sets.newHashSet();
-        uniqueStops.addAll(closestStopForFlexTrip.values());
-        uniqueStops.addAll(closestStopForPattern.values());
-        return uniqueStops;
-
-    }
-
 
     /**
      * Return all stops within a certain radius of the given vertex, using network distance along streets.
@@ -207,9 +162,7 @@ public class NearbyStopFinder {
                 Collection<State> states = locationStates.getValue();
                 // Select the vertex from all vertices that are reachable per FlexStopLocation by taking
                 // the minimum walking distance
-                State min = Collections.min(states,
-                    (s1, s2) -> (int) (s1.walkDistance - s2.walkDistance)
-                );
+                State min = Collections.min(states, Comparator.comparing(State::getWeight));
 
                 // If the best state for this FlexStopLocation is a SplitterVertex, we want to get the
                 // TemporaryStreetLocation instead. This allows us to reach SplitterVertices in both
