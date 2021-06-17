@@ -10,6 +10,7 @@ import org.opentripplanner.routing.algorithm.filterchain.filters.MaxLimitFilter;
 import org.opentripplanner.routing.algorithm.filterchain.filters.NonTransitGeneralizedCostFilter;
 import org.opentripplanner.routing.algorithm.filterchain.filters.OtpDefaultSortOrder;
 import org.opentripplanner.routing.algorithm.filterchain.filters.RemoveBikerentalWithMostlyWalkingFilter;
+import org.opentripplanner.routing.algorithm.filterchain.filters.FlexOnlyToDestinationFilter;
 import org.opentripplanner.routing.algorithm.filterchain.filters.RemoveParkAndRideWithMostlyWalkingFilter;
 import org.opentripplanner.routing.algorithm.filterchain.filters.RemoveTransitIfStreetOnlyIsBetterFilter;
 import org.opentripplanner.routing.algorithm.filterchain.filters.RemoveWalkOnlyFilter;
@@ -39,6 +40,7 @@ public class ItineraryFilterChainBuilder {
     private boolean removeTransitWithHigherCostThanBestOnStreetOnly = true;
     private double minSafeTransferTimeFactor;
     private boolean removeWalkAllTheWayResults;
+    private boolean flexOnlyToDestination;
     private DoubleFunction<Double> transitGeneralizedCostLimit;
     private double bikeRentalDistanceRatio;
     private double parkAndRideDurationRatio;
@@ -202,6 +204,20 @@ public class ItineraryFilterChainBuilder {
         return this;
     }
 
+    /**
+     * If set, itineraries with a final "long" walk are removed.
+     *
+     * This is useful when to-door delivery is required in a flex trip.
+     *
+     * This happens AFTER e.g. the group-by
+     * and remove-transit-with-higher-cost-than-best-on-street-only filters. This make sure that
+     * poor transit itineraries are filtered away before the walk-all-the-way itinerary is removed.
+     */
+    public ItineraryFilterChainBuilder withFlexOnlyToDestination(boolean enable) {
+        this.flexOnlyToDestination = enable;
+        return this;
+    }
+
     public ItineraryFilter build() {
         List<ItineraryFilter> filters = new ArrayList<>();
 
@@ -254,6 +270,10 @@ public class ItineraryFilterChainBuilder {
 
             if(removeWalkAllTheWayResults) {
                 filters.add(new RemoveWalkOnlyFilter());
+            }
+
+            if(flexOnlyToDestination) {
+                filters.add(new FlexOnlyToDestinationFilter());
             }
 
             if (latestDepartureTimeLimit != null) {

@@ -8,6 +8,7 @@ import org.opentripplanner.routing.api.request.RoutingRequest;
 
 import java.time.Instant;
 import java.util.function.Consumer;
+import org.opentripplanner.routing.api.request.StreetMode;
 
 public class RoutingRequestToFilterChainMapper {
   private static final int KEEP_ONE = 1;
@@ -51,6 +52,8 @@ public class RoutingRequestToFilterChainMapper {
       }
     }
 
+    var flexWasRequested = request.modes.egressMode == StreetMode.FLEXIBLE ||
+            request.modes.directMode == StreetMode.FLEXIBLE;
     builder
         .withMaxNumberOfItineraries(Math.min(request.numItineraries, MAX_NUMBER_OF_ITINERARIES))
         .withMinSafeTransferTimeFactor(p.minSafeTransferTimeFactor)
@@ -62,6 +65,7 @@ public class RoutingRequestToFilterChainMapper {
         .withLatestDepartureTimeLimit(filterOnLatestDepartureTime)
         .withMaxLimitReachedSubscriber(maxLimitReachedSubscriber)
         .withRemoveWalkAllTheWayResults(removeWalkAllTheWayResults)
+        .withFlexOnlyToDestination(flexWasRequested && p.flexOnlyToDestination)
         .withDebugEnabled(p.debug);
 
     return builder.build();

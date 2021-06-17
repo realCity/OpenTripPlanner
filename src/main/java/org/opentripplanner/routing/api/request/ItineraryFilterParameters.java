@@ -76,6 +76,8 @@ public class ItineraryFilterParameters {
    */
   public double parkAndRideDurationRatio;
 
+  public boolean flexOnlyToDestination;
+
   /**
    * This is a a bit similar to {@link #transitGeneralizedCostLimit}, with
    * a few important differences.
@@ -101,6 +103,7 @@ public class ItineraryFilterParameters {
     this.minSafeTransferTimeFactor = 0.0;
     this.bikeRentalDistanceRatio = 0.0;
     this.parkAndRideDurationRatio = 0.0;
+    this.flexOnlyToDestination = false;
     this.transitGeneralizedCostLimit =
         RequestFunctions.createLinearFunction(3600, 2);
     this.nonTransitGeneralizedCostLimit =
@@ -119,7 +122,8 @@ public class ItineraryFilterParameters {
       DoubleFunction<Double> transitGeneralizedCostLimit,
       DoubleFunction<Double> nonTransitGeneralizedCostLimit,
       double bikeRentalDistanceRatio,
-      double parkAndRideDurationRatio
+      double parkAndRideDurationRatio,
+      boolean flexOnlyToDestination
   ) {
     this.debug = debug;
     this.groupSimilarityKeepOne = groupSimilarityKeepOne;
@@ -129,5 +133,6 @@ public class ItineraryFilterParameters {
     this.nonTransitGeneralizedCostLimit = nonTransitGeneralizedCostLimit;
     this.bikeRentalDistanceRatio = bikeRentalDistanceRatio;
     this.parkAndRideDurationRatio = parkAndRideDurationRatio;
+    this.flexOnlyToDestination = flexOnlyToDestination;
   }
 }
