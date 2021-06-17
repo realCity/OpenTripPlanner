@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.opentripplanner.ext.legacygraphqlapi.generated.LegacyGraphQLTypes.LegacyGraphQLVehicleParkingState.LegacyGraphQLTraverseMode;
 
 public class LegacyGraphQLTypes {
 
@@ -97,39 +96,6 @@ public class LegacyGraphQLTypes {
     }
 
     public static LegacyGraphQLAlertSeverityLevelType valueOfLabel(String label) {
-      return BY_LABEL.get(label);
-    }
-  }
-  public enum LegacyGraphQLTraverseMode {
-    Airplane("AIRPLANE"),
-    Bicycle("BICYCLE"),
-    Bus("BUS"),
-    CableCar("CABLE_CAR"),
-    Car("CAR"),
-    Ferry("FERRY"),
-    Funicular("FUNICULAR"),
-    Gondola("GONDOLA"),
-    Rail("RAIL"),
-    Subway("SUBWAY"),
-    Tram("TRAM"),
-    Transit("TRANSIT"),
-    Walk("WALK");
-
-    public final String label;
-
-    LegacyGraphQLTraverseMode(String label) {
-      this.label = label;
-    }
-
-    private static final Map<String, LegacyGraphQLTraverseMode> BY_LABEL = new HashMap<>();
-
-    static {
-      for (LegacyGraphQLTraverseMode e : values()) {
-        BY_LABEL.put(e.label, e);
-      }
-    }
-
-    public static LegacyGraphQLTraverseMode valueOfLabel(String label) {
       return BY_LABEL.get(label);
     }
   }
@@ -424,7 +390,7 @@ public class LegacyGraphQLTypes {
     }
   }
 
-  public enum LegacyGraphQLApiRequestMode {
+  public enum LegacyGraphQLMode {
     Airplane("AIRPLANE"),
     Bicycle("BICYCLE"),
     Bus("BUS"),
@@ -434,8 +400,10 @@ public class LegacyGraphQLTypes {
     Carpool("CARPOOL"),
     Ferry("FERRY"),
     Flex("FLEX"),
+    Flexible("FLEXIBLE"),
     Funicular("FUNICULAR"),
     Gondola("GONDOLA"),
+    LegSwitch("LEG_SWITCH"),
     Rail("RAIL"),
     Subway("SUBWAY"),
     Tram("TRAM"),
@@ -443,56 +411,20 @@ public class LegacyGraphQLTypes {
     Walk("WALK");
 
     public final String label;
-
-    LegacyGraphQLApiRequestMode(String label) {
+     
+    LegacyGraphQLMode(String label) {
       this.label = label;
     }
-
-    private static final Map<String, LegacyGraphQLApiRequestMode> BY_LABEL = new HashMap<>();
-
+    
+    private static final Map<String, LegacyGraphQLMode> BY_LABEL = new HashMap<>();
+      
     static {
-        for (LegacyGraphQLApiRequestMode e : values()) {
+        for (LegacyGraphQLMode e : values()) {
             BY_LABEL.put(e.label, e);
         }
     }
-
-    public static LegacyGraphQLApiRequestMode valueOfLabel(String label) {
-      return BY_LABEL.get(label);
-    }
-  }
-
-
-  public enum LegacyGraphQLTransitMode {
-    Airplane("AIRPLANE"),
-    Bus("BUS"),
-    CableCar("CABLE_CAR"),
-    Coach("COACH"),
-    Ferry("FERRY"),
-    Funicular("FUNICULAR"),
-    Gondola("GONDOLA"),
-    Rail("RAIL"),
-    Subway("SUBWAY"),
-    Tram("TRAM"),
-    Carpool("CARPOOL"),
-    Walk("WALK"),
-    Bicycle("BICYCLE"),
-    Car("CAR");
-
-    public final String label;
-
-    LegacyGraphQLTransitMode(String label) {
-      this.label = label;
-    }
-
-    private static final Map<String, LegacyGraphQLTransitMode> BY_LABEL = new HashMap<>();
-
-    static {
-        for (LegacyGraphQLTransitMode e : values()) {
-            BY_LABEL.put(e.label, e);
-        }
-    }
-
-    public static LegacyGraphQLTransitMode valueOfLabel(String label) {
+    
+    public static LegacyGraphQLMode valueOfLabel(String label) {
       return BY_LABEL.get(label);
     }
   }
@@ -575,13 +507,12 @@ public class LegacyGraphQLTypes {
    */
   public enum LegacyGraphQLQualifier {
     Rent("RENT"),
+    Have("HAVE"),
     Park("PARK"),
+    Keep("KEEP"),
     Pickup("PICKUP"),
-    Dropoff("DROPOFF"),
-    Access("ACCESS"),
-    Egress("EGRESS"),
-    Direct("DIRECT");
-
+    Dropoff("DROPOFF");
+    
     public final String label;
 
     LegacyGraphQLQualifier(String label) {
@@ -698,7 +629,7 @@ public class LegacyGraphQLTypes {
     private Integer _maxDistance;
     private Integer _maxResults;
     private Iterable<LegacyGraphQLFilterPlaceType> _filterByPlaceTypes;
-    private Iterable<LegacyGraphQLTransitMode> _filterByModes;
+    private Iterable<LegacyGraphQLMode> _filterByModes;
     private LegacyGraphQLInputFiltersInput _filterByIds;
     private String _before;
     private String _after;
@@ -715,7 +646,9 @@ public class LegacyGraphQLTypes {
           this._filterByPlaceTypes = ((List<String>) args.get("filterByPlaceTypes")).stream().map(LegacyGraphQLFilterPlaceType::valueOfLabel).collect(Collectors.toList());
         }
         if (args.get("filterByModes") != null) {
-          this._filterByModes = ((List<String>) args.get("filterByModes")).stream().map(LegacyGraphQLTransitMode::valueOfLabel).collect(Collectors.toList());
+          this._filterByModes = ((List<String>) args.get("filterByModes")).stream()
+                  .map(LegacyGraphQLMode::valueOfLabel)
+                  .collect(Collectors.toList());
         }
         this._filterByIds = new LegacyGraphQLInputFiltersInput((Map<String, Object>) args.get("filterByIds"));
         this._before = (String) args.get("before");
@@ -730,7 +663,7 @@ public class LegacyGraphQLTypes {
     public Integer getLegacyGraphQLMaxDistance() { return this._maxDistance; }
     public Integer getLegacyGraphQLMaxResults() { return this._maxResults; }
     public Iterable<LegacyGraphQLFilterPlaceType> getLegacyGraphQLFilterByPlaceTypes() { return this._filterByPlaceTypes; }
-    public Iterable<LegacyGraphQLTransitMode> getLegacyGraphQLFilterByModes() { return this._filterByModes; }
+    public Iterable<LegacyGraphQLMode> getLegacyGraphQLFilterByModes() { return this._filterByModes; }
     public LegacyGraphQLInputFiltersInput getLegacyGraphQLFilterByIds() { return this._filterByIds; }
     public String getLegacyGraphQLBefore() { return this._before; }
     public String getLegacyGraphQLAfter() { return this._after; }
@@ -788,15 +721,17 @@ public class LegacyGraphQLTypes {
     private Iterable<String> _ids;
     private Iterable<String> _feeds;
     private String _name;
-    private Iterable<LegacyGraphQLTransitMode> _transportModes;
-
+    private Iterable<LegacyGraphQLMode> _transportModes;
+  
     public LegacyGraphQLQueryTypeRoutesArgs(Map<String, Object> args) {
       if (args != null) {
         this._ids = (Iterable<String>) args.get("ids");
         this._feeds = (Iterable<String>) args.get("feeds");
         this._name = (String) args.get("name");
         if (args.get("transportModes") != null) {
-          this._transportModes = ((List<String>) args.get("transportModes")).stream().map(LegacyGraphQLTransitMode::valueOfLabel).collect(Collectors.toList());
+          this._transportModes = ((List<String>) args.get("transportModes")).stream()
+                  .map(LegacyGraphQLMode::valueOfLabel)
+                  .collect(Collectors.toList());
         }
       }
     }
@@ -804,7 +739,7 @@ public class LegacyGraphQLTypes {
     public Iterable<String> getLegacyGraphQLIds() { return this._ids; }
     public Iterable<String> getLegacyGraphQLFeeds() { return this._feeds; }
     public String getLegacyGraphQLName() { return this._name; }
-    public Iterable<LegacyGraphQLTransitMode> getLegacyGraphQLTransportModes() { return this._transportModes; }
+    public Iterable<LegacyGraphQLMode> getLegacyGraphQLTransportModes() { return this._transportModes; }
   }
   public static class LegacyGraphQLQueryTypeRouteArgs {
     private String _id;
@@ -1351,16 +1286,20 @@ public class LegacyGraphQLTypes {
     public Boolean getLegacyGraphQLOmitNonPickups() { return this._omitNonPickups; }
     public Boolean getLegacyGraphQLOmitCanceled() { return this._omitCanceled; }
   }
+
+  
+  
+  
   public static class LegacyGraphQLTransportModeInput {
-    private LegacyGraphQLApiRequestMode _mode;
+    private LegacyGraphQLMode _mode;
     private LegacyGraphQLQualifier _qualifier;
 
     public LegacyGraphQLTransportModeInput(Map<String, Object> args) {
       if (args != null) {
-        if (args.get("mode") instanceof LegacyGraphQLApiRequestMode) {
-          this._mode = (LegacyGraphQLApiRequestMode) args.get("mode");
+        if (args.get("mode") instanceof LegacyGraphQLMode) {
+          this._mode = (LegacyGraphQLMode) args.get("mode");
         } else {
-          this._mode = LegacyGraphQLApiRequestMode.valueOfLabel((String) args.get("mode"));
+          this._mode = LegacyGraphQLMode.valueOfLabel((String) args.get("mode"));
         }
         if (args.get("qualifier") instanceof LegacyGraphQLQualifier) {
           this._qualifier = (LegacyGraphQLQualifier) args.get("qualifier");
@@ -1370,7 +1309,7 @@ public class LegacyGraphQLTypes {
       }
     }
 
-    public LegacyGraphQLApiRequestMode getLegacyGraphQLMode() { return this._mode; }
+    public LegacyGraphQLMode getLegacyGraphQLMode() { return this._mode; }
     public LegacyGraphQLQualifier getLegacyGraphQLQualifier() { return this._qualifier; }
   }
   public static class LegacyGraphQLTripDepartureStoptimeArgs {

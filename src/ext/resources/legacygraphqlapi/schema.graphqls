@@ -829,7 +829,7 @@ type Leg {
     arrivalDelay: Int
 
     """The mode (e.g. `WALK`) used when traversing this leg."""
-    mode: TraverseMode
+    mode: Mode
 
     """The leg's duration in seconds"""
     duration: Float
@@ -937,7 +937,7 @@ enum LocationType {
 """Long type"""
 scalar Long
 
-enum ApiRequestMode {
+enum Mode {
     """AIRPLANE"""
     AIRPLANE
 
@@ -963,13 +963,16 @@ enum ApiRequestMode {
     FERRY
 
     """Enables flexible transit for access and egress legs"""
-    FLEX
+    FLEXIBLE
 
     """FUNICULAR"""
     FUNICULAR
 
     """GONDOLA"""
     GONDOLA
+
+    """Only used internally. No use for API users."""
+    LEG_SWITCH
 
     """RAIL"""
     RAIL
@@ -985,37 +988,6 @@ enum ApiRequestMode {
 
     """WALK"""
     WALK
-}
-
-enum TraverseMode {
-    AIRPLANE
-    BICYCLE
-    BUS
-    CABLE_CAR
-    CAR
-    FERRY
-    FUNICULAR
-    GONDOLA
-    RAIL
-    SUBWAY
-    TRAM
-    TRANSIT
-    WALK
-    CARPOOL
-}
-
-enum TransitMode {
-    AIRPLANE
-    BUS
-    CABLE_CAR
-    COACH
-    FERRY
-    FUNICULAR
-    GONDOLA
-    RAIL
-    SUBWAY
-    TRAM
-    CARPOOL
 }
 
 """An object with an ID"""
@@ -1298,29 +1270,35 @@ Additional qualifier for a transport mode.
 Note that qualifiers can only be used with certain transport modes.
 """
 enum Qualifier {
-    """The vehicle used for transport has to be rented"""
+    """The vehicle used for transport can be rented"""
     RENT
+
+    """
+    ~~HAVE~~
+    **Currently not used**
+    """
+    HAVE
 
     """
     The vehicle used must be left to a parking area before continuing the journey.
     This qualifier is usable with transport modes `CAR` and `BICYCLE`.
+    Note that the vehicle is only parked if the journey is continued with public
+    transportation (e.g. if only `CAR` and `WALK` transport modes are allowed to
+    be used, the car will not be parked as it is used for the whole journey).
     """
     PARK
+
+    """
+    ~~KEEP~~
+    **Currently not used**
+    """
+    KEEP
 
     """The user can be picked up by someone else riding a vehicle"""
     PICKUP
 
     """The user can be dropped off by someone else riding a vehicle"""
     DROPOFF
-
-    """The mode is used for the access part of the search."""
-    ACCESS,
-
-    """The mode is used for the egress part of the search."""
-    EGRESS,
-
-    """The mode is used for the direct street search."""
-    DIRECT
 }
 
 type QueryType {
@@ -1434,7 +1412,7 @@ type QueryType {
         argument can be used to return e.g. only nearest railway stations or only
         nearest places related to bicycling.
         """
-        filterByModes: [TransitMode]
+        filterByModes: [Mode]
 
         """Only include places that match one of the given GTFS ids."""
         filterByIds: InputFilters
@@ -1480,7 +1458,7 @@ type QueryType {
         name: String
 
         """Only include routes, which use one of these modes"""
-        transportModes: [TransitMode]
+        transportModes: [Mode]
     ): [Route]
 
     """
@@ -2106,7 +2084,7 @@ type Route implements Node {
     longName: String
 
     """Transport mode of this route, e.g. `BUS`"""
-    mode: TransitMode
+    mode: Mode
 
     """
     The raw GTFS route type as a integer. For the list of possible values, see:
@@ -2257,7 +2235,7 @@ type Stop implements Node & PlaceInterface {
     Note that also other types of vehicles may use the stop, e.g. tram replacement
     buses might use stops which have `TRAM` as their mode.
     """
-    vehicleMode: TransitMode
+    vehicleMode: Mode
 
     """
     Identifier of the platform, usually a number. This value is only present for stops that are part of a station
@@ -2491,7 +2469,7 @@ type TranslatedString {
 
 """Transportation mode which can be used in the itinerary"""
 input TransportMode {
-    mode: ApiRequestMode!
+    mode: Mode!
 
     """Optional additional qualifier for transport mode, e.g. `RENT`"""
     qualifier: Qualifier
