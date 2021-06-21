@@ -29,6 +29,7 @@ import org.opentripplanner.api.parameter.QualifiedModeSet;
 import org.opentripplanner.ext.legacygraphqlapi.LegacyGraphQLRequestContext;
 import org.opentripplanner.ext.legacygraphqlapi.generated.LegacyGraphQLDataFetchers;
 import org.opentripplanner.ext.legacygraphqlapi.generated.LegacyGraphQLTypes;
+import org.opentripplanner.ext.transmodelapi.model.PlanResponse;
 import org.opentripplanner.model.Agency;
 import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.model.GenericLocation;
@@ -813,7 +814,9 @@ public class LegacyGraphQLQueryTypeImpl
 
       callWith.argument("useVehicleParkingAvailabilityInformation", (Boolean v) -> request.useVehicleParkingAvailabilityInformation = v);
 
-      return context.getRoutingService().route(request, context.getRouter());
+      final var route = context.getRoutingService().route(request, context.getRouter());
+      route.getDebugAggregator().finishedRendering();
+      return route;
     };
   }
 
