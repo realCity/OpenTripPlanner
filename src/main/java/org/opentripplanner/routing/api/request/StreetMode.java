@@ -17,7 +17,7 @@ public enum StreetMode {
    *
    * Direct mode and access mode only.
    */
-  BIKE_TO_PARK(true, false, true, true, true, false),
+  BIKE_TO_PARK(true, false, false, true, true, false),
   /**
    * Walk to a bike rental point, bike to a bike rental drop-off point, and walk the rest of the
    * way. This can include bike rental at fixed locations or free-floating services.
@@ -66,7 +66,8 @@ public enum StreetMode {
 
   StreetMode(
       boolean access,
-      boolean transfer, boolean egress,
+      boolean transfer,
+      boolean egress,
       boolean includesWalking,
       boolean includesBiking,
       boolean includesDriving

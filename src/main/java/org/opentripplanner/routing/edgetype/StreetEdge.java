@@ -325,66 +325,59 @@ public class StreetEdge extends Edge implements BikeWalkableEdge, Cloneable, Car
         // Automobiles have variable speeds depending on the edge type
         double speed = calculateSpeed(options, traverseMode, walkingBike);
         
-        double time = getEffectiveWalkDistance() / speed;
+        double time;
         double weight;
         // TODO(flamholz): factor out this bike, wheelchair and walking specific logic to somewhere central.
-        if (options.wheelchairAccessible) {
-            weight = getEffectiveBikeDistance() / speed;
-        } else if (traverseMode.equals(TraverseMode.BICYCLE)) {
-            time = getEffectiveBikeDistance() / speed;
-            switch (options.optimize) {
-            case SAFE:
-                weight = bicycleSafetyFactor * getDistanceMeters() / speed;
-                break;
-            case GREENWAYS:
-                weight = bicycleSafetyFactor * getDistanceMeters() / speed;
-                if (bicycleSafetyFactor <= GREENWAY_SAFETY_FACTOR) {
-                    // greenways are treated as even safer than they really are
-                    weight *= 0.66;
+        switch (traverseMode) {
+            case BICYCLE:
+                time = getEffectiveBikeDistance() / speed;
+                switch (options.optimize) {
+                    case SAFE:
+                        weight = bicycleSafetyFactor * getDistanceMeters() / speed;
+                        break;
+                    case GREENWAYS:
+                        weight = bicycleSafetyFactor * getDistanceMeters() / speed;
+                        if (bicycleSafetyFactor <= GREENWAY_SAFETY_FACTOR) {
+                            // greenways are treated as even safer than they really are
+                            weight *= 0.66;
+                        }
+                        break;
+                    case FLAT:
+                        /* see notes in StreetVertex on speed overhead */
+                        weight = getDistanceMeters() / speed + getEffectiveBikeWorkCost();
+                        break;
+                    case QUICK:
+                        weight = getEffectiveBikeDistance() / speed;
+                        break;
+                    case TRIANGLE:
+                        double quick = getEffectiveBikeDistance();
+                        double safety = bicycleSafetyFactor * getDistanceMeters();
+                        // TODO This computation is not coherent with the one for FLAT
+                        double slope = getEffectiveBikeWorkCost();
+                        weight = quick * options.bikeTriangleTimeFactor + slope
+                                * options.bikeTriangleSlopeFactor + safety
+                                * options.bikeTriangleSafetyFactor;
+                        weight /= speed;
+                        break;
+                    default:
+                        weight = getDistanceMeters() / speed;
                 }
                 break;
-            case FLAT:
-                /* see notes in StreetVertex on speed overhead */
-                weight = getDistanceMeters() / speed + getEffectiveBikeWorkCost();
-                break;
-            case QUICK:
-                weight = getEffectiveBikeDistance() / speed;
-                break;
-            case TRIANGLE:
-                double quick = getEffectiveBikeDistance();
-                double safety = bicycleSafetyFactor * getDistanceMeters();
-                // TODO This computation is not coherent with the one for FLAT
-                double slope = getEffectiveBikeWorkCost();
-                weight = quick * options.bikeTriangleTimeFactor + slope
-                        * options.bikeTriangleSlopeFactor + safety
-                        * options.bikeTriangleSafetyFactor;
-                weight /= speed;
+            case WALK:
+                if (options.wheelchairAccessible) {
+                    time = getEffectiveWalkDistance() / speed;
+                    weight = getEffectiveBikeDistance() / speed;
+                } else if (walkingBike) {
+                    // take slopes into account when walking bikes
+                    time = weight = getEffectiveBikeDistance() / speed;
+                } else {
+                    // take slopes into account when walking
+                    // FIXME: this causes steep stairs to be avoided. see #1297.
+                    time = weight = getEffectiveWalkDistance() / speed;
+                }
                 break;
             default:
-                weight = getDistanceMeters() / speed;
-            }
-        } else {
-            if (walkingBike) {
-                // take slopes into account when walking bikes
-                time = getEffectiveBikeDistance() / speed;
-            }
-            weight = time;
-            if (traverseMode.equals(TraverseMode.WALK)) {
-                // take slopes into account when walking
-                // FIXME: this causes steep stairs to be avoided. see #1297.
-                double distance = getEffectiveWalkDistance();
-                weight = distance / speed;
-                time = weight; //treat cost as time, as in the current model it actually is the same (this can be checked for maxSlope == 0)
-                /*
-                // debug code
-                if(weight > 100){
-                    double timeflat = length_mm / speed;
-
-
-                    System.out.format("line length: %.1f m, slope: %.3f ---> distance: %.1f , weight: %.1f , time (flat):  %.1f %n", getDistance(), getMaxSlope(), distance, weight, timeflat);
-                }
-                */
-            }
+                time = weight = getDistanceMeters() / speed;
         }
 
         if (isStairs()) {
@@ -404,9 +397,10 @@ public class StreetEdge extends Edge implements BikeWalkableEdge, Cloneable, Car
         }
 
         s1.setBackMode(traverseMode);
-        s1.setBackWalkingBike(walkingBike);
 
-        if (isTraversalBlockedByNoThruTraffic(traverseMode, backEdge, s0, s1)) return null;
+        if (isTraversalBlockedByNoThruTraffic(traverseMode, backEdge, s0, s1)) {
+            return null;
+        }
 
         int roundedTime = (int) Math.ceil(time);
 
@@ -474,6 +468,14 @@ public class StreetEdge extends Edge implements BikeWalkableEdge, Cloneable, Car
         return s1;
     }
 
+    /* The no-thru traffic support works by not allowing a transition from a no-thru area out of it.
+     * It allows starting in a no-thru area by checking for a transition from a "normal"
+     * (thru-traffic allowed) edge to a no-thru edge. Once a transition is recorded
+     * (State#hasEnteredNoThruTrafficArea), traverseing "normal" edges is blocked.
+     *
+     * Since a Vertex may be arrived at with and without a no-thru restriction, the logic in
+     * DominanceFunction#betterOrEqualAndComparable treats the two cases as separate.
+     */
     private boolean isTraversalBlockedByNoThruTraffic(
             TraverseMode traverseMode,
             Edge backEdge,

@@ -11,6 +11,7 @@
 - Updated documentation and process for generating Java code from GraphQL schema definition (May 2021, https://github.com/opentripplanner/OpenTripPlanner/pull/3450)
 - Update mode enums to reflect current usage (May 2021, https://github.com/opentripplanner/OpenTripPlanner/pull/3464)
 - Implemented modeWeight and added debugItineraryFilter to plan query. Added systemNotices to itineraries (May 2021, https://github.com/opentripplanner/OpenTripPlanner/pull/3503)
+- Updated to ignore modes which are not valid in OTP2 (June 2021, https://github.com/opentripplanner/OpenTripPlanner/pull/3464)
 
 ## Documentation
 

@@ -2,14 +2,10 @@ package org.opentripplanner.routing.graphfinder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
 import org.opentripplanner.common.geometry.GeometryUtils;
 import org.opentripplanner.routing.algorithm.GraphRoutingTest;
 import org.opentripplanner.routing.graph.Graph;
@@ -49,18 +45,6 @@ class DirectGraphFinderTest extends GraphRoutingTest {
         assertEquals(
                 List.of(ns1, ns2),
                 testee.findClosestStops(47.500, 19.000, 2000)
-        );
-    }
-
-    static LineString linestring(double ... latlon) {
-        if (latlon.length % 2 != 0) {
-            throw new IllegalArgumentException("Uneven number of parameters: " + Arrays.toString(latlon));
-        }
-
-        return geometryFactory.createLineString(
-                IntStream.range(0, latlon.length / 2)
-                .mapToObj(i -> new Coordinate(latlon[i * 2 + 1], latlon[i * 2]))
-                .toArray(Coordinate[]::new)
         );
     }
 }

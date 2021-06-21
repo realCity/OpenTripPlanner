@@ -93,7 +93,7 @@ final public class McRangeRaptorWorkerState<T extends RaptorTripSchedule> implem
         addStopArrival(
             new AccessStopArrival<>(
                 departureTime,
-                accessPath.cost(),
+                accessPath.generalizedCost(),
                 accessPath
             )
         );
@@ -179,7 +179,7 @@ final public class McRangeRaptorWorkerState<T extends RaptorTripSchedule> implem
 
     private void transferToStop(Iterable<? extends AbstractStopArrival<T>> fromArrivals, RaptorTransfer transfer) {
         final int transferTimeInSeconds = transfer.durationInSeconds();
-        final int transferCost = transfer.cost();
+        final int transferCost = transfer.generalizedCost();
 
         for (AbstractStopArrival<T> it : fromArrivals) {
             int arrivalTime = it.arrivalTime() + transferTimeInSeconds;

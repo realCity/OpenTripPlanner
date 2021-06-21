@@ -131,7 +131,7 @@ public class TestTransfer implements RaptorTransfer {
     }
 
     @Override
-    public int cost() {
+    public int generalizedCost() {
         return cost;
     }
 
