@@ -225,6 +225,10 @@ public class ItineraryFilterChainBuilder {
             filters.add(new AddMinSafeTransferCostFilter(minSafeTransferTimeFactor));
         }
 
+        if(flexOnlyToDestination) {
+            filters.add(new FlexOnlyToDestinationFilter());
+        }
+        
         // Sort list on {@code groupByP} in ascending order to keep as many of the elements in the
         // groups where the grouping parameter is relaxed as possible.
         {
@@ -272,9 +276,7 @@ public class ItineraryFilterChainBuilder {
                 filters.add(new RemoveWalkOnlyFilter());
             }
 
-            if(flexOnlyToDestination) {
-                filters.add(new FlexOnlyToDestinationFilter());
-            }
+
 
             if (latestDepartureTimeLimit != null) {
                 filters.add(new LatestDepartureTimeFilter(latestDepartureTimeLimit));
