@@ -17,7 +17,7 @@ public class DigitransitBikeRentalPropertyMapper extends PropertyMapper<BikeRent
   protected Collection<T2<String, Object>> map(BikeRentalStation station) {
     return List.of(
         new T2<>("id", station.id),
-        new T2<>("name", station.name),
+        new T2<>("name", station.getName()),
         new T2<>("networks", String.join(",", station.networks))
     );
   }
