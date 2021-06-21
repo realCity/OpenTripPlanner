@@ -218,7 +218,7 @@ public abstract class GraphPathToItineraryMapper {
 
             if (rentalChange || parkingChange) {
                 /* Clear the lastMode, so that switching modes doesn't re-trigger a mode change
-                 * a few state's latter. */
+                 * a few states latter. */
                 lastMode = null;
             }
         }

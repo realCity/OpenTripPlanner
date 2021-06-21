@@ -85,30 +85,34 @@ public abstract class StreetTransitEntityLink<T extends Vertex> extends Edge imp
             return null;
         }
 
-        if (s0.getOptions().parkAndRide && !s0.isVehicleParked()) {
-            // Forbid taking your own bike in the station if bike P+R activated.
-            return null;
-        }
-
         StateEditor s1 = s0.edit(this);
 
         switch (s0.getNonTransitMode()) {
             case BICYCLE:
+                // Forbid taking your own bike in the station if bike P+R activated.
+                if (s0.getOptions().parkAndRide && !s0.isVehicleParked()) {
+                    // Forbid taking your own bike in the station if bike P+R activated.
+                    return null;
+                }
                 // Forbid taking a (station) rental bike in the station. This allows taking along
                 // floating bikes.
-                if (s0.isBikeRentingFromStation() && !(s0.mayKeepRentedBicycleAtDestination() && s0.getOptions().allowKeepingRentedBicycleAtDestination)) {
+                else if (s0.isBikeRentingFromStation() && !(s0.mayKeepRentedBicycleAtDestination() && s0.getOptions().allowKeepingRentedBicycleAtDestination)) {
                     return null;
                 }
                 // Allow taking an owned bike in the station
                 break;
             case CAR:
-                // For Kiss & Ride allow dropping of the passenger before entering the station
-                if (canDropOffAfterDriving(s0) && isLeavingStreetNetwork(req)) {
-                    dropOffAfterDriving(s0, s1);
-                    break;
-                } else {
-                    return null;
+                if (s0.getCarPickupState() != null) {
+                    if (canDropOffAfterDriving(s0) && isLeavingStreetNetwork(req)) {
+                        dropOffAfterDriving(s0, s1);
+                    }
+                    else {
+                        return null;
+                    }
                 }
+                // If Kiss & Ride (Taxi) mode is not enabled allow car traversal so that the Stop
+                // may be reached by car
+                break;
             case WALK:
                 break;
             default:
