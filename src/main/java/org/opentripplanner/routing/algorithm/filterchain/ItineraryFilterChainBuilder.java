@@ -2,6 +2,7 @@ package org.opentripplanner.routing.algorithm.filterchain;
 
 import org.opentripplanner.model.plan.Itinerary;
 import org.opentripplanner.routing.algorithm.filterchain.filters.AddMinSafeTransferCostFilter;
+import org.opentripplanner.routing.algorithm.filterchain.filters.RemoveBikeParkWithShortBikingFilter;
 import org.opentripplanner.routing.algorithm.filterchain.filters.DebugFilterWrapper;
 import org.opentripplanner.routing.algorithm.filterchain.filters.FilterChain;
 import org.opentripplanner.routing.algorithm.filterchain.filters.GroupBySimilarLegsFilter;
@@ -47,6 +48,7 @@ public class ItineraryFilterChainBuilder {
     private DoubleFunction<Double> nonTransitGeneralizedCostLimit;
     private Instant latestDepartureTimeLimit = null;
     private Consumer<Itinerary> maxLimitReachedSubscriber;
+    private double minBikeParkingDistance = NOT_SET;
 
 
     /**
@@ -218,6 +220,11 @@ public class ItineraryFilterChainBuilder {
         return this;
     }
 
+    public ItineraryFilterChainBuilder withMinBikeParkingDistance(double minBikeParkingDistance) {
+        this.minBikeParkingDistance = minBikeParkingDistance;
+        return this;
+    }
+
     public ItineraryFilter build() {
         List<ItineraryFilter> filters = new ArrayList<>();
 
@@ -228,7 +235,7 @@ public class ItineraryFilterChainBuilder {
         if(flexOnlyToDestination) {
             filters.add(new FlexOnlyToDestinationFilter());
         }
-        
+
         // Sort list on {@code groupByP} in ascending order to keep as many of the elements in the
         // groups where the grouping parameter is relaxed as possible.
         {
@@ -288,6 +295,10 @@ public class ItineraryFilterChainBuilder {
 
             if (parkAndRideDurationRatio > 0) {
                 filters.add(new RemoveParkAndRideWithMostlyWalkingFilter(parkAndRideDurationRatio));
+            }
+
+            if (minBikeParkingDistance != NOT_SET) {
+                filters.add(new RemoveBikeParkWithShortBikingFilter(minBikeParkingDistance));
             }
         }
 

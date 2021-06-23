@@ -95,6 +95,11 @@ public class ItineraryFilterParameters {
    */
   public DoubleFunction<Double> nonTransitGeneralizedCostLimit;
 
+  /**
+   * Minimum biking distance at the beginning of the itinerary.
+   */
+  public final double minBikeParkingDistance;
+
 
   private ItineraryFilterParameters() {
     this.debug = false;
@@ -103,6 +108,7 @@ public class ItineraryFilterParameters {
     this.minSafeTransferTimeFactor = 0.0;
     this.bikeRentalDistanceRatio = 0.0;
     this.parkAndRideDurationRatio = 0.0;
+    this.minBikeParkingDistance = -1;
     this.flexOnlyToDestination = false;
     this.transitGeneralizedCostLimit =
         RequestFunctions.createLinearFunction(3600, 2);
@@ -123,7 +129,8 @@ public class ItineraryFilterParameters {
       DoubleFunction<Double> nonTransitGeneralizedCostLimit,
       double bikeRentalDistanceRatio,
       double parkAndRideDurationRatio,
-      boolean flexOnlyToDestination
+      boolean flexOnlyToDestination,
+      double minBikeParkingDistance
   ) {
     this.debug = debug;
     this.groupSimilarityKeepOne = groupSimilarityKeepOne;
@@ -134,5 +141,6 @@ public class ItineraryFilterParameters {
     this.bikeRentalDistanceRatio = bikeRentalDistanceRatio;
     this.parkAndRideDurationRatio = parkAndRideDurationRatio;
     this.flexOnlyToDestination = flexOnlyToDestination;
+    this.minBikeParkingDistance = minBikeParkingDistance;
   }
 }
