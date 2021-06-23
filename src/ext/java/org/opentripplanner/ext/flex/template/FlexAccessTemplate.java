@@ -136,7 +136,7 @@ public class FlexAccessTemplate extends FlexAccessEgressTemplate {
 
   protected FlexTripEdge getFlexEdge(Vertex flexToVertex, StopLocation transferStop) {
     return new FlexTripEdge(
-        accessEgress.state.getVertex(),
+        getFromVertex(),
         flexToVertex,
         accessEgress.stop,
         transferStop,
@@ -144,5 +144,9 @@ public class FlexAccessTemplate extends FlexAccessEgressTemplate {
         this,
         calculator
     );
+  }
+
+  public Vertex getFromVertex() {
+    return accessEgress.state.getVertex();
   }
 }

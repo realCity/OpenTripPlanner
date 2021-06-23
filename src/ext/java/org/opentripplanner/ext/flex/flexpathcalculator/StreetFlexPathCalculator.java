@@ -1,6 +1,10 @@
 package org.opentripplanner.ext.flex.flexpathcalculator;
 
+import java.util.Set;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
+import org.opentripplanner.common.geometry.GeometryUtils;
+import org.opentripplanner.common.geometry.SphericalDistanceLibrary;
 import org.opentripplanner.routing.algorithm.astar.AStar;
 import org.opentripplanner.routing.algorithm.astar.strategies.DurationSkipEdgeStrategy;
 import org.opentripplanner.routing.algorithm.astar.strategies.TrivialRemainingWeightHeuristic;
@@ -34,6 +38,9 @@ public class StreetFlexPathCalculator implements FlexPathCalculator {
 
   private static final long MAX_FLEX_TRIP_DURATION_SECONDS = Duration.ofMinutes(45).toSeconds();
 
+  private static final int DIRECT_EXTRA_TIME = 5 * 60;
+  private static final double FLEX_SPEED = 8.0;
+
   private final Graph graph;
   private final Map<Vertex, ShortestPathTree> cache = new HashMap<>();
   private final boolean reverseDirection;
@@ -61,7 +68,7 @@ public class StreetFlexPathCalculator implements FlexPathCalculator {
 
     GraphPath path = shortestPathTree.getPath(destinationVertex, false);
     if (path == null) {
-      return null;
+      return calculateDirectFlexPath(fromv, tov);
     }
 
     int distance = (int) path.getDistanceMeters();
@@ -69,6 +76,30 @@ public class StreetFlexPathCalculator implements FlexPathCalculator {
     LineString geometry = path.getGeometry();
 
     return new FlexPath(distance, duration, geometry);
+  }
+
+  @Override
+  public void initWith(Map<Vertex, Set<Vertex>> map) {
+    map.forEach((vertex, vertices) -> {
+      RoutingRequest routingRequest = new RoutingRequest(TraverseMode.CAR);
+      routingRequest.numItineraries = vertices.size();
+      routingRequest.arriveBy = reverseDirection;
+      if (reverseDirection) {
+        routingRequest.setRoutingContext(graph, vertices, Set.of(vertex));
+      } else {
+        routingRequest.setRoutingContext(graph, Set.of(vertex), vertices);
+      }
+      routingRequest.disableRemainingWeightHeuristic = true;
+      routingRequest.rctx.remainingWeightHeuristic = new TrivialRemainingWeightHeuristic();
+      routingRequest.dominanceFunction = new DominanceFunction.EarliestArrival();
+      routingRequest.oneToMany = true;
+
+      AStar search = new AStar();
+      search.setSkipEdgeStrategy(new DurationSkipEdgeStrategy(MAX_FLEX_TRIP_DURATION_SECONDS));
+      ShortestPathTree spt = search.getShortestPathTree(routingRequest);
+      routingRequest.cleanup();
+      cache.put(vertex, spt);
+    });
   }
 
   private ShortestPathTree routeToMany(Vertex vertex) {
@@ -88,5 +119,18 @@ public class StreetFlexPathCalculator implements FlexPathCalculator {
     ShortestPathTree spt = search.getShortestPathTree(routingRequest);
     routingRequest.cleanup();
     return spt;
+  }
+
+  private FlexPath calculateDirectFlexPath(Vertex fromv, Vertex tov  ) {
+    double distance = SphericalDistanceLibrary.distance(fromv.getCoordinate(), tov.getCoordinate());
+    LineString geometry = GeometryUtils.getGeometryFactory().createLineString(
+            new Coordinate[] {fromv.getCoordinate(), tov.getCoordinate()}
+    );
+
+    return new FlexPath(
+            (int) distance,
+            (int) (distance / FLEX_SPEED) + DIRECT_EXTRA_TIME,
+            geometry
+    );
   }
 }

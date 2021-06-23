@@ -155,5 +155,4 @@ public abstract class FlexAccessEgressTemplate {
         transferEdges.isEmpty()
     );
   }
-
 }

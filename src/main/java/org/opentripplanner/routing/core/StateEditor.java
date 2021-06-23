@@ -379,4 +379,8 @@ public class StateEditor {
             child.stateData.timeRestrictionSources.add(source);
         }
     }
+
+    public State getBackState() {
+        return child.backState;
+    }
 }

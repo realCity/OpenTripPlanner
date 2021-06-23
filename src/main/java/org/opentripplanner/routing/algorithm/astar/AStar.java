@@ -258,7 +258,7 @@ public class AStar {
 
                 /* Break out of the search if we've found the requested number of paths. */
                 // TODO Refactor. This check for getNumItineraries always returns 1
-                if (runState.targetAcceptedStates.size() >= runState.options.getNumItineraries()) {
+                if (runState.targetAcceptedStates.size() >= runState.rctx.toVertices.size()) {
                     LOG.debug("total vertices visited {}", runState.nVisited);
                     break;
                 }

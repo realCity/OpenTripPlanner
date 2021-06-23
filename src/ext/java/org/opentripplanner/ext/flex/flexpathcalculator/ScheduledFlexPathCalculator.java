@@ -1,5 +1,7 @@
 package org.opentripplanner.ext.flex.flexpathcalculator;
 
+import java.util.Map;
+import java.util.Set;
 import org.opentripplanner.ext.flex.trip.FlexTrip;
 import org.opentripplanner.routing.graph.Vertex;
 
@@ -32,5 +34,10 @@ public class ScheduledFlexPathCalculator implements FlexPathCalculator {
 
     if (departureTime >= arrivalTime) { return null; }
     return new FlexPath(distance, arrivalTime - departureTime, flexPath.geometry);
+  }
+
+  @Override
+  public void initWith(Map<Vertex, Set<Vertex>> map) {
+    flexPathCalculator.initWith(map);
   }
 }

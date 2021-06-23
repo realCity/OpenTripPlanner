@@ -2,20 +2,6 @@ package org.opentripplanner.ext.flex;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import java.util.Locale;
-import org.opentripplanner.common.model.T2;
-import org.opentripplanner.ext.flex.flexpathcalculator.FlexPathCalculator;
-import org.opentripplanner.ext.flex.flexpathcalculator.StreetFlexPathCalculator;
-import org.opentripplanner.ext.flex.template.FlexAccessTemplate;
-import org.opentripplanner.ext.flex.template.FlexEgressTemplate;
-import org.opentripplanner.ext.flex.trip.FlexTrip;
-import org.opentripplanner.model.StopLocation;
-import org.opentripplanner.model.calendar.ServiceDate;
-import org.opentripplanner.model.plan.Itinerary;
-import org.opentripplanner.routing.algorithm.raptor.transit.mappers.DateMapper;
-import org.opentripplanner.routing.graph.Graph;
-import org.opentripplanner.routing.graphfinder.NearbyStop;
-
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -24,11 +10,26 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.opentripplanner.common.model.T2;
+import org.opentripplanner.ext.flex.flexpathcalculator.FlexPathCalculator;
+import org.opentripplanner.ext.flex.template.FlexAccessTemplate;
+import org.opentripplanner.ext.flex.template.FlexEgressTemplate;
+import org.opentripplanner.ext.flex.trip.FlexTrip;
+import org.opentripplanner.model.StopLocation;
+import org.opentripplanner.model.calendar.ServiceDate;
+import org.opentripplanner.model.plan.Itinerary;
+import org.opentripplanner.routing.algorithm.raptor.transit.mappers.DateMapper;
+import org.opentripplanner.routing.graph.Graph;
+import org.opentripplanner.routing.graph.Vertex;
+import org.opentripplanner.routing.graphfinder.NearbyStop;
 
 public class FlexRouter {
 
@@ -52,20 +53,22 @@ public class FlexRouter {
   private List<FlexEgressTemplate> flexEgressTemplates = null;
 
   public FlexRouter(
-      Graph graph,
-      Instant searchInstant,
-      boolean arriveBy,
-      int additionalPastSearchDays,
-      int additionalFutureSearchDays,
-      Collection<NearbyStop> streetAccesses,
-      Collection<NearbyStop> egressTransfers
+          Graph graph,
+          Instant searchInstant,
+          boolean arriveBy,
+          int additionalPastSearchDays,
+          int additionalFutureSearchDays,
+          FlexPathCalculator forwardFlexPathCalculator,
+          FlexPathCalculator reverseFlexPathCalculator,
+          Collection<NearbyStop> streetAccesses,
+          Collection<NearbyStop> egressTransfers
   ) {
     this.graph = graph;
     this.streetAccesses = streetAccesses;
     this.streetEgresses = egressTransfers;
     this.flexIndex = graph.index.getFlexIndex();
-    this.accessFlexPathCalculator = new StreetFlexPathCalculator(graph, false);
-    this.egressFlexPathCalculator = new StreetFlexPathCalculator(graph, true);
+    this.accessFlexPathCalculator = forwardFlexPathCalculator;
+    this.egressFlexPathCalculator = reverseFlexPathCalculator;
 
     ZoneId tz = graph.getTimeZone().toZoneId();
     LocalDate searchDate = LocalDate.ofInstant(searchInstant, tz);
@@ -96,7 +99,7 @@ public class FlexRouter {
     Multimap<StopLocation, NearbyStop> streetEgressByStop = HashMultimap.create();
     streetEgresses.forEach(it -> streetEgressByStop.put(it.stop, it));
 
-    Set<StopLocation> egressStops = streetEgressByStop.keySet();
+    initializeDirectFlexCalculator(flexAccessTemplates, streetEgressByStop);
 
     Collection<Itinerary> itineraries = new ArrayList<>();
 
@@ -118,6 +121,8 @@ public class FlexRouter {
   public Collection<FlexAccessEgress> createFlexAccesses() {
     calculateFlexAccessTemplates();
 
+    initializeAccessFlexCalculator(flexAccessTemplates);
+
     return this.flexAccessTemplates
         .stream()
         .flatMap(template -> template.createFlexAccessEgressStream(graph))
@@ -126,6 +131,8 @@ public class FlexRouter {
 
   public Collection<FlexAccessEgress> createFlexEgresses() {
     calculateFlexEgressTemplates();
+
+    initializeEgressFlexCalculator(flexEgressTemplates);
 
     return this.flexEgressTemplates
         .stream()
@@ -192,4 +199,62 @@ public class FlexRouter {
         .flatMap(Optional::stream);
   }
 
+
+  private void initializeDirectFlexCalculator(
+          List<FlexAccessTemplate> flexAccessTemplates,
+          Multimap<StopLocation, NearbyStop> streetEgressByStop
+  ) {
+    var map = new HashMap<Vertex, Set<Vertex>>();
+
+    flexAccessTemplates.forEach(t -> {
+      var vertices = new ArrayList<>(t.getFlexTrip().getStops())
+              .subList(t.fromStopIndex, t.getFlexTrip().getStops().size())
+              .stream()
+              .map(streetEgressByStop::get)
+              .flatMap(Collection::stream)
+              .map(s -> s.state.getVertex())
+              .collect(Collectors.toSet());
+
+      map.computeIfAbsent(t.getFromVertex(), v -> new HashSet<>())
+              .addAll(vertices);
+    });
+
+    accessFlexPathCalculator.initWith(map);
+  }
+
+  private void initializeAccessFlexCalculator(List<FlexAccessTemplate> flexAccessTemplates) {
+    var map = new HashMap<Vertex, Set<Vertex>>();
+
+    flexAccessTemplates.forEach(t -> {
+      var vertices = t.getFlexTrip().getStops().stream()
+              .map(graph::getTransfersByStop)
+              .flatMap(Collection::stream)
+              .filter(s -> s.getEdges() != null && s.getEdges().size() > 0)
+              .map(s -> s.getEdges().get(0).getFromVertex())
+              .collect(Collectors.toSet());
+
+      map.computeIfAbsent(t.getFromVertex(), v -> new HashSet<>())
+              .addAll(vertices);
+    });
+
+    accessFlexPathCalculator.initWith(map);
+  }
+
+  private void initializeEgressFlexCalculator(List<FlexEgressTemplate> flexAccessTemplates) {
+    var map = new HashMap<Vertex, Set<Vertex>>();
+
+    flexAccessTemplates.forEach(t -> {
+      var vertices = t.getFlexTrip().getStops().stream()
+              .map(graph::getTransfersByStop)
+              .flatMap(Collection::stream)
+              .filter(s -> s.getEdges() != null && s.getEdges().size() > 0)
+              .map(s -> s.getEdges().get(s.getEdges().size() - 1).getToVertex())
+              .collect(Collectors.toSet());
+
+      map.computeIfAbsent(t.getFlexToVertex(), v -> new HashSet<>())
+              .addAll(vertices);
+    });
+
+    egressFlexPathCalculator.initWith(map);
+  }
 }

@@ -23,6 +23,9 @@ public abstract class Edge implements Serializable {
 
     protected Vertex tov;
 
+    private boolean hashCodeSet = false;
+    private int hashCode;
+
     protected Edge(Vertex v1, Vertex v2) {
         if (v1 == null || v2 == null) {
             String err = String.format("%s constructed with null vertex : %s %s", this.getClass(),
@@ -87,8 +90,12 @@ public abstract class Edge implements Serializable {
     // Notes are now handled by State
 
     @Override
-    public int hashCode() {
-        return Objects.hash(fromv, tov);
+    final public int hashCode() {
+        if (!hashCodeSet) {
+            hashCodeSet = true;
+            hashCode = Objects.hash(fromv, tov);
+        }
+        return hashCode;
     }
 
     /**

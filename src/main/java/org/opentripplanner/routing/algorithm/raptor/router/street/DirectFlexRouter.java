@@ -1,6 +1,7 @@
 package org.opentripplanner.routing.algorithm.raptor.router.street;
 
 import org.opentripplanner.ext.flex.FlexRouter;
+import org.opentripplanner.ext.flex.flexpathcalculator.FlexPathCalculator;
 import org.opentripplanner.model.plan.Itinerary;
 import org.opentripplanner.routing.api.request.RoutingRequest;
 import org.opentripplanner.routing.api.request.StreetMode;
@@ -15,8 +16,10 @@ import org.opentripplanner.standalone.server.Router;
 public class DirectFlexRouter {
 
   public static List<Itinerary> route(
-      Router router,
-      RoutingRequest request
+          Router router,
+          RoutingRequest request,
+          FlexPathCalculator forwardFlexPathCalculator,
+          FlexPathCalculator reverseFlexPathCalculator
   ) {
     if (!StreetMode.FLEXIBLE.equals(request.modes.directMode)) {
       return Collections.emptyList();
@@ -43,6 +46,8 @@ public class DirectFlexRouter {
               directRequest.arriveBy,
               directRequest.additionalSearchDaysBeforeToday,
               directRequest.additionalSearchDaysAfterToday,
+              forwardFlexPathCalculator,
+              reverseFlexPathCalculator,
               accessStops,
               egressStops
       );

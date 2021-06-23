@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.opentripplanner.ext.flex.FlexAccessEgress;
+import org.opentripplanner.ext.flex.flexpathcalculator.FlexPathCalculator;
+import org.opentripplanner.ext.flex.flexpathcalculator.StreetFlexPathCalculator;
 import org.opentripplanner.model.plan.Itinerary;
 import org.opentripplanner.routing.algorithm.filterchain.ItineraryFilter;
 import org.opentripplanner.routing.algorithm.mapping.RaptorPathToItineraryMapper;
@@ -72,6 +74,9 @@ public class RoutingWorker {
     private int searchWindowUsedInSeconds = NOT_SET;
     private Itinerary firstRemovedItinerary = null;
 
+    private FlexPathCalculator forwardFlexPathCalculator;
+    private FlexPathCalculator reverseFlexPathCalculator;
+
     public RoutingWorker(RaptorConfig<TripSchedule> config, RoutingRequest request) {
         this.debugTimingAggregator.startedCalculating();
         this.raptorService = new RaptorService<>(config);
@@ -82,6 +87,9 @@ public class RoutingWorker {
     public RoutingResponse route(Router router) {
         List<Itinerary> itineraries = new ArrayList<>();
         List<RoutingError> routingErrors = new ArrayList<>();
+
+        forwardFlexPathCalculator = new StreetFlexPathCalculator(router.graph, false);
+        reverseFlexPathCalculator = new StreetFlexPathCalculator(router.graph, true);
 
         // If no direct mode is set, then we set one.
         // See {@link FilterTransitWhenDirectModeIsEmpty}
@@ -99,7 +107,7 @@ public class RoutingWorker {
         // Direct flex routing
         if (OTPFeature.FlexRouting.isOn()) {
             try {
-                itineraries.addAll(DirectFlexRouter.route(router, request));
+                itineraries.addAll(DirectFlexRouter.route(router, request, forwardFlexPathCalculator, reverseFlexPathCalculator));
             }
             catch (RoutingValidationException e) {
                 routingErrors.addAll(e.getRoutingErrors());
@@ -173,6 +181,8 @@ public class RoutingWorker {
                 Collection<FlexAccessEgress> flexAccessList =
                         FlexAccessEgressRouter.routeAccessEgress(
                                 accessRequest,
+                                forwardFlexPathCalculator,
+                                reverseFlexPathCalculator,
                                 false
                         );
                 accessList.addAll(accessEgressMapper.mapFlexAccessEgresses(flexAccessList, requestTransitDataProvider.getStartOfTime(), false));
@@ -195,6 +205,8 @@ public class RoutingWorker {
                 Collection<FlexAccessEgress> flexEgressList =
                         FlexAccessEgressRouter.routeAccessEgress(
                                 egressRequest,
+                                forwardFlexPathCalculator,
+                                reverseFlexPathCalculator,
                                 true
                         );
                 egressList.addAll(accessEgressMapper.mapFlexAccessEgresses(flexEgressList, requestTransitDataProvider.getStartOfTime(), true));

@@ -2,6 +2,7 @@ package org.opentripplanner.routing.algorithm.raptor.router.street;
 
 import org.opentripplanner.ext.flex.FlexAccessEgress;
 import org.opentripplanner.ext.flex.FlexRouter;
+import org.opentripplanner.ext.flex.flexpathcalculator.FlexPathCalculator;
 import org.opentripplanner.routing.api.request.RoutingRequest;
 import org.opentripplanner.routing.api.request.StreetMode;
 import org.opentripplanner.routing.graphfinder.NearbyStop;
@@ -14,8 +15,10 @@ public class FlexAccessEgressRouter {
   private FlexAccessEgressRouter() {}
 
   public static Collection<FlexAccessEgress> routeAccessEgress(
-      RoutingRequest request,
-      boolean isEgress
+          RoutingRequest request,
+          FlexPathCalculator forwardFlexPathCalculator,
+          FlexPathCalculator reverseFlexPathCalculator,
+          boolean isEgress
   ) {
 
     Collection<NearbyStop> accessStops = !isEgress ? AccessEgressRouter.streetSearch(
@@ -36,6 +39,8 @@ public class FlexAccessEgressRouter {
         request.arriveBy,
         request.additionalSearchDaysBeforeToday,
         request.additionalSearchDaysAfterToday,
+        forwardFlexPathCalculator,
+        reverseFlexPathCalculator,
         accessStops,
         egressStops
     );

@@ -70,4 +70,8 @@ public class FlexEgressTemplate extends FlexAccessEgressTemplate {
         calculator
     );
   }
+
+  public Vertex getFlexToVertex() {
+    return accessEgress.state.getVertex();
+  }
 }
