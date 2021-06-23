@@ -26,7 +26,15 @@ public class FlexOnlyToDestinationFilter implements ItineraryFilter {
                     var lastLeg = it.lastLeg();
                     boolean lastLegIsLongWalk = lastLeg.mode == TraverseMode.WALK
                             && lastLeg.getDuration() > maxWalkDuration;
-                    return !lastLegIsLongWalk;
+
+                    var lastLegIsFlex = it.legs.stream()
+                            .filter(l -> l.isTransitLeg() || l.flexibleTrip)
+                            // get last element of stream
+                            .reduce((first, second) -> second)
+                            .map(l -> l.flexibleTrip)
+                            .orElse(false);
+
+                    return !lastLegIsLongWalk && lastLegIsFlex;
                 })
                 .collect(Collectors.toList());
     }
