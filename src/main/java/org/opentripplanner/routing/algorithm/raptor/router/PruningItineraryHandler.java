@@ -1,16 +1,23 @@
 package org.opentripplanner.routing.algorithm.raptor.router;
 
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.function.BiFunction;
+import org.opentripplanner.model.plan.Itinerary;
 import org.opentripplanner.routing.api.request.RequestModes;
+import org.opentripplanner.routing.api.request.RoutingRequest;
 import org.opentripplanner.routing.api.request.StreetMode;
+import org.opentripplanner.standalone.server.Router;
 
 /**
  * <p>
  * In OTP the street search and transit search is done as to separate searches. The results is then
- * merged and filtered to remove none optimal itineraries. But, when the client do NOT provide
- * a ´directMode´, OTP do not do the streetSearch. And, the removal of none optimal results is not
- * done, there is not street results to use to prune bad transit results with. In other words OTP
- * is forced to return at least one itinerary with at least one transit leg. So, instead of walking
+ * merged and filtered to remove none optimal itineraries. But, when the client do NOT provide a
+ * ´directMode´, OTP do not do the streetSearch. And, the removal of none optimal results is not
+ * done, there is not street results to use to prune bad transit results with. In other words OTP is
+ * forced to return at least one itinerary with at least one transit leg. So, instead of walking
  * maybe 100 meters, the OTP suggest you need to walk to the closest buss stop, take the bus one
  * stop and walk back, oten with more walking than just those 100 meters.
  * <p>
@@ -51,26 +58,31 @@ import org.opentripplanner.routing.api.request.StreetMode;
  * Walk 50m ~ Destination }
  * NOT: {@code Origin ~ Walk 120m ~ Destination }
  */
-public class FilterTransitWhenDirectModeIsEmpty {
-  private final StreetMode originalDirectMode;
+public class PruningItineraryHandler {
 
-  public FilterTransitWhenDirectModeIsEmpty(RequestModes modes) {
-    this.originalDirectMode = modes.directMode;
-  }
+    private final StreetMode pruningMode;
+    private List<Itinerary> pruningItineraries;
 
-  public StreetMode resolveDirectMode() {
-    return directSearchEmpty() ? StreetMode.WALK : originalDirectMode;
-  }
+    public PruningItineraryHandler(
+            StreetMode pruningMode,
+            RequestModes requestModes
+    ) {
+        // Pruning only needs to run if it differs from the directMode
+        this.pruningMode = pruningMode != requestModes.directMode ? pruningMode : null;
+    }
 
-  public boolean removeWalkAllTheWayResults() {
-    return directSearchEmpty();
-  }
+    public List<Itinerary> route(Router router, RoutingRequest request, BiFunction<Router, RoutingRequest, List<Itinerary>> route) {
+        pruningItineraries = new ArrayList<>();
+        if (pruningMode != null) {
+            var pruningRequest = request.clone();
+            pruningRequest.modes = new RequestModes(null, null, null, pruningMode, Set.of());
+            pruningItineraries.addAll(route.apply(router, pruningRequest));
+        }
 
-  public StreetMode originalDirectMode() {
-    return originalDirectMode;
-  }
+        return pruningItineraries;
+    }
 
-  private boolean directSearchEmpty() {
-    return originalDirectMode == null;
-  }
+    public List<Itinerary> pruningItineraries() {
+        return pruningItineraries;
+    }
 }

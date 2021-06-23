@@ -138,6 +138,12 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
     );
 
     /**
+     * The StreetMode to use for pruning returned itinieraries.
+     * @see
+     */
+    public StreetMode pruningMode = StreetMode.WALK;
+
+    /**
      * The set of TraverseModes allowed when doing creating sub requests and doing street routing.
      * // TODO OTP2 Street routing requests should eventually be split into its own request class.
      */
@@ -713,6 +719,11 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
         // So that they are never null.
         from = new GenericLocation(null, null);
         to = new GenericLocation(null, null);
+    }
+
+    public RoutingRequest(RequestModes requestModes) {
+        this();
+        this.modes = requestModes;
     }
 
     public RoutingRequest(TraverseModeSet streetSubRequestModes) {

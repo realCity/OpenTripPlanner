@@ -1,12 +1,5 @@
 package org.opentripplanner.routing.algorithm.filterchain.filters;
 
-import org.junit.Test;
-import org.opentripplanner.model.plan.Itinerary;
-import org.opentripplanner.util.time.DurationUtils;
-import org.opentripplanner.util.time.TimeUtils;
-
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.opentripplanner.model.plan.TestItineraryBuilder.A;
@@ -14,17 +7,22 @@ import static org.opentripplanner.model.plan.TestItineraryBuilder.B;
 import static org.opentripplanner.model.plan.TestItineraryBuilder.E;
 import static org.opentripplanner.model.plan.TestItineraryBuilder.newItinerary;
 
-public class RemoveWalkOnlyFilterTest {
+import java.util.List;
+import org.junit.Test;
+import org.opentripplanner.model.plan.Itinerary;
+import org.opentripplanner.util.time.DurationUtils;
+import org.opentripplanner.util.time.TimeUtils;
+
+public class RemovePruningItineraryFilterTest {
 
   private static final int D5m = DurationUtils.duration("5m");
 
   private static final int T10_10 = TimeUtils.hm2time(10,10);
   private static final int T10_20 = TimeUtils.hm2time(10,20);
 
-  private final RemoveWalkOnlyFilter subject = new RemoveWalkOnlyFilter();
-
   @Test
   public void name() {
+    var subject = new RemovePruningItineraryFilter(List.of());
     assertEquals("remove-walk-only-filter", subject.name());
   }
 
@@ -40,11 +38,13 @@ public class RemoveWalkOnlyFilterTest {
     var input = List.of(t1, w1, t2, w2, t3, t4);
     var expected = List.of(t1, t2, t3, t4);
 
+    var subject = new RemovePruningItineraryFilter(List.of(w1, w2));
     assertEquals(Itinerary.toStr(expected), Itinerary.toStr(subject.filter(input)));
   }
 
   @Test
   public void removeItineraries() {
+    var subject = new RemovePruningItineraryFilter(List.of());
     assertTrue(subject.removeItineraries());
   }
 }

@@ -17,6 +17,7 @@ public class DebugTimingAggregator {
 
   private long startedCalculating;
   private long finishedPrecalculating;
+  private long finishedPruningStreetRouter;
   private long finishedDirectStreetRouter;
 
   private long finishedPatternFiltering;
@@ -28,6 +29,7 @@ public class DebugTimingAggregator {
   private long finishedRendering;
 
   private long precalculationTime;
+  private long pruningStreetRouterTime;
   private long directStreetRouterTime;
   private long tripPatternFilterTime;
   private long accessEgressTime;
@@ -51,20 +53,28 @@ public class DebugTimingAggregator {
   }
 
   /**
-   * Record the time when the worker initialization is done, and the direct street router starts.
+   * Record the time when the worker initialization is done, and the pruning street router starts.
    */
   public void finishedPrecalculating() {
     if(notEnabled) { return; }
     finishedPrecalculating = System.currentTimeMillis();
     precalculationTime = finishedPrecalculating - startedCalculating;
-    log("┌  Routing initialization", directStreetRouterTime);
+    log("┌  Routing initialization", precalculationTime);
+  }
+
+  /** Record the time when we finished the pruning street router search. */
+  public void finishedPruning() {
+    if(notEnabled) { return; }
+    finishedPruningStreetRouter = System.currentTimeMillis();
+    pruningStreetRouterTime = finishedPruningStreetRouter - finishedPrecalculating;
+    log("┌  Pruning street routing", pruningStreetRouterTime);
   }
 
   /** Record the time when we finished the direct street router search. */
   public void finishedDirectStreetRouter() {
     if(notEnabled) { return; }
     finishedDirectStreetRouter = System.currentTimeMillis();
-    directStreetRouterTime = finishedDirectStreetRouter - finishedPrecalculating;
+    directStreetRouterTime = finishedDirectStreetRouter - finishedPruningStreetRouter;
     log("├  Direct street routing", directStreetRouterTime);
   }
 

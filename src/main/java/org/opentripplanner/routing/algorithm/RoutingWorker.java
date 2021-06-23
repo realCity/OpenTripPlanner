@@ -12,7 +12,7 @@ import org.opentripplanner.routing.algorithm.filterchain.ItineraryFilter;
 import org.opentripplanner.routing.algorithm.mapping.RaptorPathToItineraryMapper;
 import org.opentripplanner.routing.algorithm.mapping.RoutingRequestToFilterChainMapper;
 import org.opentripplanner.routing.algorithm.mapping.TripPlanMapper;
-import org.opentripplanner.routing.algorithm.raptor.router.FilterTransitWhenDirectModeIsEmpty;
+import org.opentripplanner.routing.algorithm.raptor.router.PruningItineraryHandler;
 import org.opentripplanner.routing.algorithm.raptor.router.street.AccessEgressRouter;
 import org.opentripplanner.routing.algorithm.raptor.router.street.DirectFlexRouter;
 import org.opentripplanner.routing.algorithm.raptor.router.street.DirectStreetRouter;
@@ -67,7 +67,7 @@ public class RoutingWorker {
     public final DebugTimingAggregator debugTimingAggregator = new DebugTimingAggregator();
 
     private final RoutingRequest request;
-    private final FilterTransitWhenDirectModeIsEmpty emptyDirectModeHandler;
+    private final PruningItineraryHandler pruningItineraryHandler;
     private Instant filterOnLatestDepartureTime = null;
     private int searchWindowUsedInSeconds = NOT_SET;
     private Itinerary firstRemovedItinerary = null;
@@ -76,18 +76,23 @@ public class RoutingWorker {
         this.debugTimingAggregator.startedCalculating();
         this.raptorService = new RaptorService<>(config);
         this.request = request;
-        this.emptyDirectModeHandler = new FilterTransitWhenDirectModeIsEmpty(request.modes);
+        this.pruningItineraryHandler = new PruningItineraryHandler(request.pruningMode, request.modes);
     }
 
     public RoutingResponse route(Router router) {
         List<Itinerary> itineraries = new ArrayList<>();
         List<RoutingError> routingErrors = new ArrayList<>();
 
-        // If no direct mode is set, then we set one.
-        // See {@link FilterTransitWhenDirectModeIsEmpty}
-        request.modes.directMode = emptyDirectModeHandler.resolveDirectMode();
-
         this.debugTimingAggregator.finishedPrecalculating();
+
+        // Pruning street routing
+        try {
+            itineraries.addAll(pruningItineraryHandler.route(router, request, DirectStreetRouter::route));
+        } catch (RoutingValidationException e) {
+            routingErrors.addAll(e.getRoutingErrors());
+        }
+
+        this.debugTimingAggregator.finishedPruning();
 
         // Direct street routing
         try {
@@ -122,9 +127,6 @@ public class RoutingWorker {
         LOG.debug("Return TripPlan with {} itineraries", itineraries.size());
 
         this.debugTimingAggregator.finishedFiltering();
-
-        // Restore original directMode.
-        request.modes.directMode = emptyDirectModeHandler.originalDirectMode();
 
         return new RoutingResponse(
             TripPlanMapper.mapTripPlan(request, itineraries),
@@ -299,7 +301,7 @@ public class RoutingWorker {
         ItineraryFilter filterChain = RoutingRequestToFilterChainMapper.createFilterChain(
             request,
             filterOnLatestDepartureTime,
-            emptyDirectModeHandler.removeWalkAllTheWayResults(),
+            pruningItineraryHandler.pruningItineraries(),
             it -> firstRemovedItinerary = it
         );
         return filterChain.filter(itineraries);

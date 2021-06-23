@@ -76,6 +76,7 @@ public class RoutingRequestMapper {
         request.otherThanPreferredRoutesPenalty = c.asInt("otherThanPreferredRoutesPenalty", dft.otherThanPreferredRoutesPenalty);
         request.parkAndRide = c.asBoolean("parkAndRide", dft.parkAndRide);
         request.pathComparator = c.asText("pathComparator", dft.pathComparator);
+        request.pruningMode = c.asEnum("pruningMode", dft.pruningMode);
         request.showIntermediateStops = c.asBoolean("showIntermediateStops", dft.showIntermediateStops);
         request.stairsReluctance = c.asDouble("stairsReluctance", dft.stairsReluctance);
         request.startingTransitTripId = c.asFeedScopedId("startingTransitTripId", dft.startingTransitTripId);

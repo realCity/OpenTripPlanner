@@ -1,18 +1,17 @@
 package org.opentripplanner.routing.algorithm.filterchain;
 
-import org.junit.jupiter.api.Test;
-import org.opentripplanner.model.plan.Itinerary;
-import org.opentripplanner.model.plan.PlanTestConstants;
-import org.opentripplanner.model.plan.TestItineraryBuilder;
-
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.opentripplanner.model.plan.Itinerary.toStr;
 import static org.opentripplanner.model.plan.TestItineraryBuilder.newItinerary;
 import static org.opentripplanner.model.plan.TestItineraryBuilder.newTime;
+
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.opentripplanner.model.plan.Itinerary;
+import org.opentripplanner.model.plan.PlanTestConstants;
+import org.opentripplanner.model.plan.TestItineraryBuilder;
 
 
 /**
@@ -113,13 +112,13 @@ public class ItineraryFilterChainTest implements PlanTestConstants {
   }
 
   @Test
-  public void removeAllWalkingOnly() {
-    var chain = createBuilder(false, false, 20)
-        .withRemoveWalkAllTheWayResults(true)
-        .build();
-
+  public void removePruningItinerary() {
     Itinerary walk = newItinerary(A, T11_06).walk(D10m, E).build();
     Itinerary bus = newItinerary(A).bus(21, T11_06, T11_12, E).build();
+
+    var chain = createBuilder(false, false, 20)
+            .withPruningItinerariesToRemove(List.of(walk))
+            .build();
 
     assertEquals(toStr(List.of(bus)), toStr(chain.filter(List.of(walk, bus))));
   }

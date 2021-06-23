@@ -7,19 +7,26 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Filter itineraries and remove all itineraries where all legs is walking.
+ * Filter itineraries and removes ones created for pruning results.
  */
-public class RemoveWalkOnlyFilter implements ItineraryFilter {
+public class RemovePruningItineraryFilter implements ItineraryFilter {
+
+    private final List<Itinerary> pruningItineraries;
+
+    public RemovePruningItineraryFilter(List<Itinerary> pruningItineraries) {
+        this.pruningItineraries = pruningItineraries;
+    }
 
     @Override
     public String name() {
-        return "remove-walk-only-filter";
+        return "remove-pruning-itinerary-filter";
     }
 
     @Override
     public List<Itinerary> filter(List<Itinerary> itineraries) {
         return itineraries
-            .stream().filter(it -> !it.isWalkingAllTheWay())
+            .stream()
+            .filter(it -> !pruningItineraries.contains(it))
             .collect(Collectors.toList());
     }
 

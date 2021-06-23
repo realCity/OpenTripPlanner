@@ -1,13 +1,13 @@
 package org.opentripplanner.routing.algorithm.mapping;
 
+import java.time.Instant;
+import java.util.List;
+import java.util.function.Consumer;
 import org.opentripplanner.model.plan.Itinerary;
 import org.opentripplanner.routing.algorithm.filterchain.GroupBySimilarity;
 import org.opentripplanner.routing.algorithm.filterchain.ItineraryFilter;
 import org.opentripplanner.routing.algorithm.filterchain.ItineraryFilterChainBuilder;
 import org.opentripplanner.routing.api.request.RoutingRequest;
-
-import java.time.Instant;
-import java.util.function.Consumer;
 
 public class RoutingRequestToFilterChainMapper {
   private static final int KEEP_ONE = 1;
@@ -21,7 +21,7 @@ public class RoutingRequestToFilterChainMapper {
   public static ItineraryFilter createFilterChain(
       RoutingRequest request,
       Instant filterOnLatestDepartureTime,
-      boolean removeWalkAllTheWayResults,
+      List<Itinerary> pruningItinerariesToRemove,
       Consumer<Itinerary> maxLimitReachedSubscriber
   ) {
     var builder = new ItineraryFilterChainBuilder(request.arriveBy);
@@ -61,7 +61,7 @@ public class RoutingRequestToFilterChainMapper {
         .withRemoveTransitWithHigherCostThanBestOnStreetOnly(true)
         .withLatestDepartureTimeLimit(filterOnLatestDepartureTime)
         .withMaxLimitReachedSubscriber(maxLimitReachedSubscriber)
-        .withRemoveWalkAllTheWayResults(removeWalkAllTheWayResults)
+        .withPruningItinerariesToRemove(pruningItinerariesToRemove)
         .withDebugEnabled(p.debug);
 
     return builder.build();
