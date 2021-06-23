@@ -52,6 +52,10 @@ public class RoutingRequestToFilterChainMapper {
       }
     }
 
+    if (request.modes.contains(StreetMode.BIKE_TO_PARK)) {
+      builder.withMinBikeParkingDistance(p.minBikeParkingDistance);
+    }
+
     var flexWasRequested = request.modes.egressMode == StreetMode.FLEXIBLE ||
             request.modes.directMode == StreetMode.FLEXIBLE;
     builder
