@@ -267,6 +267,10 @@ type VehicleParking implements Node & PlaceInterface {
 
     note: String
 
+    feeHours: String
+
+    openingHours: String
+
     state: VehicleParkingState
 
     bicyclePlaces: Boolean

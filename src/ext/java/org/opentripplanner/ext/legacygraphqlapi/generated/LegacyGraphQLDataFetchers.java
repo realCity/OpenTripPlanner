@@ -72,6 +72,8 @@ public class LegacyGraphQLDataFetchers {
     public DataFetcher<String> imageUrl();
     public DataFetcher<Iterable<String>> tags();
     public DataFetcher<String> note();
+    public DataFetcher<String> feeHours();
+    public DataFetcher<String> openingHours();
     public DataFetcher<VehicleParking.VehicleParkingState> state();
     public DataFetcher<Boolean> bicyclePlaces();
     public DataFetcher<Boolean> anyCarPlaces();
