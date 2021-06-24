@@ -5,6 +5,7 @@ import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import org.opentripplanner.ext.legacygraphqlapi.generated.LegacyGraphQLDataFetchers;
 import org.opentripplanner.routing.vehicle_parking.VehicleParking;
+import org.opentripplanner.util.I18NString;
 
 public class LegacyGraphQLVehicleParkingImpl implements LegacyGraphQLDataFetchers.LegacyGraphQLVehicleParking {
     @Override
@@ -22,7 +23,7 @@ public class LegacyGraphQLVehicleParkingImpl implements LegacyGraphQLDataFetcher
 
     @Override
     public DataFetcher<String> name() {
-        return environment -> getSource(environment).getName().toString();
+        return environment -> getSource(environment).getName().toString(environment.getLocale());
     }
 
     @Override
@@ -59,7 +60,25 @@ public class LegacyGraphQLVehicleParkingImpl implements LegacyGraphQLDataFetcher
     public DataFetcher<String> note() {
         return environment -> {
             var note = getSource(environment).getNote();
-            return note != null ? note.toString() : null;
+            return note != null ? note.toString(environment.getLocale()) : null;
+        };
+    }
+
+    @Override
+    public DataFetcher<String> feeHours() {
+        return environment -> {
+            var feeHours = getSource(environment).getFeeHours();
+            return feeHours instanceof I18NString
+                    ? ((I18NString) feeHours).toString(environment.getLocale()) : null;
+        };
+    }
+
+    @Override
+    public DataFetcher<String> openingHours() {
+        return environment -> {
+            var openingHours = getSource(environment).getOpeningHours();
+            return openingHours instanceof I18NString
+                    ? ((I18NString) openingHours).toString(environment.getLocale()) : null;
         };
     }
 
