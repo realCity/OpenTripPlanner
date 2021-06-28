@@ -69,6 +69,19 @@ public class OSMNode extends OSMWithTags {
         return isTag("barrier", "bollard");
     }
 
+    /**
+     * Checks if this node blocks traversal in any way
+     * @return true if it does
+     */
+    public boolean isBarrier() {
+        return (isBollard()
+                || isPedestrianExplicitlyDenied()
+                || isBicycleExplicitlyDenied()
+                || isMotorcarExplicitlyDenied()
+                || isMotorVehicleExplicitlyDenied()
+                || isGeneralAccessDenied());
+    }
+
     @Override
     public String getOpenStreetMapLink() {
         return String.format("http://www.openstreetmap.org/node/%d", getId());
