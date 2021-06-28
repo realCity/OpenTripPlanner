@@ -111,11 +111,9 @@ public class OSMSpecifier {
             }
         }
 
+        leftScore = (leftMatches == logicalANDPairs.size()) ? 10 + leftScore : 0;
+        rightScore = (rightMatches == logicalANDPairs.size()) ? 10 + rightScore : 0;
 
-        int allMatchLeftBonus = (leftMatches == logicalANDPairs.size()) ? 10 : 0;
-        leftScore += allMatchLeftBonus;
-        int allMatchRightBonus = (rightMatches == logicalANDPairs.size()) ? 10 : 0;
-        rightScore += allMatchRightBonus;
         return new P2<>(leftScore, rightScore);
     }
 
