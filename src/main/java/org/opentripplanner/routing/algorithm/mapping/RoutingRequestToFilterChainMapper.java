@@ -56,6 +56,10 @@ public class RoutingRequestToFilterChainMapper {
       builder.withMinBikeParkingDistance(p.minBikeParkingDistance);
     }
 
+    if (request.modes.contains(StreetMode.CAR_TO_PARK) && request.modes.directMode == StreetMode.BIKE) {
+      builder.withRemoveBikeOnlyParkAndRideItineraries(true);
+    }
+
     var flexWasRequested = request.modes.egressMode == StreetMode.FLEXIBLE ||
             request.modes.directMode == StreetMode.FLEXIBLE;
     builder

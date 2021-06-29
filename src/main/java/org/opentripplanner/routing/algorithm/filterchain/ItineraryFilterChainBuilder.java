@@ -12,6 +12,7 @@ import org.opentripplanner.routing.algorithm.filterchain.filters.NonTransitGener
 import org.opentripplanner.routing.algorithm.filterchain.filters.OtpDefaultSortOrder;
 import org.opentripplanner.routing.algorithm.filterchain.filters.RemoveBikerentalWithMostlyWalkingFilter;
 import org.opentripplanner.routing.algorithm.filterchain.filters.FlexOnlyToDestinationFilter;
+import org.opentripplanner.routing.algorithm.filterchain.filters.ParkAndRideDirectBikeItineraryFilter;
 import org.opentripplanner.routing.algorithm.filterchain.filters.RemoveParkAndRideWithMostlyWalkingFilter;
 import org.opentripplanner.routing.algorithm.filterchain.filters.RemoveTransitIfStreetOnlyIsBetterFilter;
 import org.opentripplanner.routing.algorithm.filterchain.filters.RemoveWalkOnlyFilter;
@@ -49,6 +50,7 @@ public class ItineraryFilterChainBuilder {
     private Instant latestDepartureTimeLimit = null;
     private Consumer<Itinerary> maxLimitReachedSubscriber;
     private double minBikeParkingDistance = NOT_SET;
+    private boolean removeBikeOnlyParkAndRideItineraries;
 
 
     /**
@@ -225,6 +227,11 @@ public class ItineraryFilterChainBuilder {
         return this;
     }
 
+    public ItineraryFilterChainBuilder withRemoveBikeOnlyParkAndRideItineraries(boolean enabled) {
+        this.removeBikeOnlyParkAndRideItineraries = enabled;
+        return this;
+    }
+
     public ItineraryFilter build() {
         List<ItineraryFilter> filters = new ArrayList<>();
 
@@ -299,6 +306,10 @@ public class ItineraryFilterChainBuilder {
 
             if (minBikeParkingDistance != NOT_SET) {
                 filters.add(new RemoveBikeParkWithShortBikingFilter(minBikeParkingDistance));
+            }
+
+            if (removeBikeOnlyParkAndRideItineraries) {
+                filters.add(new ParkAndRideDirectBikeItineraryFilter());
             }
         }
 
