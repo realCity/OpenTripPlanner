@@ -51,6 +51,7 @@ public class DefaultWayPropertySetSource implements WayPropertySetSource {
         props.setProperties("highway=platform", StreetTraversalPermission.PEDESTRIAN);
         props.setProperties("public_transport=platform", StreetTraversalPermission.PEDESTRIAN);
         props.setProperties("railway=platform", StreetTraversalPermission.PEDESTRIAN);
+        props.setProperties("highway=elevator", StreetTraversalPermission.PEDESTRIAN);
         props.setProperties("footway=sidewalk;highway=footway",
                 StreetTraversalPermission.PEDESTRIAN);
 
