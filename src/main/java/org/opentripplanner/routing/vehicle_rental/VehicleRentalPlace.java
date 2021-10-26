@@ -1,6 +1,7 @@
 package org.opentripplanner.routing.vehicle_rental;
 
 import org.opentripplanner.model.FeedScopedId;
+import org.opentripplanner.routing.api.request.RoutingRequest;
 import org.opentripplanner.util.I18NString;
 
 /**
@@ -67,4 +68,23 @@ public interface VehicleRentalPlace {
 
     /** Deep links for this rental station or individual vehicle */
     VehicleRentalStationUris getRentalUris();
+
+    default boolean networkIsNotAllowed(RoutingRequest options) {
+        if (getNetwork() == null && (
+                !options.allowedBikeRentalNetworks.isEmpty() ||
+                        !options.bannedBikeRentalNetworks.isEmpty()
+        )) {
+            return false;
+        }
+
+        if (options.bannedBikeRentalNetworks.contains(getNetwork())) {
+            return true;
+        }
+
+        if (options.allowedBikeRentalNetworks.isEmpty()) {
+            return false;
+        }
+
+        return !options.allowedBikeRentalNetworks.contains(getNetwork());
+    }
 }
