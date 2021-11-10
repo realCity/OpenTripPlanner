@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -882,6 +883,10 @@ public class LegacyGraphQLQueryTypeImpl
       callWith.argument("bikeSwitchCost", (Integer v) -> request.bikeSwitchCost = v);
       callWith.argument("allowKeepingRentedBicycleAtDestination", (Boolean v) -> request.allowKeepingRentedVehicleAtDestination = v);
       callWith.argument("keepingRentedBicycleAtDestinationCost", (Integer v) -> request.keepingRentedVehicleAtDestinationCost = v);
+      callWith.argument("allowedBikeRentalNetworks", (Collection<String> v) -> request.allowedVehicleRentalNetworks = new HashSet<>(v));
+      callWith.argument("bannedBikeRentalNetworks", (Collection<String> v) -> request.bannedVehicleRentalNetworks = new HashSet<>(v));
+      callWith.argument("requiredVehicleParkingTags", (Collection<String> v) -> request.requiredVehicleParkingTags = new HashSet<>(v));
+      callWith.argument("bannedVehicleParkingTags", (Collection<String> v) -> request.bannedVehicleParkingTags = new HashSet<>(v));
 
       callWith.argument(
               "modeWeight", (Map<String, Object> v) -> request.setTransitReluctanceForMode(
