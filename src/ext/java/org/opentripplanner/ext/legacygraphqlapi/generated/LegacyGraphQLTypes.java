@@ -806,6 +806,7 @@ public class LegacyGraphQLTypes {
     private Iterable<LegacyGraphQLTransportModeInput> _transportModes;
     private LegacyGraphQLInputTriangleInput _triangle;
     private LegacyGraphQLInputUnpreferredInput _unpreferred;
+    private Integer _vehicleParkingClosesSoonSeconds;
     private Double _waitAtBeginningFactor;
     private Double _waitReluctance;
     private Integer _walkBoardCost;
@@ -878,6 +879,7 @@ public class LegacyGraphQLTypes {
         }
         this._triangle = new LegacyGraphQLInputTriangleInput((Map<String, Object>) args.get("triangle"));
         this._unpreferred = new LegacyGraphQLInputUnpreferredInput((Map<String, Object>) args.get("unpreferred"));
+        this._vehicleParkingClosesSoonSeconds = (Integer) args.get("vehicleParkingClosesSoonSeconds");
         this._waitAtBeginningFactor = (Double) args.get("waitAtBeginningFactor");
         this._waitReluctance = (Double) args.get("waitReluctance");
         this._walkBoardCost = (Integer) args.get("walkBoardCost");
@@ -942,6 +944,7 @@ public class LegacyGraphQLTypes {
     public Iterable<LegacyGraphQLTransportModeInput> getLegacyGraphQLTransportModes() { return this._transportModes; }
     public LegacyGraphQLInputTriangleInput getLegacyGraphQLTriangle() { return this._triangle; }
     public LegacyGraphQLInputUnpreferredInput getLegacyGraphQLUnpreferred() { return this._unpreferred; }
+    public Integer getLegacyGraphQLVehicleParkingClosesSoonSeconds() { return this._vehicleParkingClosesSoonSeconds; }
     public Double getLegacyGraphQLWaitAtBeginningFactor() { return this._waitAtBeginningFactor; }
     public Double getLegacyGraphQLWaitReluctance() { return this._waitReluctance; }
     public Integer getLegacyGraphQLWalkBoardCost() { return this._walkBoardCost; }

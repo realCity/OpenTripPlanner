@@ -2279,6 +2279,12 @@ type QueryType {
         When doing bike-and-ride or park-and-ride search what tags must a vehicle parking contain?
         """
         requiredVehicleParkingTags: [String]
+
+        """
+        If the visiting time for a VehicleParking is inside this interval,
+        the ApiVehicleParkingWithEntrance#closesSoon flag will be marked true.
+        """
+        vehicleParkingClosesSoonSeconds: Int
     ): Plan
 }
 
