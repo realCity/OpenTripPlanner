@@ -759,6 +759,8 @@ public class LegacyGraphQLTypes {
     private Iterable<String> _allowedTicketTypes;
     private Boolean _arriveBy;
     private LegacyGraphQLInputBannedInput _banned;
+    private Iterable<String> _bannedBikeRentalNetworks;
+    private Iterable<String> _bannedVehicleParkingTags;
     private Boolean _batch;
     private Integer _bikeBoardCost;
     private Double _bikeReluctance;
@@ -792,6 +794,7 @@ public class LegacyGraphQLTypes {
     private Boolean _omitCanceled;
     private LegacyGraphQLOptimizeType _optimize;
     private LegacyGraphQLInputPreferredInput _preferred;
+    private Iterable<String> _requiredVehicleParkingTags;
     private Boolean _reverseOptimizeOnTheFly;
     private Long _searchWindow;
     private String _startTransitStopId;
@@ -820,6 +823,8 @@ public class LegacyGraphQLTypes {
         this._allowedTicketTypes = (Iterable<String>) args.get("allowedTicketTypes");
         this._arriveBy = (Boolean) args.get("arriveBy");
         this._banned = new LegacyGraphQLInputBannedInput((Map<String, Object>) args.get("banned"));
+        this._bannedBikeRentalNetworks = (Iterable<String>) args.get("bannedBikeRentalNetworks");
+        this._bannedVehicleParkingTags = (Iterable<String>) args.get("bannedVehicleParkingTags");
         this._batch = (Boolean) args.get("batch");
         this._bikeBoardCost = (Integer) args.get("bikeBoardCost");
         this._bikeReluctance = (Double) args.get("bikeReluctance");
@@ -859,6 +864,7 @@ public class LegacyGraphQLTypes {
           this._optimize = LegacyGraphQLOptimizeType.valueOfLabel((String) args.get("optimize"));
         }
         this._preferred = new LegacyGraphQLInputPreferredInput((Map<String, Object>) args.get("preferred"));
+        this._requiredVehicleParkingTags = (Iterable<String>) args.get("requiredVehicleParkingTags");
         this._reverseOptimizeOnTheFly = (Boolean) args.get("reverseOptimizeOnTheFly");
         this._searchWindow = (Long) args.get("searchWindow");
         this._startTransitStopId = (String) args.get("startTransitStopId");
@@ -889,6 +895,8 @@ public class LegacyGraphQLTypes {
     public Iterable<String> getLegacyGraphQLAllowedTicketTypes() { return this._allowedTicketTypes; }
     public Boolean getLegacyGraphQLArriveBy() { return this._arriveBy; }
     public LegacyGraphQLInputBannedInput getLegacyGraphQLBanned() { return this._banned; }
+    public Iterable<String> getLegacyGraphQLBannedBikeRentalNetworks() { return this._bannedBikeRentalNetworks; }
+    public Iterable<String> getLegacyGraphQLBannedVehicleParkingTags() { return this._bannedVehicleParkingTags; }
     public Boolean getLegacyGraphQLBatch() { return this._batch; }
     public Integer getLegacyGraphQLBikeBoardCost() { return this._bikeBoardCost; }
     public Double getLegacyGraphQLBikeReluctance() { return this._bikeReluctance; }
@@ -922,6 +930,7 @@ public class LegacyGraphQLTypes {
     public Boolean getLegacyGraphQLOmitCanceled() { return this._omitCanceled; }
     public LegacyGraphQLOptimizeType getLegacyGraphQLOptimize() { return this._optimize; }
     public LegacyGraphQLInputPreferredInput getLegacyGraphQLPreferred() { return this._preferred; }
+    public Iterable<String> getLegacyGraphQLRequiredVehicleParkingTags() { return this._requiredVehicleParkingTags; }
     public Boolean getLegacyGraphQLReverseOptimizeOnTheFly() { return this._reverseOptimizeOnTheFly; }
     public Long getLegacyGraphQLSearchWindow() { return this._searchWindow; }
     public String getLegacyGraphQLStartTransitStopId() { return this._startTransitStopId; }

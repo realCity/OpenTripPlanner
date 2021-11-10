@@ -2264,6 +2264,21 @@ type QueryType {
         Which bike rental networks can be used. By default, all networks are allowed.
         """
         allowedBikeRentalNetworks: [String]
+
+        """
+        Which bike rental networks may not be used. By default, all networks are allowed.
+        """
+        bannedBikeRentalNetworks: [String]
+
+        """
+        When doing bike-and-ride or park-and-ride search what tags can not have a vehicle parking?
+        """
+        bannedVehicleParkingTags: [String]
+
+        """
+        When doing bike-and-ride or park-and-ride search what tags must a vehicle parking contain?
+        """
+        requiredVehicleParkingTags: [String]
     ): Plan
 }
 
