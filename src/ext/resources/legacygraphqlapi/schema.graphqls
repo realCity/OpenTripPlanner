@@ -402,6 +402,21 @@ type VehicleParkingSpaces {
     wheelchairAccessibleCarSpaces: Int
 }
 
+type VehicleParkingWithEntrance {
+    vehicleParking: VehicleParking
+
+    """
+    True if the difference of visiting time for a VehicleParking and the closing time is inside the
+    request's vehicleParkingClosesSoonSeconds interval.
+    """
+    closesSoon: Boolean
+
+    """
+    Was realtime data used when parking.
+    """
+    realtime: Boolean
+}
+
 """
 Bike rental station represents a location where users can rent bicycles for a fee.
 """
@@ -1498,7 +1513,7 @@ type Place {
     carPark: CarPark @deprecated(reason: "carPark is deprecated. Use vehicleParking instead.")
 
     """The vehicle parking related to the place"""
-    vehicleParking: VehicleParking
+    vehicleParkingWithEntrance: VehicleParkingWithEntrance
 }
 
 type placeAtDistance implements Node {
@@ -2396,6 +2411,11 @@ type QueryType {
         the ApiVehicleParkingWithEntrance#closesSoon flag will be marked true.
         """
         vehicleParkingClosesSoonSeconds: Int
+
+        """
+        Whether or not vehicle parking availability information will be used to plan park and ride trips
+        """
+        useVehicleParkingAvailabilityInformation: Boolean
     ): Plan
 }
 

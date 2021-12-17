@@ -79,5 +79,6 @@ config:
     VehicleParking: org.opentripplanner.routing.vehicle_parking.VehicleParking#VehicleParking
     VehicleParkingSpaces: org.opentripplanner.routing.vehicle_parking.VehicleParkingSpaces#VehicleParkingSpaces
     VehicleParkingState: org.opentripplanner.routing.vehicle_parking.VehicleParkingState#VehicleParkingState
+    VehicleParkingWithEntrance: org.opentripplanner.model.plan.VehicleParkingWithEntrance#VehicleParkingWithEntrance
     VertexType: String
     SystemNotice: org.opentripplanner.model.SystemNotice#SystemNotice

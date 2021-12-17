@@ -988,6 +988,9 @@ public class LegacyGraphQLQueryTypeImpl
       callWith.argument("disableRemainingWeightHeuristic", (Boolean v) -> request.disableRemainingWeightHeuristic = v);
 
       callWith.argument("locale", (String v) -> request.locale = ResourceBundleSingleton.INSTANCE.getLocale(v));
+
+      callWith.argument("useVehicleParkingAvailabilityInformation", (Boolean v) -> request.useVehicleParkingAvailabilityInformation = v);
+
       return context.getRoutingService().route(request, context.getRouter());
     };
   }
