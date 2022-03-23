@@ -10,6 +10,7 @@ import org.opentripplanner.ext.dataoverlay.api.DataOverlayParameters;
 import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.model.GenericLocation;
 import org.opentripplanner.model.Route;
+import org.opentripplanner.model.StopLocation;
 import org.opentripplanner.model.TransitMode;
 import org.opentripplanner.model.modes.AllowedTransitMode;
 import org.opentripplanner.model.plan.SortOrder;
@@ -759,12 +760,24 @@ public class RoutingRequest implements AutoCloseable, Cloneable, Serializable {
      */
     public DataOverlayParameters dataOverlay = null;
 
+    /**
+     * Raptor can print all events when arriving at stops to stderrr. For developers only.
+     */
+    public Set<StopLocation> debugRaptorStops;
 
     /**
-     * Raptor can print all events when arriving at stops to system error. For developers only.
+     * Raptor can print all events for a path to stderr. For developers only.
+     *
+     * @see #debugRaptorPathFromStopIndex
      */
-    public DebugRaptor raptorDebuging = null;
+    public List<StopLocation> debugRaptorPath;
 
+    /**
+     * Stop index to print a Raptor paths to stderr. For developers only.
+     *
+     * @see #debugRaptorPath
+     */
+    public int debugRaptorPathFromStopIndex = 0;
 
     /* CONSTRUCTORS */
 

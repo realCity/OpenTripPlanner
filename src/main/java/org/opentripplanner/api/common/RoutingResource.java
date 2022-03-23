@@ -5,6 +5,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
@@ -16,7 +17,6 @@ import org.opentripplanner.api.parameter.QualifiedModeSet;
 import org.opentripplanner.ext.dataoverlay.api.DataOverlayParameters;
 import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.model.plan.pagecursor.PageCursor;
-import org.opentripplanner.routing.api.request.DebugRaptor;
 import org.opentripplanner.routing.api.request.RoutingRequest;
 import org.opentripplanner.routing.core.BicycleOptimizeType;
 import org.opentripplanner.standalone.server.OTPServer;
@@ -696,6 +696,9 @@ public abstract class RoutingResource {
     @QueryParam("debugRaptorPath")
     private String debugRaptorPath;
 
+    @QueryParam("debugRaptorPathFromStopIndex")
+    private int debugRaptorPathFromStopIndex = 0;
+
     /**
      * somewhat ugly bug fix: the graphService is only needed here for fetching per-graph time zones. 
      * this should ideally be done when setting the routing context, but at present departure/
@@ -946,10 +949,19 @@ public abstract class RoutingResource {
             request.itineraryFilters.debug = debugItineraryFilter;
         }
 
-        if(debugRaptorPath != null || debugRaptorStops != null) {
-            request.raptorDebuging = new DebugRaptor()
-                    .withStops(debugRaptorStops)
-                    .withPath(debugRaptorPath);
+        if (debugRaptorStops != null) {
+            request.debugRaptorStops = FeedScopedId.parseListOfIds(debugRaptorStops)
+                    .stream()
+                    .map(feedScopedId -> router.graph.index.getStopForId(feedScopedId))
+                    .collect(Collectors.toSet());
+        }
+
+        if (debugRaptorPath != null) {
+            request.debugRaptorPath = FeedScopedId.parseListOfIds(debugRaptorPath)
+                    .stream()
+                    .map(feedScopedId -> router.graph.index.getStopForId(feedScopedId))
+                    .toList();
+            request.debugRaptorPathFromStopIndex = debugRaptorPathFromStopIndex;
         }
 
         if (useVehicleParkingAvailabilityInformation != null) {
