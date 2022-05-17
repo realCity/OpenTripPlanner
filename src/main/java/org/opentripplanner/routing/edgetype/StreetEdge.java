@@ -398,7 +398,7 @@ public class StreetEdge
 
     // If we are biking, or walking with a bike check if we may continue by biking or by walking
     if (s0.getNonTransitMode() == TraverseMode.BICYCLE) {
-      if (canTraverse(TraverseMode.BICYCLE)) {
+      if (canTraverse(TraverseMode.BICYCLE) && !isBicycleNoThruTraffic()) {
         editor = doTraverse(s0, options, TraverseMode.BICYCLE, false);
       } else if (canTraverse(TraverseMode.WALK)) {
         editor = doTraverse(s0, options, TraverseMode.WALK, true);
