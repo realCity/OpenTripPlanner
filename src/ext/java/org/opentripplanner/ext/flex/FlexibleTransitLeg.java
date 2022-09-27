@@ -17,6 +17,7 @@ import org.opentripplanner.model.plan.StopArrival;
 import org.opentripplanner.model.plan.TransitLeg;
 import org.opentripplanner.routing.alertpatch.TransitAlert;
 import org.opentripplanner.transit.model.basic.Accessibility;
+import org.opentripplanner.transit.model.basic.SubMode;
 import org.opentripplanner.transit.model.basic.TransitMode;
 import org.opentripplanner.transit.model.framework.AbstractTransitEntity;
 import org.opentripplanner.transit.model.network.Route;
@@ -108,8 +109,8 @@ public class FlexibleTransitLeg implements TransitLeg {
   }
 
   @Override
-  public Integer getRouteType() {
-    return getTrip().getRoute().getGtfsType();
+  public SubMode getSubMode() {
+    return getTrip().getSubMode();
   }
 
   @Override

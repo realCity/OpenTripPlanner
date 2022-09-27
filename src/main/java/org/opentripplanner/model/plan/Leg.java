@@ -17,6 +17,7 @@ import org.opentripplanner.model.plan.legreference.LegReference;
 import org.opentripplanner.model.transfer.ConstrainedTransfer;
 import org.opentripplanner.routing.alertpatch.TransitAlert;
 import org.opentripplanner.transit.model.basic.Accessibility;
+import org.opentripplanner.transit.model.basic.SubMode;
 import org.opentripplanner.transit.model.framework.FeedScopedId;
 import org.opentripplanner.transit.model.network.Route;
 import org.opentripplanner.transit.model.organization.Agency;
@@ -274,7 +275,7 @@ public interface Leg {
    * using the Hierarchical Vehicle Type (HVT) codes from the European TPEG standard Also see
    * http://groups.google.com/group/gtfs-changes/msg/ed917a69cf8c5bef
    */
-  default Integer getRouteType() {
+  default SubMode getSubMode() {
     return null;
   }
 
