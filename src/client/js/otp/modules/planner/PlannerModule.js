@@ -76,6 +76,8 @@ otp.modules.planner.PlannerModule =
 
     startName       : null,
     endName         : null,
+    startStopId     : null,
+    endStopId       : null,
     startLatLng     : null,
     endLatLng       : null,
 
@@ -207,8 +209,9 @@ otp.modules.planner.PlannerModule =
         }
     },
 
-    setStartPoint : function(latlng, update, name) {
+    setStartPoint : function(latlng, update, name, stopId) {
         this.startName = (typeof name !== 'undefined') ? name : null;
+        this.startStopId = stopId;
         this.startLatLng = latlng;
         if(this.startMarker == null) {
             this.startMarker = new L.Marker(this.startLatLng, {icon: this.icons.startFlag, draggable: true});
@@ -217,8 +220,6 @@ otp.modules.planner.PlannerModule =
             this.startMarker.on('dragend', $.proxy(function() {
                 this.webapp.hideSplash();
                 this.setStartPoint(this.startMarker.getLatLng(), false);
-                // start flag has beenpicked up, clear any name that was set
-                this.startName=null;
                 this.invokeHandlers("startChanged", [this.startLatLng]);
                 if(typeof this.userPlanTripStart == 'function') this.userPlanTripStart();
                 this.planTripFunction.apply(this);//planTrip();
@@ -240,8 +241,9 @@ otp.modules.planner.PlannerModule =
         }
     },
 
-    setEndPoint : function(latlng, update, name) {
+    setEndPoint : function(latlng, update, name, stopId) {
         this.endName = (typeof name !== 'undefined') ? name : null;
+        this.endStopId = stopId;
         this.endLatLng = latlng;
         if(this.endMarker == null) {
             this.endMarker = new L.Marker(this.endLatLng, {icon: this.icons.endFlag, draggable: true});
@@ -250,8 +252,6 @@ otp.modules.planner.PlannerModule =
             this.endMarker.on('dragend', $.proxy(function() {
                 this.webapp.hideSplash();
                 this.setEndPoint(this.endMarker.getLatLng(), false);
-                // end flag has beenpicked up, clear any name that was set
-                this.endName=null;
                 this.invokeHandlers("endChanged", [this.endLatLng]);
                 if(typeof this.userPlanTripStart == 'function') this.userPlanTripStart();
                 this.planTripFunction.apply(this);//this_.planTrip();
@@ -274,12 +274,14 @@ otp.modules.planner.PlannerModule =
 
     getStartOTPString : function() {
         return (this.startName !== null ? this.startName + "::" : "")
-                 + this.startLatLng.lat + ',' + this.startLatLng.lng;
+                 + this.startLatLng.lat + ',' + this.startLatLng.lng
+            + (this.startStopId ? ';' + this.startStopId : '');
     },
 
     getEndOTPString : function() {
         return (this.endName !== null ? this.endName + "::" : "")
-                + this.endLatLng.lat+','+this.endLatLng.lng;
+                + this.endLatLng.lat+','+this.endLatLng.lng
+            + (this.endStopId ? ';' + this.endStopId : '');
     },
 
     restoreTrip : function(queryParams) {
@@ -288,11 +290,8 @@ otp.modules.planner.PlannerModule =
     },
 
     restoreMarkers : function(queryParams) {
-        this.startLatLng = otp.util.Geo.stringToLatLng(otp.util.Itin.getLocationPlace(queryParams.fromPlace));
-        this.setStartPoint(this.startLatLng, false,this.startName);
-
-        this.endLatLng = otp.util.Geo.stringToLatLng(otp.util.Itin.getLocationPlace(queryParams.toPlace));
-        this.setEndPoint(this.endLatLng, false,this.endName);
+        this.setStartPoint(this.startLatLng, false, this.startName, this.startStopId);
+        this.setEndPoint(this.endLatLng, false,this.endName, this.endStopId);
     },
 
     planTrip : function(existingQueryParams, apiMethod) {

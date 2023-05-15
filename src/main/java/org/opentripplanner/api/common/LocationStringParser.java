@@ -30,7 +30,11 @@ public class LocationStringParser {
   // Regex has been rewritten following https://bugs.openjdk.java.net/browse/JDK-8189343
   // from "[^[\\d&&[-|+|.]]]*(" to "[\\D&&[^-+.]]*("
   private static final Pattern LAT_LON_PATTERN = Pattern.compile(
-    "[\\D&&[^-+.]]*(" + DOUBLE_PATTERN + ")(\\s*,\\s*|\\s+)(" + DOUBLE_PATTERN + ")\\D*"
+    "^[\\D&&[^-+.]]*(" +
+    DOUBLE_PATTERN +
+    ")(\\s*,\\s*|\\s+)(" +
+    DOUBLE_PATTERN +
+    ")\\s*(?:;(.*?))?$"
   );
 
   /**
@@ -66,6 +70,9 @@ public class LocationStringParser {
     if (matcher.find()) {
       lat = Double.parseDouble(matcher.group(1));
       lon = Double.parseDouble(matcher.group(4));
+      if (matcher.group(6) != null && !matcher.group(6).isEmpty()) {
+        placeId = FeedScopedId.parseId(matcher.group(6));
+      }
     } else if (FeedScopedId.isValidString(place)) {
       placeId = FeedScopedId.parseId(place);
     }

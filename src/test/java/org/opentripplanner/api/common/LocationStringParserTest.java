@@ -62,6 +62,26 @@ public class LocationStringParserTest {
   }
 
   @Test
+  public void testWithCoordAndId() {
+    GenericLocation loc = LocationStringParser.fromOldStyleString("2.5,4.2;aFeed:A1B2C3");
+    assertNull(loc.label);
+    assertEquals(loc.stopId, new FeedScopedId("aFeed", "A1B2C3"));
+    assertEquals(2.5, loc.lat);
+    assertEquals(4.2, loc.lng);
+    assertEquals(new Coordinate(4.2, 2.5), loc.getCoordinate());
+  }
+
+  @Test
+  public void testWithLabelCoordAndId() {
+    GenericLocation loc = LocationStringParser.fromOldStyleString("NAME::2.5,4.2;aFeed:A1B2C3");
+    assertEquals("NAME", loc.label);
+    assertEquals(loc.stopId, new FeedScopedId("aFeed", "A1B2C3"));
+    assertEquals(2.5, loc.lat);
+    assertEquals(4.2, loc.lng);
+    assertEquals(new Coordinate(4.2, 2.5), loc.getCoordinate());
+  }
+
+  @Test
   public void testWithCoordOnly() {
     GenericLocation loc = LocationStringParser.fromOldStyleString("1.0,2.5");
     assertNull(loc.label);

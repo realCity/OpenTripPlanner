@@ -214,11 +214,11 @@ otp.widgets.tripoptions.LocationsSelector =
 
         $("#"+this.id+"-reverseButton").click($.proxy(function() {
             var module = this.tripWidget.module;
-            var startLatLng = module.startLatLng, startName = module.startName;
-            var endLatLng = module.endLatLng, endName = module.endName;
+            var startLatLng = module.startLatLng, startName = module.startName, startStopId = module.startStopId;
+            var endLatLng = module.endLatLng, endName = module.endName, endStopId = module.endStopId;
             module.clearTrip();
-            module.setStartPoint(endLatLng, false, endName);
-            module.setEndPoint(startLatLng, false, startName);
+            module.setStartPoint(endLatLng, false, endName, endStopId);
+            module.setEndPoint(startLatLng, false, startName, startStopId);
             this_.tripWidget.inputChanged();
 
         }, this));
@@ -246,7 +246,7 @@ otp.widgets.tripoptions.LocationsSelector =
                 var result = input.data("results")[ui.item.value];
                 var latlng = new L.LatLng(result.lat, result.lng);
                 this_.tripWidget.module.webapp.map.lmap.panTo(latlng);
-                setterFunction.call(this_.tripWidget.module, latlng, false, result.description);
+                setterFunction.call(this_.tripWidget.module, latlng, false, result.description, result.id);
                 this_.tripWidget.inputChanged();
             },
         })
@@ -268,12 +268,15 @@ otp.widgets.tripoptions.LocationsSelector =
         if(data.queryParams.fromPlace) {
             console.log("rP: "+data.queryParams.fromPlace);
             var fromName = otp.util.Itin.getLocationName(data.queryParams.fromPlace);
-            var fromPlace = otp.util.Itin.getLocationPlace(data.queryParams.fromPlace);
-            var fromLatLng = otp.util.Itin.getLocationLatLng(data.queryParams.fromPlace);
+            var fromPlace= otp.util.Itin.getLocationPlace(data.queryParams.fromPlace);
 
             if(fromName) {
                 $("#"+this.id+"-start").val(fromName);
                 this.tripWidget.module.startName = fromName;
+            }
+            if (fromPlace) {
+                this.tripWidget.module.startLatLng = new L.LatLng(fromPlace.lat, fromPlace.lng);
+                this.tripWidget.module.startStopId = fromPlace.stopId;
             }
         }
         else {
@@ -283,12 +286,15 @@ otp.widgets.tripoptions.LocationsSelector =
 
         if(data.queryParams.toPlace) {
             var toName = otp.util.Itin.getLocationName(data.queryParams.toPlace);
-            var toPlace = otp.util.Itin.getLocationPlace(data.queryParams.toPlace);
-            var toLatLng = otp.util.Itin.getLocationLatLng(data.queryParams.toPlace);
+            var toPlace= otp.util.Itin.getLocationPlace(data.queryParams.toPlace);
 
             if(toName) {
                 $("#"+this.id+"-end").val(toName);
                 this.tripWidget.module.endName = toName;
+            }
+            if (toPlace) {
+                this.tripWidget.module.endLatLng = new L.LatLng(toPlace.lat, toPlace.lng);
+                this.tripWidget.module.endStopId = toPlace.stopId;
             }
         }
         else {
