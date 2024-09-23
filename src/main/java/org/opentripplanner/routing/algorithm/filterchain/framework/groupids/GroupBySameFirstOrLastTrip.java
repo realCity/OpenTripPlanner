@@ -3,6 +3,7 @@ package org.opentripplanner.routing.algorithm.filterchain.framework.groupids;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.opentripplanner.framework.application.OTPFeature;
 import org.opentripplanner.model.plan.Itinerary;
 import org.opentripplanner.model.plan.Leg;
 import org.opentripplanner.routing.algorithm.filterchain.framework.spi.GroupId;
@@ -19,6 +20,12 @@ public class GroupBySameFirstOrLastTrip implements GroupId<GroupBySameFirstOrLas
 
   public GroupBySameFirstOrLastTrip(Itinerary itinerary) {
     keySet = itinerary.getLegs().stream().filter(Leg::isTransitLeg).collect(Collectors.toList());
+
+    if (OTPFeature.OnBoardAccessEgress.isOn()) {
+      if (keySet.size() >= 2 && Boolean.TRUE.equals(keySet.get(0).getOnBoardAccess())) {
+        keySet.remove(0);
+      }
+    }
   }
 
   @Override

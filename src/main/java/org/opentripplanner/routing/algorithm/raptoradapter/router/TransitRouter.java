@@ -119,7 +119,7 @@ public class TransitRouter {
 
     debugTimingAggregator.finishedPatternFiltering();
 
-    var accessEgresses = fetchAccessEgresses();
+    var accessEgresses = fetchAccessEgresses(requestTransitDataProvider);
 
     debugTimingAggregator.finishedAccessEgress(
       accessEgresses.getAccesses().size(),
@@ -176,7 +176,9 @@ public class TransitRouter {
     return new TransitRouterResult(itineraries, transitResponse.requestUsed().searchParams());
   }
 
-  private AccessEgresses fetchAccessEgresses() {
+  private AccessEgresses fetchAccessEgresses(
+    RaptorRoutingRequestTransitData requestTransitDataProvider
+  ) {
     final var accessList = new ArrayList<RoutingAccessEgress>();
     final var egressList = new ArrayList<RoutingAccessEgress>();
 
@@ -186,16 +188,20 @@ public class TransitRouter {
         //       log-trace-parameters-propagation and graceful timeout handling here.
         CompletableFuture
           .allOf(
-            CompletableFuture.runAsync(() -> accessList.addAll(fetchAccess())),
-            CompletableFuture.runAsync(() -> egressList.addAll(fetchEgress()))
+            CompletableFuture.runAsync(() ->
+              accessList.addAll(fetchAccess(requestTransitDataProvider))
+            ),
+            CompletableFuture.runAsync(() ->
+              egressList.addAll(fetchEgress(requestTransitDataProvider))
+            )
           )
           .join();
       } catch (CompletionException e) {
         RoutingValidationException.unwrapAndRethrowCompletionException(e);
       }
     } else {
-      accessList.addAll(fetchAccess());
-      egressList.addAll(fetchEgress());
+      accessList.addAll(fetchAccess(requestTransitDataProvider));
+      egressList.addAll(fetchEgress(requestTransitDataProvider));
     }
 
     verifyAccessEgress(accessList, egressList);
@@ -213,21 +219,41 @@ public class TransitRouter {
     return new AccessEgresses(accessListWithPenalty, egressListWithPenalty);
   }
 
-  private Collection<? extends RoutingAccessEgress> fetchAccess() {
+  private Collection<? extends RoutingAccessEgress> fetchAccess(
+    RaptorRoutingRequestTransitData requestTransitDataProvider
+  ) {
     debugTimingAggregator.startedAccessCalculating();
-    var list = fetchAccessEgresses(ACCESS);
+    var list = fetchAccessEgresses(ACCESS, requestTransitDataProvider);
     debugTimingAggregator.finishedAccessCalculating();
     return list;
   }
 
-  private Collection<? extends RoutingAccessEgress> fetchEgress() {
+  private Collection<? extends RoutingAccessEgress> fetchEgress(
+    RaptorRoutingRequestTransitData requestTransitDataProvider
+  ) {
     debugTimingAggregator.startedEgressCalculating();
-    var list = fetchAccessEgresses(EGRESS);
+    var list = fetchAccessEgresses(EGRESS, requestTransitDataProvider);
     debugTimingAggregator.finishedEgressCalculating();
     return list;
   }
 
-  private Collection<? extends RoutingAccessEgress> fetchAccessEgresses(AccessEgressType type) {
+  private Collection<? extends RoutingAccessEgress> fetchAccessEgresses(
+    AccessEgressType type,
+    RaptorRoutingRequestTransitData requestTransitDataProvider
+  ) {
+    if (
+      OTPFeature.OnBoardAccessEgress.isOn() &&
+      type.isAccess() &&
+      OnboardAccessCalculator.isRequestOnBoardAccess(request)
+    ) {
+      return OnboardAccessCalculator.getOnboardAccessEgress(
+        serverContext.transitService(),
+        requestTransitDataProvider,
+        transitSearchTimeZero,
+        request
+      );
+    }
+
     var streetRequest = type.isAccess() ? request.journey().access() : request.journey().egress();
 
     // Prepare access/egress lists

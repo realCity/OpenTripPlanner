@@ -180,6 +180,18 @@ public interface RaptorAccessEgress {
     return numberOfRides() > 0;
   }
 
+  default RaptorTripSchedule stopReachedOnBoardTripSchedule() {
+    return null;
+  }
+
+  default Integer stopReachedOnBoardBoardingStopPos() {
+    return null;
+  }
+
+  default Integer stopReachedOnBoardAlightingStopPos() {
+    return null;
+  }
+
   /**
    * Is this {@link RaptorAccessEgress} is connected to the given {@code stop} directly by
    * <b>transit</b>? For access and egress paths we allow plugging in flexible transit and other

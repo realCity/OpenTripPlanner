@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.opentripplanner.framework.application.OTPFeature;
 import org.opentripplanner.framework.geometry.GeometryUtils;
 import org.opentripplanner.model.GenericLocation;
 import org.opentripplanner.routing.api.request.StreetMode;
@@ -50,10 +51,12 @@ public class TemporaryVerticesContainer implements AutoCloseable {
     StreetIndex index = this.graph.getStreetIndex();
     this.from = from;
     this.to = to;
+
+    var fromIsOnBoardAccess = (OTPFeature.OnBoardAccessEgress.isOn() && from.serviceDate != null && from.tripId != null);
     fromVertices = index.getStreetVerticesForLocation(from, accessMode, false, tempEdges);
     toVertices = index.getStreetVerticesForLocation(to, egressMode, true, tempEdges);
 
-    checkIfVerticesFound();
+    checkIfVerticesFound(fromIsOnBoardAccess);
 
     if (fromVertices != null && toVertices != null) {
       for (Vertex fromVertex : fromVertices) {
@@ -75,11 +78,11 @@ public class TemporaryVerticesContainer implements AutoCloseable {
   }
 
   public Set<Vertex> getFromVertices() {
-    return fromVertices;
+    return fromVertices == null ? Set.of() : fromVertices;
   }
 
   public Set<Vertex> getToVertices() {
-    return toVertices;
+    return toVertices == null ? Set.of() : toVertices;
   }
 
   /**
@@ -110,11 +113,11 @@ public class TemporaryVerticesContainer implements AutoCloseable {
 
   /* PRIVATE METHODS */
 
-  private void checkIfVerticesFound() {
+  private void checkIfVerticesFound(boolean fromIsOnBoardAccess) {
     List<RoutingError> routingErrors = new ArrayList<>();
 
     // check that vertices where found if from-location was specified
-    if (from.isSpecified() && isDisconnected(fromVertices, true)) {
+    if (!fromIsOnBoardAccess && from.isSpecified() && isDisconnected(fromVertices, true)) {
       routingErrors.add(
         new RoutingError(getRoutingErrorCodeForDisconnected(from), InputField.FROM_PLACE)
       );

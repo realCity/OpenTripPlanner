@@ -11,6 +11,7 @@ import org.opentripplanner.raptor.api.request.SearchParams;
 import org.opentripplanner.routing.api.request.RouteRequest;
 import org.opentripplanner.routing.api.response.RoutingError;
 import org.opentripplanner.routing.api.response.RoutingResponse;
+import org.opentripplanner.routing.api.response.TripSearchMetadata;
 import org.opentripplanner.routing.framework.DebugTimingAggregator;
 import org.opentripplanner.service.paging.PagingService;
 import org.opentripplanner.transit.service.TransitService;
@@ -42,14 +43,24 @@ public class RoutingResponseMapper {
     var tripPlan = TripPlanMapper.mapTripPlan(request, itineraries);
 
     // Paging
-    PageCursor nextPageCursor = pagingService.nextPageCursor();
-    PageCursor prevPageCursor = pagingService.previousPageCursor();
+    TripSearchMetadata metadata;
+    PageCursor nextPageCursor;
+    PageCursor prevPageCursor;
 
-    if (LOG.isDebugEnabled()) {
-      logPagingInformation(request.pageCursor(), prevPageCursor, nextPageCursor, routingErrors);
+    if (OTPFeature.OnBoardAccessEgress.isOn() && request.from().tripId != null) {
+      prevPageCursor = null;
+      nextPageCursor = null;
+      metadata = null;
+    } else {
+      nextPageCursor = pagingService.nextPageCursor();
+      prevPageCursor = pagingService.previousPageCursor();
+
+      if (LOG.isDebugEnabled()) {
+        logPagingInformation(request.pageCursor(), prevPageCursor, nextPageCursor, routingErrors);
+      }
+
+      metadata = pagingService.createTripSearchMetadata();
     }
-
-    var metadata = pagingService.createTripSearchMetadata();
 
     return new RoutingResponse(
       tripPlan,

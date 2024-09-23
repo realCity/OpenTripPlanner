@@ -1,5 +1,6 @@
 package org.opentripplanner.model;
 
+import java.time.LocalDate;
 import javax.annotation.Nullable;
 import org.locationtech.jts.geom.Coordinate;
 import org.opentripplanner.framework.lang.StringUtils;
@@ -28,6 +29,13 @@ public class GenericLocation {
   public final FeedScopedId stopId;
 
   /**
+   * Refers to a specific element in the OTP model. This can currently be a Stop or StopCollection.
+   */
+  public final FeedScopedId tripId;
+
+  public final LocalDate serviceDate;
+
+  /**
    * Coordinates of the location. These can be used by themselves or as a fallback if placeId is not
    * found.
    */
@@ -38,22 +46,31 @@ public class GenericLocation {
   public final Double lng;
 
   public GenericLocation(
-    @Nullable String label,
-    @Nullable FeedScopedId stopId,
-    @Nullable Double lat,
-    @Nullable Double lng
+    String label,
+    FeedScopedId stopId,
+    Double lat,
+    Double lng,
+    FeedScopedId tripId,
+    LocalDate serviceDate
   ) {
     this.label = label;
     this.stopId = stopId;
     this.lat = lat;
     this.lng = lng;
+    this.tripId = tripId;
+    this.serviceDate = serviceDate;
+  }
+
+  public static GenericLocation forTrip(String label, FeedScopedId tripId, LocalDate serviceDate) {
+    return new GenericLocation(label, null, null, null, tripId, serviceDate);
+  }
+
+  public GenericLocation(String label, FeedScopedId stopId, Double lat, Double lng) {
+    this(label, stopId, lat, lng, null, null);
   }
 
   public GenericLocation(Double lat, Double lng) {
-    this.label = null;
-    this.stopId = null;
-    this.lat = lat;
-    this.lng = lng;
+    this(null, null, lat, lng);
   }
 
   public static GenericLocation fromStopId(String name, String feedId, String stopId) {
@@ -72,7 +89,7 @@ public class GenericLocation {
   }
 
   public boolean isSpecified() {
-    return stopId != null || (lat != null && lng != null);
+    return stopId != null || (lat != null && lng != null) || (serviceDate != null && tripId != null);
   }
 
   @Override

@@ -2,10 +2,12 @@ package org.opentripplanner.raptor.rangeraptor.multicriteria.arrivals.c1;
 
 import static org.opentripplanner.raptor.api.model.PathLegType.ACCESS;
 
+import javax.annotation.Nullable;
 import org.opentripplanner.raptor.api.model.PathLegType;
 import org.opentripplanner.raptor.api.model.RaptorAccessEgress;
 import org.opentripplanner.raptor.api.model.RaptorConstants;
 import org.opentripplanner.raptor.api.model.RaptorTripSchedule;
+import org.opentripplanner.raptor.api.model.TransitArrival;
 import org.opentripplanner.raptor.api.view.AccessPathView;
 import org.opentripplanner.raptor.rangeraptor.multicriteria.arrivals.McStopArrival;
 
@@ -59,6 +61,23 @@ final class AccessStopArrival<T extends RaptorTripSchedule> extends McStopArriva
     int newDepartureTime = newArrivalTime - access.durationInSeconds();
 
     return new AccessStopArrival<>(newDepartureTime, access);
+  }
+
+  @Nullable
+  @Override
+  public TransitArrival<T> mostRecentTransitArrival() {
+    if (access.stopReachedOnBoard() && access.stopReachedOnBoardTripSchedule() != null) {
+      //noinspection unchecked
+      return new TransitStopArrival<>(
+        this,
+        this.stop(),
+        arrivalTime(),
+        this.c1(),
+        (T) access.stopReachedOnBoardTripSchedule()
+      );
+    } else {
+      return null;
+    }
   }
 
   @Override

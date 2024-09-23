@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import org.opentripplanner.framework.time.ServiceDateUtils;
 import org.opentripplanner.transit.model.network.RoutingTripPattern;
 import org.opentripplanner.transit.model.timetable.FrequencyEntry;
+import org.opentripplanner.transit.model.timetable.Trip;
 import org.opentripplanner.transit.model.timetable.TripTimes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,6 +134,10 @@ public class TripPatternForDate implements Comparable<TripPatternForDate> {
    */
   public LocalDate getServiceDate() {
     return serviceDate;
+  }
+
+  public Optional<TripTimes> getTripTimes(Trip trip) {
+    return Arrays.stream(tripTimes).filter(tt -> tt.getTrip().equals(trip)).findFirst();
   }
 
   public int numberOfTripSchedules() {

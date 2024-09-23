@@ -19,6 +19,7 @@ import org.opentripplanner.model.plan.ScheduledTransitLegBuilder;
 import org.opentripplanner.model.plan.StreetLeg;
 import org.opentripplanner.model.plan.UnknownTransitPathLeg;
 import org.opentripplanner.model.transfer.ConstrainedTransfer;
+import org.opentripplanner.raptor.api.model.RaptorAccessEgress;
 import org.opentripplanner.raptor.api.path.AccessPathLeg;
 import org.opentripplanner.raptor.api.path.EgressPathLeg;
 import org.opentripplanner.raptor.api.path.PathLeg;
@@ -26,6 +27,7 @@ import org.opentripplanner.raptor.api.path.RaptorPath;
 import org.opentripplanner.raptor.api.path.TransferPathLeg;
 import org.opentripplanner.raptor.api.path.TransitPathLeg;
 import org.opentripplanner.routing.algorithm.raptoradapter.transit.DefaultRaptorTransfer;
+import org.opentripplanner.routing.algorithm.raptoradapter.transit.OnBoardAccess;
 import org.opentripplanner.routing.algorithm.raptoradapter.transit.RoutingAccessEgress;
 import org.opentripplanner.routing.algorithm.raptoradapter.transit.Transfer;
 import org.opentripplanner.routing.algorithm.raptoradapter.transit.TransitLayer;
@@ -105,6 +107,7 @@ public class RaptorPathToItineraryMapper<T extends TripSchedule> {
     PathLeg<T> pathLeg = path.accessLeg().nextLeg();
 
     Leg transitLeg = null;
+    boolean firstLeg = true;
 
     PathLeg<T> previousLeg = null;
     while (!pathLeg.isEgressLeg()) {
@@ -116,7 +119,13 @@ public class RaptorPathToItineraryMapper<T extends TripSchedule> {
         ) {
           legs.add(createTransferLegAtSameStop(previousLeg, pathLeg));
         }
-        transitLeg = mapTransitLeg(transitLeg, pathLeg.asTransitLeg());
+        var onBoardAccess = OTPFeature.OnBoardAccessEgress.isOn() &&
+          firstLeg &&
+          path.accessLeg().access() instanceof OnBoardAccess
+          ? true
+          : null;
+        transitLeg = mapTransitLeg(transitLeg, pathLeg.asTransitLeg(), onBoardAccess);
+        firstLeg = false;
         legs.add(transitLeg);
       }
       // Map transfer leg
@@ -187,7 +196,7 @@ public class RaptorPathToItineraryMapper<T extends TripSchedule> {
   }
 
   private List<Leg> mapAccessLeg(AccessPathLeg<T> accessPathLeg) {
-    if (accessPathLeg.access().isFree()) {
+    if (isFree(accessPathLeg)) {
       return List.of();
     }
 
@@ -206,7 +215,7 @@ public class RaptorPathToItineraryMapper<T extends TripSchedule> {
     return subItinerary.withTimeShiftToStartAt(createZonedDateTime(fromTime)).getLegs();
   }
 
-  private Leg mapTransitLeg(Leg prevTransitLeg, TransitPathLeg<T> pathLeg) {
+  private Leg mapTransitLeg(Leg prevTransitLeg, TransitPathLeg<T> pathLeg, Boolean onBoardAccess) {
     T tripSchedule = pathLeg.trip();
 
     // If the next leg is an egress leg without a duration then this transit leg
@@ -268,6 +277,7 @@ public class RaptorPathToItineraryMapper<T extends TripSchedule> {
       )
       .withTransferToNextLeg((ConstrainedTransfer) pathLeg.getConstrainedTransferAfterLeg())
       .withGeneralizedCost(toOtpDomainCost(pathLeg.c1() + lastLegCost))
+      .withOnBoardAccess(onBoardAccess)
       .build();
   }
 
@@ -282,8 +292,20 @@ public class RaptorPathToItineraryMapper<T extends TripSchedule> {
     return transitService.getTripOnServiceDateForTripAndDay(tripIdAndServiceDate);
   }
 
+  private boolean isFree(AccessPathLeg<T> accessPathLeg) {
+    return isEmptyAccessEgress(accessPathLeg.access());
+  }
+
   private boolean isFree(EgressPathLeg<T> egressPathLeg) {
-    return egressPathLeg.egress().isFree();
+    return isEmptyAccessEgress(egressPathLeg.egress());
+  }
+
+  private boolean isEmptyAccessEgress(RaptorAccessEgress accessEgress) {
+    if (OTPFeature.OnBoardAccessEgress.isOn() && accessEgress instanceof OnBoardAccess) {
+      return true;
+    }
+
+    return accessEgress.isFree();
   }
 
   /**

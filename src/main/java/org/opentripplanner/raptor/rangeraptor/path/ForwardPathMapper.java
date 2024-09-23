@@ -1,5 +1,7 @@
 package org.opentripplanner.raptor.rangeraptor.path;
 
+import org.opentripplanner.framework.application.OTPFeature;
+import org.opentripplanner.raptor.api.model.RaptorAccessEgress;
 import org.opentripplanner.raptor.api.model.RaptorTripSchedule;
 import org.opentripplanner.raptor.api.path.RaptorPath;
 import org.opentripplanner.raptor.api.path.RaptorStopNameResolver;
@@ -7,6 +9,7 @@ import org.opentripplanner.raptor.api.view.ArrivalView;
 import org.opentripplanner.raptor.path.PathBuilder;
 import org.opentripplanner.raptor.rangeraptor.internalapi.WorkerLifeCycle;
 import org.opentripplanner.raptor.rangeraptor.transit.TripTimesSearch;
+import org.opentripplanner.raptor.spi.BoardAndAlightTime;
 import org.opentripplanner.raptor.spi.RaptorCostCalculator;
 import org.opentripplanner.raptor.spi.RaptorPathConstrainedTransferSearch;
 import org.opentripplanner.raptor.spi.RaptorSlackProvider;
@@ -61,7 +64,58 @@ public final class ForwardPathMapper<T extends RaptorTripSchedule> implements Pa
           pathBuilder.transit(arrival.transitPath().trip(), times);
         }
         case TRANSFER -> pathBuilder.transfer(arrival.transfer(), arrival.stop());
-        case ACCESS -> pathBuilder.access(arrival.accessPath().access());
+        case ACCESS -> {
+          RaptorAccessEgress access = arrival.accessPath().access();
+          if (
+            OTPFeature.OnBoardAccessEgress.isOn() &&
+            access.stopReachedOnBoardTripSchedule() != null
+          ) {
+            //noinspection unchecked
+            pathBuilder.transit(
+              (T) access.stopReachedOnBoardTripSchedule(),
+              new BoardAndAlightTime(
+                access.stopReachedOnBoardTripSchedule(),
+                access.stopReachedOnBoardBoardingStopPos(),
+                access.stopReachedOnBoardAlightingStopPos()
+              )
+            );
+
+            // An access path must always exist, so set a NOOP one
+            pathBuilder.access(new RaptorAccessEgress() {
+              @Override
+              public int stop() {
+                return access.stop();
+              }
+
+              @Override
+              public int c1() {
+                return 0;
+              }
+
+              @Override
+              public int durationInSeconds() {
+                return 0;
+              }
+
+              @Override
+              public int earliestDepartureTime(int requestedDepartureTime) {
+                return requestedDepartureTime;
+              }
+
+              @Override
+              public int latestArrivalTime(int requestedArrivalTime) {
+                return requestedArrivalTime;
+              }
+
+              @Override
+              public boolean hasOpeningHours() {
+                return false;
+              }
+            });
+          } else {
+            pathBuilder.access(access);
+          }
+        }
         case EGRESS -> throw new RuntimeException(
           "Unknown arrival type: " + arrival.getClass().getSimpleName()
         );

@@ -62,6 +62,7 @@ public class ScheduledTransitLeg implements TransitLeg {
   private final TripOnServiceDate tripOnServiceDate;
   private double distanceMeters;
   private final double directDistanceMeters;
+  private final Boolean onBoardAccess;
   private final Float accessibilityScore;
   private List<FareProductUse> fareProducts = List.of();
 
@@ -84,6 +85,8 @@ public class ScheduledTransitLeg implements TransitLeg {
     this.transferToNextLeg = builder.transferToNextLeg();
 
     this.generalizedCost = builder.generalizedCost();
+
+    this.onBoardAccess = builder.onBoardAccess();
 
     this.accessibilityScore = builder.accessibilityScore();
     List<Coordinate> transitLegCoordinates = extractTransitLegCoordinates(
@@ -379,6 +382,10 @@ public class ScheduledTransitLeg implements TransitLeg {
   }
 
   @Override
+  public Boolean getOnBoardAccess() {
+    return onBoardAccess;
+  }
+
   public void addAlert(TransitAlert alert) {
     transitAlerts.add(alert);
   }
@@ -421,6 +428,7 @@ public class ScheduledTransitLeg implements TransitLeg {
       .addNum("distance", distanceMeters, "m")
       .addNum("cost", generalizedCost)
       .addNum("routeType", getRouteType())
+      .addBoolIfTrue("onBoardAccess", getOnBoardAccess())
       .addObjOp("agencyId", getAgency(), AbstractTransitEntity::getId)
       .addObjOp("routeId", getRoute(), AbstractTransitEntity::getId)
       .addObjOp("tripId", getTrip(), AbstractTransitEntity::getId)

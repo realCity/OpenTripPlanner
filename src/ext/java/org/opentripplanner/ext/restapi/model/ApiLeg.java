@@ -216,6 +216,8 @@ public class ApiLeg {
    */
   public Boolean walkingBike;
 
+  public Boolean onBoardAccess;
+
   /**
    * An experimental feature for calculating a numeric score between 0 and 1 which indicates
    * how accessible the itinerary is as a whole. This is not a very scientific method but just

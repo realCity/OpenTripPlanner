@@ -1,9 +1,13 @@
 package org.opentripplanner.api.common;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.opentripplanner.model.GenericLocation;
 import org.opentripplanner.transit.model.framework.FeedScopedId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is used by the REST API to parse strings representing the from and to places for a
@@ -20,6 +24,8 @@ import org.opentripplanner.transit.model.framework.FeedScopedId;
  */
 public class LocationStringParser {
 
+  private static final Logger LOG = LoggerFactory.getLogger(LocationStringParser.class);
+
   // Pattern for matching a latitude or longitude string: an optional '-' character followed
   // by one or more digits, and an optional (decimal point followed by one or more digits).
   private static final String DOUBLE_PATTERN = "-{0,1}\\d+(\\.\\d+){0,1}";
@@ -31,6 +37,12 @@ public class LocationStringParser {
   // from "[^[\\d&&[-|+|.]]]*(" to "[\\D&&[^-+.]]*("
   private static final Pattern LAT_LON_PATTERN = Pattern.compile(
     "[\\D&&[^-+.]]*(" + DOUBLE_PATTERN + ")(\\s*,\\s*|\\s+)(" + DOUBLE_PATTERN + ")\\D*"
+  );
+
+  private static final Pattern TRIP_ID_PATTERN = Pattern.compile("(\\d{8}):(.+?):(.+)");
+
+  private static final DateTimeFormatter SERVICE_DATE_FORMAT = DateTimeFormatter.ofPattern(
+    "yyyyMMdd"
   );
 
   /**
@@ -66,9 +78,18 @@ public class LocationStringParser {
     if (matcher.find()) {
       lat = Double.parseDouble(matcher.group(1));
       lon = Double.parseDouble(matcher.group(4));
-    } else if (FeedScopedId.isValidString(place)) {
-      placeId = FeedScopedId.parse(place);
+    } else {
+      Matcher tripIdMatcher = TRIP_ID_PATTERN.matcher(place);
+      if (tripIdMatcher.find()) {
+        var tripParts = place.split(":", 2);
+        var parsedTripId = FeedScopedId.parse(tripParts[1]);
+        var parsedServiceDate = LocalDate.parse(tripParts[0], SERVICE_DATE_FORMAT);
+        return GenericLocation.forTrip(label, parsedTripId, parsedServiceDate);
+      } else if (FeedScopedId.isValidString(place)) {
+        placeId = FeedScopedId.parse(place);
+      }
     }
+
     return new GenericLocation(label, placeId, lat, lon);
   }
 }

@@ -13,6 +13,7 @@ import org.opentripplanner.model.plan.paging.cursor.PageCursorInput;
 import org.opentripplanner.routing.algorithm.filterchain.ItineraryListFilterChain;
 import org.opentripplanner.routing.algorithm.filterchain.ItineraryListFilterChainBuilder;
 import org.opentripplanner.routing.algorithm.filterchain.api.GroupBySimilarity;
+import org.opentripplanner.routing.algorithm.raptoradapter.router.OnboardAccessCalculator;
 import org.opentripplanner.routing.api.request.RouteRequest;
 import org.opentripplanner.routing.api.request.StreetMode;
 import org.opentripplanner.routing.api.request.preference.ItineraryFilterPreferences;
@@ -88,11 +89,18 @@ public class RouteRequestToFilterChainMapper {
         context.transitService().getTransitAlertService(),
         context.transitService()::getMultiModalStationForStation
       )
-      .withSearchWindow(earliestDepartureTimeUsed, searchWindowUsed)
-      .withPageCursorInputSubscriber(pageCursorInputSubscriber)
       .withRemoveWalkAllTheWayResults(removeWalkAllTheWayResults)
       .withRemoveTransitIfWalkingIsBetter(true)
       .withDebugEnabled(params.debug());
+
+    // With departing OnBoard, paging isn't supported
+    // + the itineraries may depart before the searchTime, since the transit leg uses
+    // the previous stop's departure.
+    if (!OnboardAccessCalculator.isRequestOnBoardAccess(request)) {
+      builder
+        .withSearchWindow(earliestDepartureTimeUsed, searchWindowUsed)
+        .withPageCursorInputSubscriber(pageCursorInputSubscriber);
+    }
 
     if (!request.preferences().transit().relaxTransitGroupPriority().isNormal()) {
       builder.withTransitGroupPriority();

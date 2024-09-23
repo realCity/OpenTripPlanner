@@ -496,4 +496,8 @@ public interface Leg {
       return place.stop.getFareZones().stream();
     }
   }
+
+  default Boolean getOnBoardAccess() {
+    return null;
+  }
 }

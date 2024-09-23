@@ -3,6 +3,8 @@ package org.opentripplanner.api.common;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.opentripplanner.model.GenericLocation;
@@ -101,5 +103,35 @@ public class LocationStringParserTest {
     loc = LocationStringParser.fromOldStyleString(input);
     assertEquals("", loc.label);
     assertNull(loc.stopId);
+  }
+
+  @Test
+  public void testWithTrip() {
+    String serviceDate = "20220228";
+    String feedId = "TEST";
+    String tripId = "12345";
+
+    var expectedTripId = new FeedScopedId(feedId, tripId);
+    var expectedServiceDate = LocalDate.parse(serviceDate, DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+    String input = String.join(":", serviceDate, feedId, tripId);
+    GenericLocation loc = LocationStringParser.fromOldStyleString(input);
+    assertNull(loc.label);
+    assertNull(loc.stopId);
+    assertNull(loc.lat);
+    assertNull(loc.lng);
+    assertNull(loc.getCoordinate());
+    assertEquals(expectedTripId, loc.tripId);
+    assertEquals(expectedServiceDate, loc.serviceDate);
+
+    input = "label::" + input;
+    loc = LocationStringParser.fromOldStyleString(input);
+    assertEquals("label", loc.label);
+    assertNull(loc.stopId);
+    assertNull(loc.lat);
+    assertNull(loc.lng);
+    assertNull(loc.getCoordinate());
+    assertEquals(expectedTripId, loc.tripId);
+    assertEquals(expectedServiceDate, loc.serviceDate);
   }
 }

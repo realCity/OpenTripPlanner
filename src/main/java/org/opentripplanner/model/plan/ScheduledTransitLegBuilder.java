@@ -22,6 +22,7 @@ public class ScheduledTransitLegBuilder<B extends ScheduledTransitLegBuilder<B>>
   private ConstrainedTransfer transferFromPreviousLeg;
   private ConstrainedTransfer transferToNextLeg;
   private int generalizedCost;
+  private Boolean onBoardAccess;
   private Float accessibilityScore;
 
   public ScheduledTransitLegBuilder() {}
@@ -39,6 +40,7 @@ public class ScheduledTransitLegBuilder<B extends ScheduledTransitLegBuilder<B>>
     transferToNextLeg = original.getTransferToNextLeg();
     generalizedCost = original.getGeneralizedCost();
     accessibilityScore = original.accessibilityScore();
+    onBoardAccess = original.getOnBoardAccess();
     zoneId = original.getZoneId();
   }
 
@@ -148,6 +150,15 @@ public class ScheduledTransitLegBuilder<B extends ScheduledTransitLegBuilder<B>>
 
   public int generalizedCost() {
     return generalizedCost;
+  }
+
+  public B withOnBoardAccess(Boolean onBoardAccess) {
+    this.onBoardAccess = onBoardAccess;
+    return instance();
+  }
+
+  public Boolean onBoardAccess() {
+    return onBoardAccess;
   }
 
   public B withAccessibilityScore(Float accessibilityScore) {

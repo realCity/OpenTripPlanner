@@ -94,6 +94,7 @@ public enum OTPFeature {
   ),
   FaresV2(false, true, "Enable import of GTFS-Fares v2 data."),
   FlexRouting(false, true, "Enable FLEX routing."),
+  OnBoardAccessEgress(false, false, "Enable OnBoard Access/Egress"),
   GoogleCloudStorage(false, true, "Enable Google Cloud Storage integration."),
   LegacyRestApi(false, true, "Enable legacy REST API. This API will be removed in the future."),
   MultiCriteriaGroupMaxFilter(
